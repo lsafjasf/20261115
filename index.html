@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171311" />
+    <title>三幕光室 · 纸影工坊</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='9' fill='%23efe3cb'/%3E%3Cpath d='M18 21h28v24H18z' fill='none' stroke='%2333281e' stroke-width='2'/%3E%3Ccircle cx='41' cy='33' r='8' fill='%23c9864f'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="masthead">
+        <a class="brand" href="#" aria-label="三幕光室首页">
+          <span class="brand-seal" aria-hidden="true">影</span>
+          <span class="brand-copy">
+            <span class="eyebrow">SHADOW ATELIER · 纸影工坊</span>
+            <span class="brand-title">三幕光室</span>
+          </span>
+        </a>
+        <div class="header-note">
+          <span class="live-pin" aria-hidden="true"></span>
+          <span>光箱已点亮</span>
+          <span class="header-divider"></span>
+          <span>帧率 <strong id="fpsReadout">60</strong> fps</span>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button" id="soundButton" type="button" aria-pressed="true" title="切换机械声">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 10v4M8 8v8M12 5v14M16 9v6M20 11v2" />
+            </svg>
+            <span>机械声 开</span>
+          </button>
+          <button class="export-button" id="exportButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" />
+            </svg>
+            导出当前帧
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="scene-rail" aria-label="场景列表">
+          <div class="rail-heading">
+            <span class="eyebrow">PROGRAM · 剧目</span>
+            <span class="rail-count"><strong id="completeCount">0</strong> / 3</span>
+          </div>
+          <div class="scene-list" id="sceneList"></div>
+          <div class="rail-progress">
+            <div class="progress-caption">
+              <span>交付进度</span>
+              <span id="progressLabel">待收录</span>
+            </div>
+            <div class="progress-track"><span id="progressFill"></span></div>
+          </div>
+          <div class="rail-note">
+            <span class="note-index">工坊手记 07</span>
+            <p>好影子不是叠出来的。让每一层留一口气，轮廓才会浮起来。</p>
+          </div>
+        </aside>
+
+        <section class="stage-column" aria-label="投影预览">
+          <div class="stage-panel">
+            <div class="stage-heading">
+              <div>
+                <div class="stage-meta">
+                  <span id="sceneIndex">SCENE 01</span>
+                  <span class="dot-separator"></span>
+                  <span id="sceneMood">暮色 · 湖面</span>
+                </div>
+                <h1 id="sceneTitle">潮汐信使</h1>
+              </div>
+              <div class="stage-state" id="stageState">
+                <span></span>
+                <span>实时投影</span>
+              </div>
+            </div>
+            <div class="canvas-frame" id="canvasFrame">
+              <canvas id="stageCanvas" aria-label="纸片投影箱实时画面"></canvas>
+              <div class="canvas-corner top-left"></div>
+              <div class="canvas-corner top-right"></div>
+              <div class="canvas-corner bottom-left"></div>
+              <div class="canvas-corner bottom-right"></div>
+              <div class="drag-hint" id="dragHint">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v18M3 12h18M12 3l-3 3m3-3 3 3M12 21l-3-3m3 3 3-3M3 12l3-3m-3 3 3 3M21 12l-3-3m3 3-3 3" />
+                </svg>
+                拖拽光源
+              </div>
+              <div class="burn-callout" id="burnCallout" aria-hidden="true">
+                <span></span>边缘过曝
+              </div>
+              <div class="canvas-caption">
+                <span>纸层 04 / 背面投影</span>
+                <span>点击画面移动光源</span>
+              </div>
+            </div>
+            <div class="stage-footer">
+              <div class="legend">
+                <span><i class="legend-light"></i>光源</span>
+                <span><i class="legend-paper"></i>纸层</span>
+                <span><i class="legend-shadow"></i>投影</span>
+              </div>
+              <div class="diagnostic-strip" id="diagnosticStrip"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="inspector" aria-label="投影参数">
+          <div class="inspector-head">
+            <div>
+              <span class="eyebrow">CUT &amp; LIGHT</span>
+              <h2 id="inspectorTitle">潮汐信使</h2>
+            </div>
+            <span class="inspector-number" id="inspectorNumber">01</span>
+          </div>
+          <p class="scene-description" id="sceneDescription"></p>
+          <div class="inspector-tabs" role="tablist" aria-label="参数组">
+            <button class="inspector-tab is-active" type="button" data-panel="layersPanel" role="tab" aria-selected="true">纸层</button>
+            <button class="inspector-tab" type="button" data-panel="lightPanel" role="tab" aria-selected="false">光源</button>
+          </div>
+          <div class="inspector-body">
+            <div class="parameter-panel is-active" id="layersPanel" role="tabpanel">
+              <div class="panel-label">
+                <span>四层剪纸</span>
+                <span class="panel-hint">旋转角度</span>
+              </div>
+              <div class="layer-controls" id="layerControls"></div>
+            </div>
+            <div class="parameter-panel" id="lightPanel" role="tabpanel">
+              <label class="range-control" for="lightIntensity">
+                <span class="range-top"><span>光源距离</span><output id="lightIntensityValue">62</output></span>
+                <input id="lightIntensity" type="range" min="12" max="100" value="62" />
+                <span class="range-scale"><span>贴近 · 易烧边</span><span>退后 · 柔光</span></span>
+              </label>
+              <label class="range-control" for="lightHeight">
+                <span class="range-top"><span>投光高度</span><output id="lightHeightValue">48</output></span>
+                <input id="lightHeight" type="range" min="12" max="88" value="48" />
+              </label>
+              <div class="light-presets">
+                <button type="button" data-light-preset="soft">柔和</button>
+                <button type="button" data-light-preset="dramatic">侧光</button>
+                <button type="button" data-light-preset="low">低位</button>
+              </div>
+            </div>
+            <div class="meter-block">
+              <div class="meter-row">
+                <span>轮廓完整度</span>
+                <strong id="silhouetteValue">82%</strong>
+              </div>
+              <div class="meter"><span id="silhouetteMeter"></span></div>
+              <div class="meter-row">
+                <span>边缘安全</span>
+                <strong id="exposureValue">安全</strong>
+              </div>
+              <div class="meter exposure"><span id="exposureMeter"></span></div>
+            </div>
+            <div class="warning-note" id="warningNote">
+              <span class="warning-icon">!</span>
+              <span id="warningText">构图透气，可收录这一幕。</span>
+            </div>
+          </div>
+          <div class="inspector-actions">
+            <button class="save-scene-button" id="saveSceneButton" type="button">
+              <span id="saveSceneLabel">收录这一幕</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" /></svg>
+            </button>
+            <p class="save-status" id="saveStatus">参数将自动保存在本机</p>
+          </div>
+        </aside>
+      </main>
+
+      <section class="timeline-panel" aria-label="图层时间线">
+        <div class="timeline-head">
+          <div class="timeline-title">
+            <span class="eyebrow">LAYER TIMELINE</span>
+            <span>明暗编排</span>
+          </div>
+          <div class="transport">
+            <button class="play-button" id="playButton" type="button" aria-label="播放">
+              <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z" /></svg>
+              <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14" /></svg>
+            </button>
+            <span class="timecode" id="timecode">00:00:00</span>
+            <span class="time-total">/ 00:08:00</span>
+          </div>
+          <div class="timeline-tools">
+            <span class="timeline-tip">拖动菱形关键帧设置淡入淡出</span>
+            <button class="timeline-reset" id="timelineReset" type="button">重置编排</button>
+          </div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-labels" id="timelineLabels"></div>
+          <div class="timeline-tracks" id="timelineTracks">
+            <div class="playhead" id="playhead"><span></span></div>
+            <div class="timeline-ruler" id="timelineRuler"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span class="toast-icon">✓</span>
+      <span id="toastText">已保存</span>
+    </div>
+    <div class="export-flash" id="exportFlash" aria-hidden="true"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
