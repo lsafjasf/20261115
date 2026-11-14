@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冰湖三点测量 · 球形探测器</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="layout">
+    <header>
+      <h1>冰湖三点测量</h1>
+      <p class="sub">瞬时推力 · 滚动惯性 · 薄冰应力 · 静止 2 秒完成检测</p>
+    </header>
+
+    <section class="hud">
+      <div class="card"><span class="k">状态</span><span id="status" class="v">手动控制</span></div>
+      <div class="card"><span class="k">速度</span><span id="speed" class="v">0</span></div>
+      <div class="card"><span class="k">冰面应力</span><span id="stress" class="v">0%</span></div>
+      <div class="card"><span class="k">检测进度</span><span id="progress" class="v">—</span></div>
+      <div class="card"><span class="k">测点</span><span id="points" class="v">0 / 3</span></div>
+      <div class="card"><span class="k">推力次数</span><span id="thrusts" class="v">0</span></div>
+      <div class="card"><span class="k">Seed</span><span id="seed" class="v"></span></div>
+    </section>
+
+    <div class="stage">
+      <canvas id="lake" tabindex="0"></canvas>
+    </div>
+
+    <section class="controls">
+      <button id="autoBtn"><span id="auto">自动驾驶：关</span></button>
+      <button id="resetBtn">重置 (R)</button>
+      <p class="hint">
+        <b>WASD / 方向键</b>：朝该方向施加一次瞬时推力；
+        <b>点击湖面</b>：朝点击位置推一次；<b>空格</b>：切换自动驾驶。
+        进入橙色检测圈并把速度降到阈值以下、保持静止 2 秒即可读数；
+        深蓝色为冰洞（坠入即失败），浅蓝灰薄冰停留越久裂痕越严重。
+      </p>
+    </section>
+  </main>
+
+  <script src="js/rng.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/autopilot.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "ice-lake-probe",
+  "version": "1.0.0",
+  "description": "Ice-lake three-point sphere probe mission (Canvas + WebAudio, deterministic seed)",
+  "main": "index.html",
+  "scripts": {
+    "test:engine": "node test/headless-run.js",
+    "test:browser": "node test/browser-mission.test.js",
+    "test": "node test/headless-run.js && node test/browser-mission.test.js",
+    "serve": "python3 -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [
+    "canvas",
+    "game",
+    "physics",
+    "seeded",
+    "webaudio"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}
