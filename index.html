@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>海边温室 · 盐雾与湿度模拟</title>
+<style>
+  :root { --bg:#0e1620; --panel:#16222f; --line:#2a3b4d; --txt:#cfe3f0; --warn:#ffb347; --bad:#ff6b6b; --ok:#7ddb8a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.5 "PingFang SC","Microsoft YaHei",sans-serif; }
+  #wrap { display:flex; gap:12px; max-width:1280px; margin:0 auto; padding:12px; }
+  #stage { flex:1 1 auto; }
+  canvas { width:100%; border:1px solid var(--line); border-radius:8px; background:#0a121b; display:block; }
+  #panel { flex:0 0 320px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; }
+  h1 { font-size:17px; margin:0 0 4px; }
+  h2 { font-size:13px; margin:12px 0 6px; color:#8fb6d4; letter-spacing:1px; }
+  .row { display:flex; align-items:center; gap:8px; margin:6px 0; }
+  button { background:#1f3245; color:var(--txt); border:1px solid var(--line); border-radius:6px;
+           padding:6px 10px; cursor:pointer; font-size:13px; }
+  button:hover { background:#28405a; }
+  button.on { background:#1d5b3a; border-color:#3f9c66; }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  .bar { height:10px; background:#0c141d; border:1px solid var(--line); border-radius:5px; position:relative; overflow:hidden; flex:1; }
+  .bar > i { position:absolute; inset:0; transform-origin:left; background:var(--ok); }
+  .bar.rust > i { background:var(--warn); }
+  .bar.hp > i { background:var(--ok); }
+  .lbl { width:88px; flex:none; color:#9db8cc; }
+  .val { width:44px; flex:none; text-align:right; font-variant-numeric:tabular-nums; }
+  #log { height:150px; overflow-y:auto; background:#0c141d; border:1px solid var(--line);
+         border-radius:6px; padding:6px 8px; font-size:12px; }
+  #log div { white-space:nowrap; }
+  #banner { position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+            flex-direction:column; background:rgba(5,10,16,.78); border-radius:8px; z-index:5; }
+  #banner.show { display:flex; }
+  #banner .big { font-size:34px; margin-bottom:10px; }
+  #stagebox { position:relative; }
+  .kbd { color:#6f8ba3; font-size:12px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <div id="stagebox">
+      <canvas id="cv" width="920" height="560"></canvas>
+      <div id="banner"><div class="big"></div><div class="sub"></div><button id="again">重新开始</button></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="start">▶ 开始模拟</button>
+      <button id="speed">速度 ×8</button>
+      <span class="kbd">快捷键：F 风机 / C 遮阳帘 / 1·2·3 滴灌阀 / M 检修</span>
+    </div>
+  </div>
+  <div id="panel">
+    <h1>🌊 海边温室控制台</h1>
+    <div class="row"><span class="lbl">模拟时间</span><span id="clock" class="val" style="width:auto">00:00 / 20:00</span></div>
+    <div class="row"><span class="lbl">温度</span><span id="temp" class="val" style="width:auto">-- ℃</span></div>
+    <h2>设备控制</h2>
+    <div class="row"><button id="btnFan" style="flex:1">除雾风机：开</button><button id="btnFanSpd">档位 1</button></div>
+    <div class="row"><button id="btnCurtain" style="flex:1">遮阳帘：开</button></div>
+    <div class="row"><button class="btnValve" data-i="0" style="flex:1">叶菜区滴灌</button>
+                     <button class="btnValve" data-i="1" style="flex:1">育苗区滴灌</button>
+                     <button class="btnValve" data-i="2" style="flex:1">果菜区滴灌</button></div>
+    <div class="row"><button id="btnMaint" style="flex:1">🔧 安排检修（45 秒，全设备停机）</button></div>
+    <h2>设备锈蚀</h2>
+    <div id="rustBars"></div>
+    <h2>种植区状态</h2>
+    <div id="zoneBars"></div>
+    <h2>事件日志</h2>
+    <div id="log"></div>
+  </div>
+</div>
+<script src="sim.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
