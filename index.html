@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111113" />
+    <title>Rolling Credits · 片尾字幕工作台</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%2319191d'/%3E%3Cpath d='M10 10v12M16 8v16M22 12v8' stroke='%23e8b15f' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Rolling Credits 首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>
+            <strong>ROLLING CREDITS</strong>
+            <small>片尾字幕工作台</small>
+          </span>
+        </a>
+
+        <div class="topbar-status">
+          <span class="status-dot"></span>
+          <span>CANVAS / WEB AUDIO</span>
+          <span class="status-sep"></span>
+          <span id="projectName">夜航之后 · END CREDITS</span>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="icon-button" id="resetButton" type="button" title="恢复示例字幕" aria-label="恢复示例字幕">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4v5h5M5.2 15a7 7 0 1 0 .4-7.7L4 9" />
+            </svg>
+          </button>
+          <button class="button button-ghost compact" id="vttTopButton" type="button">
+            <span>VTT</span>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar" aria-label="字幕设置">
+          <div class="sidebar-scroll">
+            <section class="panel text-panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">01 / CREDITS</span>
+                  <h2>片尾文本</h2>
+                </div>
+                <span class="line-badge" id="lineBadge">10 行</span>
+              </div>
+
+              <label class="sr-only" for="creditsInput">片尾字幕文本，每行一条，空行会形成留白</label>
+              <div class="editor-shell">
+                <div class="editor-gutter" id="editorGutter" aria-hidden="true"></div>
+                <textarea
+                  id="creditsInput"
+                  spellcheck="false"
+                  rows="12"
+                  aria-describedby="editorHint"
+                ></textarea>
+              </div>
+              <div class="field-note" id="editorHint">
+                <span><i class="note-dot"></i><span id="textStats">10 行字幕 · 4 处留白</span></span>
+                <span>空行 = 留白段</span>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">02 / MOTION</span>
+                  <h2>滚动节奏</h2>
+                </div>
+                <span class="auto-tag">AUTO SLOW</span>
+              </div>
+
+              <label class="control-row" for="speedInput">
+                <span>
+                  <strong>滚动速度</strong>
+                  <small>基础位移速度</small>
+                </span>
+                <output id="speedValue" for="speedInput">66 px/s</output>
+              </label>
+              <input id="speedInput" class="range" type="range" min="24" max="110" value="66" step="1" />
+
+              <label class="control-row spaced" for="holdInput">
+                <span>
+                  <strong>分段停留</strong>
+                  <small>每处留白抵达焦点时</small>
+                </span>
+                <output id="holdValue" for="holdInput">0.7 s</output>
+              </label>
+              <input id="holdInput" class="range" type="range" min="0" max="2.4" value="0.7" step="0.1" />
+
+              <div class="slow-note">
+                <span class="slow-gauge"><i id="slowGaugeFill"></i></span>
+                <span>留白进入焦点区时自动降至 <strong>46%</strong></span>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">03 / ATMOSPHERE</span>
+                  <h2>画面与声音</h2>
+                </div>
+                <label class="switch">
+                  <input id="fadeToggle" type="checkbox" checked />
+                  <span class="switch-track"><i></i></span>
+                  <span class="switch-label">淡出</span>
+                </label>
+              </div>
+
+              <label class="control-row" for="fadeInput">
+                <span>
+                  <strong>背景淡出起点</strong>
+                  <small>字幕保持在黑场上方</small>
+                </span>
+                <output id="fadeValue" for="fadeInput">82%</output>
+              </label>
+              <input id="fadeInput" class="range" type="range" min="55" max="95" value="82" step="1" />
+
+              <div class="audio-card">
+                <div class="audio-icon" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="audio-copy">
+                  <strong>夜潮 · 环境声</strong>
+                  <small>Web Audio 实时合成</small>
+                </div>
+                <label class="sr-only" for="volumeInput">背景音音量</label>
+                <input id="volumeInput" class="volume" type="range" min="0" max="100" value="46" step="1" />
+                <button class="audio-toggle" id="audioButton" type="button" aria-pressed="true" aria-label="关闭背景音">
+                  <svg class="sound-on" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M3 8v4h3l4 3V5L6 8H3Zm9-1.5a4 4 0 0 1 0 7M14.5 4a7 7 0 0 1 0 12" />
+                  </svg>
+                  <svg class="sound-off" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M3 8v4h3l4 3V5L6 8H3Zm9 0 5 4m0-4-5 4" />
+                  </svg>
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <div class="export-panel">
+            <button class="button button-primary" id="pngButton" type="button">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 3v9m0 0 3-3m-3 3L7 9M4 15v2h12v-2" />
+              </svg>
+              <span>
+                <strong>导出 PNG 版式</strong>
+                <small>当前预览帧 · 1280 × 720</small>
+              </span>
+            </button>
+            <button class="button button-secondary" id="vttButton" type="button">
+              <span>
+                <strong>导出 WebVTT</strong>
+                <small>分段字幕 · UTF-8</small>
+              </span>
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M6 3h6l3 3v11H6V3Zm6 0v4h4M9 10h3M9 13h3" />
+              </svg>
+            </button>
+          </div>
+        </aside>
+
+        <section class="preview" aria-label="预览与时间轴">
+          <div class="preview-header">
+            <div>
+              <span class="eyebrow">PROGRAM FILM / 2026</span>
+              <h1>夜航之后</h1>
+            </div>
+            <div class="preview-tools">
+              <div class="resolution-pill">
+                <span class="status-dot"></span>
+                1280 × 720
+              </div>
+              <button class="icon-button light" id="fullscreenButton" type="button" title="全屏预览" aria-label="全屏预览">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="stage-frame" id="stageFrame">
+            <canvas id="stageCanvas" width="1280" height="720" aria-label="片尾字幕预览画布"></canvas>
+            <div class="stage-chrome stage-chrome-top">
+              <span>FRAME 0128</span>
+              <span class="record-dot"></span>
+              <span>PROGRAM GENERATED</span>
+            </div>
+            <div class="stage-chrome stage-chrome-bottom">
+              <span id="sceneState">STILL / 00:00:00</span>
+              <span>SAFE AREA 90%</span>
+            </div>
+            <div class="stage-center-play" id="stageCenterPlay" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="m12 8 12 8-12 8V8Z" /></svg>
+            </div>
+          </div>
+
+          <div class="transport">
+            <button class="play-button" id="playButton" type="button" aria-label="播放预览" aria-pressed="false">
+              <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z" /></svg>
+              <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM14 5h3v14h-3z" /></svg>
+            </button>
+            <div class="timecode" id="timecode" aria-live="off">
+              <span id="currentTime">00:00.0</span>
+              <i>/</i>
+              <span id="durationTime">00:00.0</span>
+            </div>
+            <label class="sr-only" for="timelineInput">拖动预览时间</label>
+            <input id="timelineInput" class="timeline-range" type="range" min="0" max="1000" value="0" step="1" />
+            <button class="transport-button active" id="loopButton" type="button" aria-pressed="true" aria-label="循环播放">
+              <svg viewBox="0 0 22 22" aria-hidden="true">
+                <path d="M4 8V6h12l-3-3m3 11v2H4l3 3" />
+              </svg>
+              <span>循环</span>
+            </button>
+            <button class="transport-button active" id="soundButton" type="button" aria-pressed="true" aria-label="开启背景音">
+              <svg class="sound-on" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M3 8v4h3l4 3V5L6 8H3Zm9-1.5a4 4 0 0 1 0 7M14.5 4a7 7 0 0 1 0 12" />
+              </svg>
+              <svg class="sound-off" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M3 8v4h3l4 3V5L6 8H3Zm9 0 5 4m0-4-5 4" />
+              </svg>
+              <span>声音</span>
+            </button>
+          </div>
+
+          <div class="metrics">
+            <article class="metric">
+              <span class="metric-label">成片时长</span>
+              <strong id="metricDuration">00:00.0</strong>
+              <small id="metricFrames">0 帧 · 30 FPS</small>
+            </article>
+            <article class="metric">
+              <span class="metric-label">滚动距离</span>
+              <strong id="metricDistance">0 px</strong>
+              <small id="metricRows">10 行字幕 / 0 视觉行</small>
+            </article>
+            <article class="metric">
+              <span class="metric-label">自动减速</span>
+              <strong id="metricSlow">01.00×</strong>
+              <small id="metricSlowState">焦点区 · 正常速度</small>
+            </article>
+            <article class="metric metric-check" id="boundaryMetric">
+              <span class="metric-label">版式校验</span>
+              <strong><i class="check-icon">✓</i><span id="metricCheck">边界安全</span></strong>
+              <small id="metricCheckNote">10 / 10 行未裁切</small>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

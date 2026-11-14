@@ -1,0 +1,12 @@
+{
+  "name": "rolling-credits-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Canvas 与 Web Audio 驱动的片尾滚动字幕工作台",
+  "scripts": {
+    "serve": "python3 -m http.server 8899",
+    "test": "node --test tests/timeline.test.mjs",
+    "verify": "node tests/verify-browser.mjs"
+  }
+}
