@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>听漏车 · 地下供水管泄漏定位</title>
+<style>
+  body {
+    margin: 0;
+    background: #0b0e12;
+    color: #cfe3ff;
+    font-family: "Microsoft YaHei", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+  h1 { font-size: 18px; margin: 4px 0 10px; }
+  canvas { background: #101418; border: 1px solid #2a3440; }
+  #hud {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #9fb2c8;
+    max-width: 840px;
+    text-align: center;
+    min-height: 20px;
+  }
+</style>
+</head>
+<body>
+  <h1>听漏车 · 地下供水管泄漏定位</h1>
+  <canvas id="view" width="840" height="700"></canvas>
+  <div id="hud"></div>
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>
