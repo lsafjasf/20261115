@@ -1,0 +1,13 @@
+{
+  "name": "calibre-30-escapement-bench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Canvas mechanical watch assembly puzzle with Web Audio.",
+  "scripts": {
+    "start": "node scripts/server.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

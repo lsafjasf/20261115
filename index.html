@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0e0d" />
+    <title>CALIBRE 30 · 擒纵调试台</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <div>
+          <p>ATELIER <span>NO. 30</span></p>
+          <h1>擒纵调试台</h1>
+        </div>
+      </div>
+      <div class="topbar-center">
+        <span class="live-dot"></span>
+        <span>CALIBRE 30 · 动力试验</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-button" id="soundButton" type="button" aria-pressed="true">
+          <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span id="soundLabel">声音开启</span>
+        </button>
+        <button class="text-button" id="guideButton" type="button">机芯图纸</button>
+      </div>
+    </header>
+
+    <main class="workbench">
+      <section class="stage-panel" aria-label="机芯装配区">
+        <div class="stage-title">
+          <div>
+            <span class="eyebrow">MOVEMENT / 03</span>
+            <h2>轮系装配台</h2>
+          </div>
+          <div class="stage-readout">
+            <span>摆频</span>
+            <strong id="beatReadout">0 bph</strong>
+          </div>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas
+            id="watchCanvas"
+            width="1200"
+            height="720"
+            aria-label="机械表机芯和表盘，三个齿轮轴位等待装配"
+          ></canvas>
+          <button class="slot-hotspot slot-center" data-slot="center" type="button" aria-label="二轮轴位，需要48齿"></button>
+          <button class="slot-hotspot slot-third" data-slot="third" type="button" aria-label="三轮轴位，需要36齿"></button>
+          <button class="slot-hotspot slot-fourth" data-slot="fourth" type="button" aria-label="四轮轴位，需要24齿"></button>
+          <div class="canvas-corner top-left">SWISS LEVER · 17 JEWELS</div>
+          <div class="canvas-corner bottom-right">CÔTE DE GENÈVE</div>
+        </div>
+
+        <div class="status-strip">
+          <div class="status-copy">
+            <span class="status-led" id="statusLed"></span>
+            <div>
+              <p class="status-kicker" id="statusKicker">READY / 待装</p>
+              <p class="status-message" id="statusMessage" data-testid="status">轮系空缺。从零件盘选择齿轮，装入三个轴位。</p>
+            </div>
+          </div>
+          <div class="run-meter" aria-label="三十秒稳定测试进度">
+            <div class="meter-label">
+              <span>稳定走时</span>
+              <strong id="runTime">00.0 / 30.0s</strong>
+            </div>
+            <div class="meter-track"><i id="runProgress"></i></div>
+          </div>
+          <div class="attempts">
+            <span>调试</span>
+            <div id="attemptPips" aria-label="剩余三次调试机会"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="control-panel">
+        <section class="spec-card">
+          <div class="card-heading">
+            <span class="card-index">A</span>
+            <div>
+              <p>原厂轮系卡</p>
+              <h3>齿数不可妥协</h3>
+            </div>
+          </div>
+          <div class="spec-list">
+            <div><span class="jewel"></span><b>二轮</b><em>48T</em><small>中心轴</small></div>
+            <div><span class="jewel ruby"></span><b>三轮</b><em>36T</em><small>传动轴</small></div>
+            <div><span class="jewel"></span><b>四轮</b><em>24T</em><small>秒轴</small></div>
+          </div>
+          <p class="spec-note">齿数偏小会加快轮系；齿数偏大则轴距过紧。</p>
+        </section>
+
+        <section class="tray-card">
+          <div class="card-heading tray-heading">
+            <span class="card-index">B</span>
+            <div>
+              <p>零件盘</p>
+              <h3 id="trayTitle">3 / 9 已取用</h3>
+            </div>
+            <span class="selection-hint" id="selectionHint">点选齿轮</span>
+          </div>
+          <div class="gear-tray" id="gearTray" role="list" aria-label="齿轮零件盘"></div>
+        </section>
+
+        <section class="power-card">
+          <div class="crown-wrap">
+            <div class="crown-shadow"></div>
+            <button class="crown" id="crownButton" type="button" aria-label="转动表冠上弦">
+              <span class="crown-ridge"></span>
+              <span class="crown-face"><i></i></span>
+            </button>
+            <div class="power-copy">
+              <span class="eyebrow">POWER RESERVE</span>
+              <h3 id="powerTitle">发条松弛</h3>
+              <p id="powerHint">点击表冠五次，蓄满动力</p>
+            </div>
+          </div>
+          <div class="power-track"><i id="powerFill"></i></div>
+          <div class="power-meta">
+            <span id="windingReadout">0 / 5 格</span>
+            <button id="resetButton" type="button">重新开始</button>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <div class="guide-drawer" id="guideDrawer" aria-hidden="true">
+      <button class="guide-backdrop" id="guideBackdrop" type="button" aria-label="关闭图纸"></button>
+      <article class="guide-sheet">
+        <div class="guide-top">
+          <span class="eyebrow">SERVICE MANUAL / REV. 06</span>
+          <button id="guideClose" type="button" aria-label="关闭图纸">×</button>
+        </div>
+        <h2>轮系校验图</h2>
+        <div class="ratio-diagram" aria-hidden="true">
+          <span class="ratio-node"><b>48</b><small>二轮</small></span>
+          <i class="ratio-line"></i>
+          <span class="ratio-node"><b>36</b><small>三轮</small></span>
+          <i class="ratio-line"></i>
+          <span class="ratio-node"><b>24</b><small>四轮</small></span>
+        </div>
+        <ol>
+          <li><b>齿数：</b>三个轴位分别需要 48T、36T、24T。偏小会令秒针过快。</li>
+          <li><b>轴距：</b>齿数偏大会使齿顶顶死，摆轮无法起振。</li>
+          <li><b>测试：</b>每次满弦消耗一次调试机会。秒针连续稳定 30 秒即可交付。</li>
+        </ol>
+        <p class="guide-sign">ATELIER NO. 30 · BENCH ACCEPTANCE</p>
+      </article>
+    </div>
+
+    <div class="result-modal" id="resultModal" aria-hidden="true">
+      <div class="result-card">
+        <span class="result-seal" id="resultSeal">30</span>
+        <p class="eyebrow" id="resultEyebrow">BENCH ACCEPTANCE</p>
+        <h2 id="resultTitle">走时稳定</h2>
+        <p id="resultCopy">秒针连续通过 30 秒。轮系装配完成，机芯可以交付。</p>
+        <button id="resultAction" type="button">查看机芯</button>
+      </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
