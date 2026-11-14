@@ -1,0 +1,10 @@
+{
+  "name": "pontoon-crane",
+  "version": "1.0.0",
+  "description": "河港浮筏吊机货箱转运 Canvas 游戏（含可测试物理引擎）",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}

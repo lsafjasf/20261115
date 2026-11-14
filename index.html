@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>河港浮筏吊机 · 货箱转运</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0e1720;
+        font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #eef4f8;
+      }
+      header {
+        padding: 10px 18px 4px;
+      }
+      header h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      header p {
+        margin: 0;
+        font-size: 13px;
+        color: #9fb4c4;
+      }
+      #game {
+        display: block;
+        width: calc(100vw - 24px);
+        height: calc(100vh - 96px);
+        margin: 8px 12px 12px;
+        border-radius: 10px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        background: #7fb8d6;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>河港浮筏吊机 · 三箱转运</h1>
+      <p>
+        把驳船上的三只货箱搬到岸台。重箱会压弯吊臂并让浮筏倾斜，外伸过远、角度过陡会侧翻；
+        在水面上空脱钩会落水。
+      </p>
+    </header>
+    <canvas id="game"></canvas>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
