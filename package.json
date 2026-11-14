@@ -1,0 +1,30 @@
+{
+  "name": "uid232",
+  "version": "1.0.0",
+  "description": "悬崖餐厅 · 钢索送餐 Canvas 游戏",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/mechanics.js && node test/sim.js && node test/browser-smoke.js",
+    "sim": "node test/sim.js",
+    "screenshot": "node test/screenshot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "jsdom": "^31.0.1"
+  }
+}

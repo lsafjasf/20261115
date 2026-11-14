@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悬崖餐厅 · 钢索送餐</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    background: radial-gradient(circle at 50% 20%, #3a2430, #17101a);
+    color: #ffe9d2; font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 18px;
+  }
+  h1 { margin: 4px 0 12px; font-size: 22px; letter-spacing: 2px; }
+  .stage { position: relative; width: 960px; max-width: 100%; }
+  canvas {
+    width: 100%; border-radius: 14px; display: block;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+    background: #2a1820;
+  }
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 12px; justify-content: center;
+  }
+  button {
+    background: linear-gradient(#b0563f, #7c3a30);
+    color: #fff3e2; border: 0; border-radius: 9px;
+    padding: 9px 16px; font-size: 14px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  }
+  button:hover { filter: brightness(1.12); }
+  .help {
+    margin-top: 14px; max-width: 960px; width: 100%;
+    background: rgba(255,233,210,0.07); border: 1px solid rgba(255,233,210,0.15);
+    border-radius: 12px; padding: 12px 18px; font-size: 13px; line-height: 1.9;
+  }
+  kbd {
+    background: #4a2f33; border-radius: 5px; padding: 1px 7px;
+    font-family: monospace; color: #ffd9a8;
+  }
+  .goal { color: #ffd166; }
+</style>
+</head>
+<body>
+  <h1>悬崖餐厅 · 钢索送餐</h1>
+  <div class="stage">
+    <canvas id="game" width="960" height="600"></canvas>
+  </div>
+  <div class="controls">
+    <button id="btn-auto">▶ 自动演示一次投递</button>
+    <button id="btn-restart">↻ 重新开始</button>
+    <button id="btn-mute">🔊 声音开</button>
+  </div>
+  <div class="help">
+    <div><span class="goal">目标：</span>沿钢索把三盘热菜依次送到三个观景台，送达时温度 ≥ 55℃ 且汤汁未洒光才算合格；完成三次投递且合格菜品 ≥ 2 盘即胜利。</div>
+    <div>
+      操作：<kbd>→</kbd>/<kbd>D</kbd> 前进　<kbd>←</kbd>/<kbd>A</kbd> 倒车　<kbd>空格</kbd> 急停（高速急停会洒汤）
+      　<kbd>E</kbd> 到观景台停稳后投递　<kbd>R</kbd> 重开
+    </div>
+    <div>提示：餐车悬挂在钢索下有摆动惯性，风会把托盘推向一侧；大摆角与剧烈加减速都会让汤汁溢出，菜品持续散热、大风降温更快。左上角看温度色带，右上角看风力方向与强度。</div>
+  </div>
+  <script src="js/core.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
