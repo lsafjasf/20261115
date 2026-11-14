@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1110">
+  <title>ANCHOR / 采石场爆破防护</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b1110'/%3E%3Cpath d='M5 8l22 6M7 18l20-5M9 25l17 2' stroke='%23d9f16b' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <p class="eyebrow">NORTH PIT · BLAST CONTROL</p>
+          <h1>ANCHOR <span>/ 爆破防护</span></h1>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <div class="status-chip">
+          <i class="status-dot"></i>
+          <span id="systemStatus">待布设</span>
+        </div>
+        <button id="soundToggle" class="icon-button" aria-label="切换声音" title="切换声音">
+          <span class="sound-icon">◖</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="stage-column" aria-label="矿区平面图">
+        <div class="stage-frame">
+          <div class="stage-topline">
+            <span class="mono-label">SITE 04 / 东侧临空面</span>
+            <span class="coordinate-readout" id="cursorReadout">X 000 · Y 000</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="scene" width="1280" height="720" aria-label="采石场防护网布置图"></canvas>
+            <div class="canvas-vignette"></div>
+            <div class="countdown" id="countdown" hidden>
+              <span class="countdown-label">爆破窗口</span>
+              <strong id="countdownValue">3</strong>
+            </div>
+          </div>
+          <div class="stage-legend">
+            <span><i class="legend-swatch net"></i>防护网</span>
+            <span><i class="legend-swatch buffer"></i>缓冲区</span>
+            <span><i class="legend-swatch danger"></i>禁入区</span>
+            <span><i class="legend-swatch path"></i>落石轨迹</span>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline-head">
+            <div>
+              <p class="eyebrow">REAL-TIME WINDOW</p>
+              <h2>十秒爆破模拟</h2>
+            </div>
+            <div class="timer-block">
+              <span id="timerLabel">T−10.0</span>
+              <b id="timerState">未启动</b>
+            </div>
+          </div>
+          <div class="timeline-track">
+            <div class="timeline-fill" id="timelineFill"></div>
+            <div class="timeline-ticks" aria-hidden="true">
+              <span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10s</span>
+            </div>
+            <i class="timeline-blast" id="timelineBlast"></i>
+          </div>
+          <div class="sim-stats">
+            <div><span>落石</span><b id="rockCount">0</b></div>
+            <div><span>拦截</span><b id="caughtCount">0</b></div>
+            <div><span>峰值张力</span><b id="loadReadout">0%</b></div>
+            <div><span>越界</span><b id="breachCount">0</b></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="control-column">
+        <section class="control-card setup-card">
+          <div class="card-heading">
+            <span class="step-number">01</span>
+            <div>
+              <p class="eyebrow">ANCHOR LAYOUT</p>
+              <h2>布设防护网</h2>
+            </div>
+            <span class="tag" id="layoutTag">4 / 4 固定</span>
+          </div>
+          <p class="card-copy">拖动图上四个橙色锚点，让网面覆盖落石可能越过的路径。车辆与工棚位置固定，不可移动。</p>
+
+          <label class="range-label" for="tension">
+            <span>网面张力</span>
+            <b id="tensionValue">58%</b>
+          </label>
+          <div class="range-row">
+            <span class="range-end">松</span>
+            <input id="tension" type="range" min="0" max="100" value="58" step="1">
+            <span class="range-end">紧</span>
+          </div>
+          <div class="tension-meter">
+            <div class="tension-blue"></div>
+            <div class="tension-safe" id="tensionSafe"></div>
+            <div class="tension-red"></div>
+            <i class="tension-needle" id="tensionNeedle"></i>
+          </div>
+          <div class="tension-scale">
+            <span>过松 · 堆载</span>
+            <span>稳定区</span>
+            <span>过紧 · 撕裂</span>
+          </div>
+
+          <div class="anchor-list" id="anchorList"></div>
+        </section>
+
+        <section class="control-card blast-card">
+          <div class="card-heading">
+            <span class="step-number">02</span>
+            <div>
+              <p class="eyebrow">BLAST AUTHORIZATION</p>
+              <h2>确认爆破</h2>
+            </div>
+          </div>
+          <div class="scenario-switch" role="group" aria-label="爆破工况">
+            <button class="scenario-option active" data-mode="normal">常规落石</button>
+            <button class="scenario-option" data-mode="abnormal">异常落石</button>
+          </div>
+          <div class="scenario-note" id="scenarioNote">
+            <i></i>
+            <span>标准爆破序列 · 17 枚岩块</span>
+          </div>
+          <button id="blastButton" class="blast-button">
+            <span class="blast-icon" aria-hidden="true"></span>
+            <span>
+              <b>确认爆破</b>
+              <small>启动 10 秒实时模拟</small>
+            </span>
+            <em>↗</em>
+          </button>
+          <button id="resetButton" class="text-button">恢复推荐布置</button>
+        </section>
+
+        <section class="control-card result-card" id="resultCard">
+          <div class="card-heading compact">
+            <div>
+              <p class="eyebrow">SIMULATION LOG</p>
+              <h2 id="resultTitle">等待爆破</h2>
+            </div>
+            <span class="result-badge idle" id="resultBadge">STANDBY</span>
+          </div>
+          <p class="result-copy" id="resultCopy">布置完成后执行一次十秒模拟。危险岩块不得越过围栏或进入右侧禁入区。</p>
+          <div class="result-facts" id="resultFacts">
+            <div><span>越界岩块</span><b>—</b></div>
+            <div><span>锚点状态</span><b>—</b></div>
+            <div><span>网面堆载</span><b>—</b></div>
+          </div>
+        </section>
+
+        <p class="field-hint"><span>FIELD NOTE</span> 张力稳定区约为 42–68%。异常落石从高位切入，需同时抬高左右上锚点。</p>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="src/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "quarry-blast-net",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "test": "node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.1"
+  }
+}
