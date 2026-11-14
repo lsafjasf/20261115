@@ -1,0 +1,158 @@
+@font-face {
+  font-family: "Noto Sans SC Local";
+  src: url("../assets/fonts/noto-sc-400.woff2") format("woff2");
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: "Noto Sans SC Local";
+  src: url("../assets/fonts/noto-sc-500.woff2") format("woff2");
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: "Noto Sans SC Local";
+  src: url("../assets/fonts/noto-sc-700.woff2") format("woff2");
+  font-weight: 700; font-display: swap;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d1117;
+  --panel: #161d27;
+  --panel-2: #1d2735;
+  --line: #2a3647;
+  --text: #dce4ee;
+  --muted: #8497ab;
+  --accent: #38bdf8;
+  --good: #34d399;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --fire: #fb923c;
+}
+
+body {
+  background: radial-gradient(1200px 600px at 70% -10%, #182334 0%, var(--bg) 60%);
+  color: var(--text);
+  font: 14px/1.5 "Noto Sans SC Local", "PingFang SC", "Microsoft YaHei",
+    system-ui, "Noto Color Emoji", "Segoe UI Emoji", sans-serif;
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px; border-bottom: 1px solid var(--line);
+  background: rgba(13, 17, 23, 0.85);
+}
+.topbar h1 { font-size: 18px; letter-spacing: 1px; }
+.top-status { display: flex; gap: 14px; align-items: center; }
+#clock { font-variant-numeric: tabular-nums; color: var(--muted); }
+.badge {
+  padding: 3px 12px; border-radius: 999px; font-size: 12px;
+  background: var(--panel-2); border: 1px solid var(--line);
+}
+.badge.run { color: var(--accent); border-color: var(--accent); }
+.badge.won { color: var(--good); border-color: var(--good); }
+.badge.lost { color: var(--danger); border-color: var(--danger); }
+
+.layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 18px; padding: 18px 22px; align-items: start;
+}
+
+.stage {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px;
+}
+#scene { width: 100%; height: auto; border-radius: 10px; display: block; }
+.stage-hint { margin-top: 10px; color: var(--muted); font-size: 12.5px; }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 14px; padding: 16px; max-height: calc(100vh - 110px);
+  overflow-y: auto;
+}
+.panel h2 {
+  font-size: 13px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1px; margin: 16px 0 8px;
+}
+.panel h2:first-child { margin-top: 0; }
+
+.gauges { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gauge {
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px;
+}
+.gauge-label { font-size: 12px; color: var(--muted); }
+.gauge-value { font-size: 22px; font-weight: 700; margin: 2px 0 6px; }
+.gauge-value small { font-size: 11px; color: var(--muted); margin-left: 3px; }
+.bar { height: 6px; border-radius: 4px; background: #0a0f16; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent);
+  transition: width 0.15s linear; }
+.bar.hammer i { background: var(--warn); }
+.bar.tank i { background: var(--good); }
+.bar.smoke i { background: #94a3b8; }
+
+.pump-list { display: grid; gap: 8px; }
+.pump {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 12px;
+}
+.pump .meta b { display: block; }
+.pump .meta small { color: var(--muted); }
+.pump .flow { font-variant-numeric: tabular-nums; color: var(--accent); }
+
+button {
+  cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--text); border-radius: 9px; padding: 8px 10px; font-size: 13px;
+  font-family: "Noto Sans SC Local", "PingFang SC", "Microsoft YaHei",
+    "Noto Color Emoji", "Segoe UI Emoji", sans-serif;
+  transition: filter 0.15s, border-color 0.15s;
+}
+button:hover { filter: brightness(1.15); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.primary { background: #0e7490; border-color: #22d3ee; }
+button.toggle.on { background: #065f46; border-color: var(--good); color: #d1fae5; }
+button.toggle.off { background: #3f1d1d; border-color: var(--danger); color: #fee2e2; }
+
+.hose-list { display: grid; gap: 10px; }
+.hose {
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px 12px;
+}
+.hose-head { display: flex; justify-content: space-between; align-items: center; }
+.hose-head b { font-size: 13px; }
+.hose-head .temp { font-variant-numeric: tabular-nums; }
+.hose-head .temp.hot { color: var(--fire); }
+.hose-head .temp.out { color: var(--good); }
+.hose-head .temp.rupt { color: var(--danger); }
+.hose-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  font-size: 12px; color: var(--muted);
+}
+.hose-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.hose-row .q { width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
+.hose-actions { display: flex; gap: 6px; margin-top: 8px; }
+.hose-actions button { flex: 1; padding: 5px; font-size: 12px; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.controls button { flex: 1 1 30%; }
+.controls #btn-reset { flex-basis: 100%; }
+
+.log-wrap { margin-top: 14px; }
+.log {
+  list-style: none; max-height: 180px; overflow-y: auto;
+  background: #0a0f16; border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 10px; font-size: 12px;
+}
+.log li { padding: 3px 0; color: var(--muted); display: flex; gap: 8px; }
+.log li .t { color: #64748b; font-variant-numeric: tabular-nums; }
+.log li.rupture { color: var(--danger); }
+.log li.hammer { color: var(--warn); }
+.log li.fire { color: var(--good); }
+.log li.result { color: var(--accent); font-weight: 700; }
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+  .panel { max-height: none; }
+}

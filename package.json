@@ -1,0 +1,30 @@
+{
+  "name": "uid245",
+  "version": "1.0.0",
+  "description": "仓库灭火供水调度模拟：Canvas 俯视火场 + 水力/水锤物理 + Web Audio",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/sim-test.js",
+    "test:browser": "node test/browser-test.js",
+    "screenshot": "node test/screenshot.js",
+    "serve": "node -e \"require('http').createServer((q,s)=>{const f=require('fs'),p=require('path');const u=q.url==='/'?'/index.html':q.url.split('?')[0];f.readFile(p.join(__dirname,u),(e,d)=>{if(e){s.writeHead(404);s.end()}else{s.end(d)}})}).listen(8080,()=>console.log('http://localhost:8080'))\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

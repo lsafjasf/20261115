@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仓库灭火供水调度模拟</title>
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>仓库灭火 · 供水调度模拟</h1>
+    <div class="top-status">
+      <span id="clock">00:00</span>
+      <span id="mission-state" class="badge">待开始</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="stage">
+      <canvas id="scene" width="900" height="560"></canvas>
+      <div class="stage-hint" id="stage-hint">
+        俯视火场：左侧泵站 → 四条水带 → 仓库内四个火点。开启泵并调节阀门，在储水耗尽前扑灭全部火点。
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="gauges">
+        <div class="gauge">
+          <div class="gauge-label">管网压力</div>
+          <div class="gauge-value"><span id="pressure">0</span><small>kPa</small></div>
+          <div class="bar"><i id="pressure-bar"></i></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">水锤峰值</div>
+          <div class="gauge-value"><span id="hammer">0</span><small>kPa</small></div>
+          <div class="bar hammer"><i id="hammer-bar"></i></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">储水量</div>
+          <div class="gauge-value"><span id="tank">4000</span><small>L</small></div>
+          <div class="bar tank"><i id="tank-bar"></i></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">烟层厚度</div>
+          <div class="gauge-value"><span id="smoke">0</span><small>%</small></div>
+          <div class="bar smoke"><i id="smoke-bar"></i></div>
+        </div>
+      </div>
+
+      <h2>泵站（三台并联）</h2>
+      <div id="pumps" class="pump-list"></div>
+
+      <h2>水带与阀门（四条支路）</h2>
+      <div id="hoses" class="hose-list"></div>
+
+      <div class="controls">
+        <button id="btn-start" class="primary">开始任务</button>
+        <button id="btn-auto">自动驾驶</button>
+        <button id="btn-rupture">模拟破裂</button>
+        <button id="btn-reset">重置</button>
+        <button id="btn-mute" title="切换 Web Audio 音效">音效：开</button>
+      </div>
+
+      <div class="log-wrap">
+        <h2>事件日志</h2>
+        <ul id="log" class="log"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <script src="src/fire-sim.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/render.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
