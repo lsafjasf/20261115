@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>地铁站台应急疏散模拟</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 18px;
+      background: #0a0e14; color: #dce6f0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      display: flex; gap: 18px; flex-wrap: wrap;
+    }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    canvas {
+      background: #10161f; border: 1px solid #2a3340;
+      border-radius: 8px; max-width: 100%;
+    }
+    .panel {
+      width: 280px; background: #121a24; border: 1px solid #24303d;
+      border-radius: 8px; padding: 14px;
+    }
+    .stat { display: flex; justify-content: space-between; padding: 6px 0;
+      border-bottom: 1px solid #1e2833; font-size: 14px; }
+    .stat b { color: #7fd0ff; }
+    .stat .ok { color: #3ddc84; }
+    .stat .bad { color: #ff5a5a; }
+    .buttons { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+    button {
+      background: #1d2a39; color: #dce6f0; border: 1px solid #33465c;
+      border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 13px;
+    }
+    button:hover { background: #27394d; }
+    label { font-size: 13px; display: block; margin: 8px 0; }
+    .legend { font-size: 12px; line-height: 1.9; color: #9fb2c4; }
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px;
+      margin-right: 6px; vertical-align: middle; }
+    #events { list-style: none; padding: 0; margin: 8px 0 0; font-size: 12px;
+      max-height: 150px; overflow: auto; }
+    #events li { padding: 3px 0; border-bottom: 1px dotted #24303d; }
+    #events span { color: #6b7c90; margin-right: 6px; }
+    .hint { font-size: 12px; color: #8fa3b8; line-height: 1.7; margin-top: 10px;
+      background: #0f1720; border-radius: 6px; padding: 8px 10px; }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>地铁站台应急疏散模拟</h1>
+    <canvas id="board"></canvas>
+  </div>
+  <div class="panel">
+    <div class="stat"><span>状态</span><b id="status">已暂停</b></div>
+    <div class="stat"><span>剩余时间</span><b id="time">0.0s / 120s</b></div>
+    <div class="stat"><span>已疏散</span><b id="evacuated">0/90</b></div>
+    <div class="stat"><span>站内乘客</span><b id="aboard">0</b></div>
+    <div class="stat"><span>峰值同格人数</span><b id="maxOcc">0</b></div>
+    <div class="stat"><span>踩踏风险帧</span><b id="risk">0</b></div>
+
+    <div class="buttons">
+      <button id="start">开始</button>
+      <button id="reset">重置</button>
+      <button id="mute">静音</button>
+    </div>
+    <label><input type="checkbox" id="heatmap" checked /> 显示客流热区</label>
+
+    <div class="legend">
+      <div><span class="swatch" style="background:#3ddc84"></span>双向通行</div>
+      <div><span class="swatch" style="background:#4aa3ff"></span>单向（向上疏散）</div>
+      <div><span class="swatch" style="background:#ff5a5a"></span>关闭 / 隔烟</div>
+      <div><span class="swatch" style="background:#b4b4be"></span>烟雾（越浓越不透明）</div>
+      <div><span class="swatch" style="background:#ff4d4d"></span>烟感报警</div>
+      <div><span class="swatch" style="background:#7fd0ff"></span>排烟机（点击开关）</div>
+    </div>
+
+    <div class="hint">
+      点击闸门 G0–G3 或通道 C0–C4 循环切换：双向 → 单向向上 → 关闭。<br />
+      点击风扇图标开启排烟。乘客按实时烟雾与拥堵自行寻路；同格 8 人持续 3 秒触发踩踏，
+      两分钟内全员疏散且安全区无烟即成功。
+    </div>
+
+    <ul id="events"></ul>
+  </div>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

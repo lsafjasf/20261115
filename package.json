@@ -1,0 +1,9 @@
+{
+  "name": "subway-evac-sim",
+  "version": "1.0.0",
+  "description": "地铁站台应急疏散模拟：Canvas 渲染、动态寻路、烟雾与闸门联动、Web Audio 警报广播",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/headless.js"
+  }
+}
