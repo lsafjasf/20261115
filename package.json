@@ -1,0 +1,10 @@
+{
+  "name": "windmill-irrigation",
+  "version": "1.0.0",
+  "description": "风车带动旱地水车向三块不同高程田块调水的 Canvas 模拟",
+  "type": "module",
+  "scripts": {
+    "test": "node test/run-scenario.mjs",
+    "serve": "python3 -m http.server 8080"
+  }
+}
