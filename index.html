@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07131d" />
+    <title>霜线撒布 · 寒潮除冰行动</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">❄</span>
+          <div>
+            <p class="eyebrow">MOUNTAIN ROAD AUTHORITY · UNIT 07</p>
+            <h1>霜线撒布</h1>
+          </div>
+        </div>
+        <div class="weather">
+          <span class="pulse"></span>
+          <div>
+            <span class="weather-label">寒潮前锋</span>
+            <strong>-11°C · 风速 9 m/s</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <div class="stage">
+          <canvas id="gameCanvas" aria-label="三段山区坡道除冰撒布模拟"></canvas>
+
+          <div class="stage-hud">
+            <div class="hud-chip">
+              <span>路段进度</span>
+              <strong id="routeProgress">0%</strong>
+            </div>
+            <div class="hud-chip">
+              <span>料仓余量</span>
+              <strong id="materialHud">100%</strong>
+            </div>
+            <div class="hud-chip hud-chip--risk">
+              <span>溪流污染</span>
+              <strong id="pollutionHud">0%</strong>
+            </div>
+          </div>
+
+          <div id="curveAlert" class="curve-alert" role="status" aria-live="polite">
+            <span class="curve-alert__icon">↯</span>
+            <span><strong>弯道离心偏析</strong><small>减速或加宽撒布面</small></span>
+          </div>
+
+          <div id="startOverlay" class="start-overlay">
+            <div class="briefing-card">
+              <p class="eyebrow">PRE-STORM DISPATCH · 05:40</p>
+              <h2>在封路前铺完三段坡道</h2>
+              <p class="briefing-copy">
+                融雪剂要覆盖整幅路面。弯道会把颗粒甩向外侧，车速越高偏析越明显；撒得太宽会污染右侧溪流，料仓见底同样无法交班。
+              </p>
+              <div class="briefing-grid">
+                <div><span>01</span><p>调节宽度<br /><small>贴住弯道内外沿</small></p></div>
+                <div><span>02</span><p>控制车速<br /><small>快省料，但更易偏析</small></p></div>
+                <div><span>03</span><p>守住出口<br /><small>完成三段且余料 ≥ 12%</small></p></div>
+              </div>
+              <button id="startButton" class="primary-button" type="button">
+                <span>发车</span><small>SPACE / CLICK</small>
+              </button>
+            </div>
+          </div>
+
+          <div id="resultOverlay" class="result-overlay" hidden>
+            <div class="result-card">
+              <p id="resultKicker" class="eyebrow">ROUTE REPORT</p>
+              <div id="resultSeal" class="result-seal">✓</div>
+              <h2 id="resultTitle">三段坡道已封闭</h2>
+              <p id="resultSummary"></p>
+              <div id="resultStats" class="result-stats"></div>
+              <button id="retryButton" class="primary-button" type="button">
+                <span>再跑一局</span><small>R / RESET</small>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="control-deck">
+          <div class="deck-heading">
+            <div>
+              <p class="eyebrow">LIVE TELEMETRY</p>
+              <h2>撒布控制台</h2>
+            </div>
+            <button id="soundButton" class="icon-button" type="button" aria-pressed="true" title="切换声音">
+              <span id="soundIcon">◖</span>
+              <span class="icon-button__label">声音</span>
+            </button>
+          </div>
+
+          <div id="sectionList" class="section-list"></div>
+
+          <div class="controls">
+            <label class="control">
+              <span class="control__head"><b>撒布宽度</b><output id="widthValue">6.5 m</output></span>
+              <input id="widthControl" type="range" min="3.2" max="10.2" step="0.1" value="6.5" />
+              <span class="control__ends"><small>3.2 m</small><small>10.2 m</small></span>
+            </label>
+            <label class="control">
+              <span class="control__head"><b>行驶速度</b><output id="speedValue">22 km/h</output></span>
+              <input id="speedControl" type="range" min="8" max="30" step="1" value="22" />
+              <span class="control__ends"><small>稳 · 费料</small><small>快 · 易偏析</small></span>
+            </label>
+            <label class="control">
+              <span class="control__head"><b>料仓出口</b><output id="outletValue">62%</output></span>
+              <input id="outletControl" type="range" min="20" max="100" step="1" value="62" />
+              <span class="control__ends"><small>少量</small><small>足量</small></span>
+            </label>
+          </div>
+
+          <div class="deck-footer">
+            <div id="statusLine" class="status-line"><span></span>等待发车指令</div>
+            <button id="resetButton" class="text-button" type="button">重置本局 <kbd>R</kbd></button>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
