@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>程序化夜景雨线滤镜 · Canvas 2D</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="stage">
+      <canvas id="view"></canvas>
+      <div class="hud">
+        <span id="hud-state">运行中</span>
+        <span id="hud-params"></span>
+      </div>
+      <p class="hint">在画面上按住并左右拖动可改变视角</p>
+    </section>
+
+    <aside class="panel">
+      <h1>夜景雨线滤镜</h1>
+      <p class="sub">全部像素由 Canvas 2D 程序化生成，无雨滴贴图</p>
+
+      <div class="control">
+        <label for="rainfall">雨量 <output id="rainfall-val">45</output></label>
+        <input type="range" id="rainfall" min="0" max="100" step="1" value="45" />
+      </div>
+      <div class="control">
+        <label for="wind">风向 <output id="wind-val">12°</output></label>
+        <input type="range" id="wind" min="-90" max="90" step="1" value="12" />
+      </div>
+      <div class="control">
+        <label for="focal">镜头焦距 <output id="focal-val">35mm</output></label>
+        <input type="range" id="focal" min="24" max="85" step="1" value="35" />
+      </div>
+      <div class="control">
+        <label for="yaw">视角偏航 <output id="yaw-val">0°</output></label>
+        <input type="range" id="yaw" min="-45" max="45" step="1" value="0" />
+      </div>
+      <div class="control">
+        <label for="reflection">地面反射 <output id="reflection-val">55%</output></label>
+        <input type="range" id="reflection" min="0" max="100" step="1" value="55" />
+      </div>
+
+      <div class="buttons">
+        <button id="btn-pause" type="button">暂停</button>
+        <button id="btn-shot" type="button">截图 PNG</button>
+        <button id="btn-reset" type="button">重置</button>
+      </div>
+      <div class="buttons">
+        <button id="btn-light" type="button" class="ghost">应用小雨参数</button>
+        <button id="btn-storm" type="button" class="ghost">应用暴雨参数</button>
+        <button id="btn-compare" type="button" class="ghost">对比小雨 / 暴雨</button>
+      </div>
+
+      <table class="preset-table">
+        <thead>
+          <tr><th>参数</th><th>小雨</th><th>暴雨</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>雨量</td><td>20</td><td>95</td></tr>
+          <tr><td>风向</td><td>-10°</td><td>45°</td></tr>
+          <tr><td>镜头焦距</td><td>35mm</td><td>28mm</td></tr>
+          <tr><td>地面反射</td><td>35%</td><td>85%</td></tr>
+        </tbody>
+      </table>
+    </aside>
+  </main>
+
+  <div id="compare-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <header>
+        <h2>小雨 vs 暴雨</h2>
+        <button id="btn-close-compare" type="button">关闭</button>
+      </header>
+      <div class="compare-grid">
+        <figure>
+          <canvas id="compare-light"></canvas>
+          <figcaption>小雨：雨量 20 · 风向 -10° · 35mm · 反射 35%</figcaption>
+        </figure>
+        <figure>
+          <canvas id="compare-storm"></canvas>
+          <figcaption>暴雨：雨量 95 · 风向 45° · 28mm · 反射 85%</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

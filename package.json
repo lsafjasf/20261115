@@ -1,0 +1,24 @@
+{
+  "name": "uid256",
+  "version": "1.0.0",
+  "description": "Canvas 2D 程序化夜景雨线滤镜",
+  "type": "module",
+  "scripts": {
+    "test": "node test/e2e.mjs",
+    "serve": "node test/serve.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

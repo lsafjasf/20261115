@@ -1,0 +1,191 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --panel: #121a30;
+  --panel-2: #0e1528;
+  --line: #24304f;
+  --text: #e6ecff;
+  --muted: #93a0c2;
+  --accent: #5aa2ff;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(1200px 700px at 70% -10%, #16224a 0%, var(--bg) 60%);
+  color: var(--text);
+  font: 14px/1.5 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+  padding: 16px;
+  min-height: 100vh;
+}
+
+.stage {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #05070f;
+  min-height: 420px;
+}
+
+#view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+#view:active { cursor: grabbing; }
+
+.hud {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--muted);
+  background: rgba(8, 12, 26, 0.55);
+  padding: 4px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.hint {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.panel {
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  align-self: start;
+}
+
+.panel h1 { margin: 0 0 4px; font-size: 18px; }
+
+.sub {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.control { margin-bottom: 14px; }
+
+.control label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.control output { color: var(--accent); }
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  flex: 1 1 auto;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #06122b;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.1); }
+button.ghost {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.preset-table {
+  width: 100%;
+  margin-top: 18px;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--muted);
+}
+.preset-table th, .preset-table td {
+  border-top: 1px solid var(--line);
+  padding: 6px 4px;
+  text-align: center;
+}
+.preset-table th { color: var(--text); }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 16, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 24px;
+}
+.modal.hidden { display: none; }
+
+.modal-box {
+  width: min(1200px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+}
+.modal-box header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.modal-box h2 { margin: 0; font-size: 16px; }
+.modal-box header button { flex: 0 0 auto; padding: 6px 14px; }
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.compare-grid figure { margin: 0; }
+.compare-grid canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #05070f;
+}
+.compare-grid figcaption {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .stage { min-height: 300px; }
+  .compare-grid { grid-template-columns: 1fr; }
+}
