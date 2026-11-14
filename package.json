@@ -1,0 +1,11 @@
+{
+  "name": "prairie-balloon-mail",
+  "version": "1.0.0",
+  "description": "草原热气球邮递游戏：惯性升降、风场漂移、四袋邮件不同高度接收圈投递",
+  "type": "module",
+  "scripts": {
+    "test": "node test-mission.mjs",
+    "test:browser": "node browser-smoke.mjs",
+    "serve": "node serve.mjs"
+  }
+}

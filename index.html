@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>草原邮航 · 热气球投递</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <div class="hud-block">
+      <span class="label">高度</span>
+      <span class="value" id="hud-alt">0 m</span>
+    </div>
+    <div class="hud-block">
+      <span class="label">垂直速度</span>
+      <span class="value" id="hud-vy">0.0 m/s</span>
+    </div>
+    <div class="hud-block">
+      <span class="label">地速</span>
+      <span class="value" id="hud-vx">0.0 m/s</span>
+    </div>
+    <div class="hud-block">
+      <span class="label">燃料</span>
+      <div class="fuel-bar"><div id="hud-fuel"></div></div>
+      <span class="value" id="hud-fuel-text">100%</span>
+    </div>
+    <div class="hud-block">
+      <span class="label">邮件</span>
+      <span class="value" id="hud-mail">4 / 4</span>
+    </div>
+    <div class="hud-block">
+      <span class="label">已送达</span>
+      <span class="value" id="hud-done">0 / 4</span>
+    </div>
+  </header>
+
+  <canvas id="scene" width="960" height="600"></canvas>
+
+  <div id="hint">
+    <b>操作：</b>
+    <kbd>↑</kbd>/<kbd>W</kbd> 燃烧器（加热上升，耗燃料） ·
+    <kbd>↓</kbd>/<kbd>S</kbd> 排气阀（快速下降，有惯性） ·
+    <kbd>←</kbd><kbd>→</kbd>/<kbd>A</kbd><kbd>D</kbd> 风向舵（相对空气横向推力） ·
+    <kbd>空格</kbd> 投递邮件 · <kbd>R</kbd> 重新开始 ·
+    <kbd>P</kbd> 自动驾驶演示
+  </div>
+
+  <div id="touch-controls">
+    <button id="btn-left" class="tbtn">◀ 舵</button>
+    <button id="btn-burn" class="tbtn">🔥 燃烧器</button>
+    <button id="btn-vent" class="tbtn">💨 排气阀</button>
+    <button id="btn-right" class="tbtn">舵 ▶</button>
+    <button id="btn-drop" class="tbtn">✉ 投递</button>
+    <button id="btn-auto" class="tbtn">🤖 自动驾驶</button>
+    <button id="btn-reset" class="tbtn">↻ 重开</button>
+  </div>
+
+  <div id="overlay" class="hidden">
+    <div class="overlay-card">
+      <h1 id="overlay-title"></h1>
+      <p id="overlay-text"></p>
+      <button id="overlay-btn">再飞一次</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="game.js"></script>
+</body>
+</html>
