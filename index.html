@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#03111b">
+  <title>深渊取样 · Deep Tether</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/fonts.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="scene" aria-label="深海取样场景：绞车缆绳、采样篮、海流与岩壁"></canvas>
+
+    <header class="mission-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">R/V ABYSSAL · 绞车甲板</p>
+          <h1>深渊取样 <span>DEEP TETHER</span></h1>
+        </div>
+      </div>
+      <div class="mission-meta">
+        <span class="signal"><i></i> 声学链路</span>
+        <span id="elapsed">T+ 00:00</span>
+        <button id="soundToggle" class="utility" aria-pressed="true">音频 开</button>
+      </div>
+    </header>
+
+    <section class="depth-rail" aria-label="任务深度">
+      <div class="depth-readout">
+        <span class="label">当前深度</span>
+        <strong id="depthValue">000.0</strong>
+        <span class="unit">m</span>
+      </div>
+      <div class="targets" id="targetCards">
+        <div class="target" data-index="0">
+          <span class="target-led"></span>
+          <span class="target-depth">150 m</span>
+          <span class="target-state">待采样</span>
+        </div>
+        <div class="target" data-index="1">
+          <span class="target-led"></span>
+          <span class="target-depth">300 m</span>
+          <span class="target-state">待采样</span>
+        </div>
+        <div class="target" data-index="2">
+          <span class="target-led"></span>
+          <span class="target-depth">450 m</span>
+          <span class="target-state">待采样</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="telemetry">
+      <div class="panel-title">
+        <span>绞车遥测</span>
+        <span id="integrity" class="integrity">缆绳完好</span>
+      </div>
+
+      <section class="gauge tension-gauge">
+        <div class="gauge-heading">
+          <span>缆绳张力</span>
+          <strong><span id="tensionValue">42</span><small> kN</small></strong>
+        </div>
+        <div class="meter"><span id="tensionFill"></span><b id="tensionLimit"></b></div>
+        <div class="gauge-scale"><span>松弛</span><span>安全</span><span>断裂</span></div>
+      </section>
+
+      <section class="gauge slack-gauge">
+        <div class="gauge-heading">
+          <span>缆绳状态</span>
+          <strong id="slackState">张紧</strong>
+        </div>
+        <div class="slack-track"><span id="slackFill"></span></div>
+        <p>放缆快于篮体下落会累积松弛，持续松弛将缠结。</p>
+      </section>
+
+      <div class="data-grid">
+        <div><span>线速</span><strong id="lineSpeed">0.0</strong><small>m/s</small></div>
+        <div><span>篮体速度</span><strong id="basketSpeed">0.0</strong><small>m/s</small></div>
+        <div><span>离壁距离</span><strong id="wallDistance">--</strong><small>m</small></div>
+        <div><span>倾斜角</span><strong id="swayValue">0.0</strong><small>°</small></div>
+      </div>
+
+      <div class="audio-card">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <div>
+          <span>张力声呐</span>
+          <strong id="toneReadout">295 Hz</strong>
+        </div>
+        <label class="audio-slider">
+          <span>音量</span>
+          <input id="volume" type="range" min="0" max="100" value="42" aria-label="张力声呐音量">
+        </label>
+      </div>
+    </aside>
+
+    <section class="sample-panel">
+      <div class="sample-heading">
+        <span>样品舱</span>
+        <strong id="sampleCount">0 / 3</strong>
+      </div>
+      <div class="vials" aria-label="样品收集状态">
+        <span class="vial" data-sample="0"></span>
+        <span class="vial" data-sample="1"></span>
+        <span class="vial" data-sample="2"></span>
+      </div>
+      <div class="sample-progress">
+        <span id="sampleHint">进入采样层后减速保持稳定</span>
+        <div class="sample-track"><span id="sampleFill"></span></div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="操作说明">
+      <div class="control-group">
+        <span class="control-label">绞车</span>
+        <button class="key" data-action="speedDown" aria-label="提高回收速度">↑</button>
+        <button class="key" data-action="speedUp" aria-label="提高放缆速度">↓</button>
+        <span class="control-copy">速度 ±</span>
+      </div>
+      <div class="control-group">
+        <button class="key key-wide brake-key" data-action="brake">SPACE · 制动</button>
+      </div>
+      <div class="control-group">
+        <span class="control-label">配重</span>
+        <button class="key" data-action="weightLeft" aria-label="配重左移">←</button>
+        <button class="key" data-action="weightRight" aria-label="配重右移">→</button>
+        <span class="control-copy">抗流</span>
+      </div>
+      <div class="control-group">
+        <button id="haulButton" class="key key-wide haul-key" data-action="haul">R · 回收</button>
+      </div>
+    </section>
+
+    <div class="speed-panel">
+      <div class="speed-number"><span id="winchSpeed">0.0</span><small>m/s</small></div>
+      <div class="speed-direction" id="speedDirection">待命</div>
+      <div class="speed-track"><i id="speedCenter"></i><span id="speedFill"></span></div>
+      <div class="speed-labels"><span>回收</span><span>下放</span></div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <section class="start-screen" id="startScreen">
+      <div class="start-card">
+        <p class="eyebrow">任务 07 · 热液区调查</p>
+        <h2>把三管样品<br>完好带回海面</h2>
+        <p class="briefing">海流会把采样篮压向右侧岩壁。用配重修正姿态，以安全线速穿过三个采样层；每层需稳定悬停才能完成取样。缆绳过载会断，持续松弛会缠结。</p>
+        <div class="briefing-grid">
+          <span><b>↓ / ↑</b> 放缆 / 收缆</span>
+          <span><b>SPACE</b> 制动</span>
+          <span><b>← / →</b> 篮体配重</span>
+          <span><b>R</b> 三点完成后回收</span>
+        </div>
+        <button id="startButton" class="primary">开始下潜 <span>START</span></button>
+        <p class="audio-note">首次操作后启用 Web Audio 张力声呐</p>
+      </div>
+    </section>
+
+    <section class="result-screen" id="resultScreen">
+      <div class="result-card">
+        <p class="eyebrow" id="resultEyebrow">任务完成</p>
+        <h2 id="resultTitle">样品已回收</h2>
+        <p id="resultCopy"></p>
+        <div class="result-stats">
+          <div><span>回收样品</span><strong id="resultSamples">3 / 3</strong></div>
+          <div><span>最大张力</span><strong id="resultTension">--</strong></div>
+          <div><span>任务用时</span><strong id="resultTime">--</strong></div>
+        </div>
+        <div class="result-actions">
+          <button id="retryButton" class="primary">再次下潜 <span>RESTART</span></button>
+          <button id="inspectButton" class="utility">查看海床</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

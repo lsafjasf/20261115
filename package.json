@@ -1,0 +1,14 @@
+{
+  "name": "deep-tether-sampler",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Canvas deep-sea winch sampling game with Web Audio tension sonification",
+  "scripts": {
+    "start": "python3 -m http.server 5188 --bind 127.0.0.1",
+    "test": "node tests/gameplay.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}
