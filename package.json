@@ -1,0 +1,16 @@
+{
+  "name": "snowline-control",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Canvas snowmaking control game with procedural Web Audio.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.js",
+    "verify": "node scripts/verify-snow.js",
+    "verify:browser": "node scripts/browser-verify.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

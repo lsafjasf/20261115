@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="雪线调度台：调节水泵、压缩空气与喷筒角度，在营业前完成三条不同硬度雪道。"
+    />
+    <title>雪线调度台 · Snowline Control</title>
+    <link rel="stylesheet" href="assets/noto-sans-sc/index.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="雪线调度台首页">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span>
+            <strong>雪线调度台</strong>
+            <small>SNOWLINE CONTROL / N-07</small>
+          </span>
+        </a>
+        <div class="shift-meta">
+          <span class="live-dot"></span>
+          <span>夜班造雪</span>
+          <span class="shift-divider"></span>
+          <span id="clock">04:12</span>
+          <span>距开门 <strong id="countdown">06:00</strong></span>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="audioButton" type="button" aria-pressed="false">
+            <span class="sound-icon" aria-hidden="true">))))</span>
+            <span id="audioLabel">开启声场</span>
+          </button>
+          <button class="icon-button warm-button" id="warmButton" type="button">
+            <span aria-hidden="true">☀</span>
+            <span>暖锋测试</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="main-grid">
+        <section class="scene-panel" aria-labelledby="sceneTitle">
+          <div class="scene-heading">
+            <div>
+              <p class="eyebrow">ALPINE RESERVOIR / LIVE</p>
+              <h1 id="sceneTitle">北坡造雪场</h1>
+            </div>
+            <div class="weather-readout">
+              <div>
+                <span>气温</span>
+                <strong id="temperature">-8.4<small>°C</small></strong>
+              </div>
+              <div>
+                <span>湿度</span>
+                <strong id="humidity">68<small>%</small></strong>
+              </div>
+              <div>
+                <span>风速</span>
+                <strong id="wind">4.2<small>m/s</small></strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas
+              id="snowCanvas"
+              width="1200"
+              height="700"
+              aria-label="雪场俯视图：三台雪炮、三条雪道、风向、厚度与结冰区域"
+            ></canvas>
+            <div class="canvas-overlay top-left">
+              <span class="overlay-kicker">风场</span>
+              <strong id="windVector">西南风 ↗</strong>
+            </div>
+            <div class="canvas-overlay bottom-left">
+              <span class="overlay-kicker">当前喷口</span>
+              <strong id="activeLaneLabel">01 / 粉雪道</strong>
+            </div>
+            <div class="phase-badge" id="phaseBadge">
+              <span class="phase-icon">◆</span>
+              <span>
+                <small>准备阶段</small>
+                <strong id="phaseText">待机</strong>
+              </span>
+            </div>
+          </div>
+
+          <div class="lane-strip" id="laneStrip" aria-label="雪道认证状态"></div>
+        </section>
+
+        <aside class="control-panel" aria-labelledby="controlTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">GUN MANIFOLD / 07</p>
+              <h2 id="controlTitle">雪炮控制台</h2>
+            </div>
+            <span class="status-pill" id="gunStatus">待机</span>
+          </div>
+
+          <div class="lane-selector" id="laneSelector" role="tablist" aria-label="选择雪道">
+            <button class="lane-tab active" type="button" role="tab" data-lane="0">
+              <span>01</span>粉雪道
+            </button>
+            <button class="lane-tab" type="button" role="tab" data-lane="1">
+              <span>02</span>竞速道
+            </button>
+            <button class="lane-tab" type="button" role="tab" data-lane="2">
+              <span>03</span>硬雪道
+            </button>
+          </div>
+
+          <div class="target-card" id="targetCard">
+            <div>
+              <span class="eyebrow">当前目标 / TARGET</span>
+              <strong id="targetName">粉雪道 · 松软层</strong>
+            </div>
+            <div class="target-values">
+              <span>厚度 <b id="targetThickness">46</b></span>
+              <span>硬度 <b id="targetHardness">32</b> ±7</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="waterControl">
+              <span><i class="control-index">01</i>水泵压力</span>
+              <output id="waterValue">62 bar</output>
+            </label>
+            <input
+              id="waterControl"
+              type="range"
+              min="0"
+              max="100"
+              value="62"
+              step="1"
+              aria-describedby="waterHint"
+            />
+            <div class="range-scale"><span>0</span><span>造雪水量</span><span>100</span></div>
+            <p class="control-hint" id="waterHint">水量越高，雪层增长越快，也更容易偏湿。</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="airControl">
+              <span><i class="control-index">02</i>压缩空气</span>
+              <output id="airValue">66 bar</output>
+            </label>
+            <input
+              id="airControl"
+              type="range"
+              min="0"
+              max="100"
+              value="66"
+              step="1"
+              aria-describedby="airHint"
+            />
+            <div class="range-scale"><span>0</span><span>雾化力度</span><span>100</span></div>
+            <p class="control-hint" id="airHint">空气负责雾化；低温或升温时都要重新匹配水量。</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="angleControl">
+              <span><i class="control-index">03</i>喷筒角度</span>
+              <output id="angleValue">34°</output>
+            </label>
+            <input
+              id="angleControl"
+              type="range"
+              min="12"
+              max="66"
+              value="34"
+              step="1"
+              aria-describedby="angleHint"
+            />
+            <div class="range-scale"><span>低抛</span><span>抛物线</span><span>高抛</span></div>
+            <p class="control-hint" id="angleHint">角度过低会被侧风带走，过高则雪晶蒸发。</p>
+          </div>
+
+          <div class="quality-readout">
+            <div class="quality-head">
+              <span>预计落雪</span>
+              <strong id="qualityLabel">稳定</strong>
+            </div>
+            <div class="quality-meter"><span id="qualityFill"></span><i id="qualityTarget"></i></div>
+            <div class="quality-stats">
+              <span>成雪硬度 <b id="predictedHardness">—</b></span>
+              <span>落雪率 <b id="catchRate">—</b></span>
+            </div>
+          </div>
+
+          <button class="spray-button" id="sprayButton" type="button" aria-pressed="false">
+            <span class="button-led"></span>
+            <span id="sprayLabel">启动雪炮</span>
+            <kbd>SPACE</kbd>
+          </button>
+          <p class="console-message" id="consoleMessage" aria-live="polite">
+            选择雪道，匹配目标后启动雪炮。
+          </p>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <p>造雪窗口 <strong>06:00</strong> · 三台雪炮共用泵组，切换雪道不会中断当前雪层。</p>
+        <div class="footer-actions">
+          <button id="resetButton" type="button">重置雪季</button>
+          <span>快捷键 <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 切道 · <kbd>Space</kbd> 启停</span>
+        </div>
+      </footer>
+    </div>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+    <dialog class="result-dialog" id="resultDialog">
+      <div class="result-orbit" aria-hidden="true"></div>
+      <p class="eyebrow">NORTH SLOPE / OPENING CHECK</p>
+      <h2 id="resultTitle">雪道已通过验收</h2>
+      <p id="resultCopy">三条雪道均已达到营业标准。</p>
+      <div class="result-grid" id="resultGrid"></div>
+      <div class="dialog-actions">
+        <button class="primary-action" id="continueButton" type="button">继续巡检</button>
+        <button class="text-action" id="closeResultButton" type="button">关闭</button>
+      </div>
+    </dialog>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
