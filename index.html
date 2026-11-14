@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111719" />
+    <title>悬浮摄影棚 · SUSPENDED STUDIO</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="悬浮摄影棚首页">
+          <span class="brand-mark">S/08</span>
+          <span>
+            <strong>悬浮摄影棚</strong>
+            <small>SUSPENDED STUDIO</small>
+          </span>
+        </a>
+        <div class="topbar-meta">
+          <div class="round-chip">
+            <span>轮次</span>
+            <strong id="round-label">01</strong>
+          </div>
+          <div class="round-chip">
+            <span>连拍进度</span>
+            <strong id="progress-label">0 / 3</strong>
+          </div>
+          <button class="icon-button" id="sound-button" type="button" aria-label="切换声音">
+            <span class="sound-icon" aria-hidden="true">◖</span>
+            <span id="sound-label">声音开</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <div class="stage-column">
+          <div class="canvas-shell">
+            <canvas id="stage-canvas" aria-label="俯视摄影棚舞台"></canvas>
+            <div class="canvas-hud">
+              <div class="live-badge"><span></span> STAGE LIVE</div>
+              <div class="beat-readout">
+                <span>BEAT</span>
+                <strong id="beat-label">01</strong>
+                <small>100 BPM</small>
+              </div>
+            </div>
+            <div class="pause-scrim" id="pause-scrim" hidden>
+              <div class="pause-mark">Ⅱ</div>
+              <strong>时间冻结</strong>
+              <span>演员与节拍已暂停在同一帧</span>
+            </div>
+          </div>
+
+          <section class="contact-sheet" aria-label="三镜头连拍板">
+            <div class="sheet-heading">
+              <span>CONTACT SHEET</span>
+              <small>三格全部通过后进入下一轮</small>
+            </div>
+            <div class="sheet-grid" id="contact-sheet"></div>
+          </section>
+        </div>
+
+        <aside class="control-column">
+          <section class="mission-card">
+            <div class="mission-topline">
+              <span class="eyebrow">CURRENT BRIEF</span>
+              <span class="shot-counter" id="shot-counter">SHOT 01 / 03</span>
+            </div>
+            <h1 id="shot-title">右侧三分</h1>
+            <p id="shot-brief">中近景。让演员落在画面右三分线内。</p>
+            <div class="target-tags" id="target-tags"></div>
+          </section>
+
+          <section class="monitor-card">
+            <div class="section-label">
+              <span>DIRECTOR'S MONITOR</span>
+              <span class="monitor-status" id="monitor-status">WAITING</span>
+            </div>
+            <canvas id="monitor-canvas" aria-label="相机取景器预览"></canvas>
+          </section>
+
+          <section class="control-card">
+            <div class="section-label">
+              <span>CAMERA RIG</span>
+              <span class="hotkey-note">拖动画布机位</span>
+            </div>
+            <div class="control-grid">
+              <label class="slider-row" for="camera-x">
+                <span>机位 X</span>
+                <output id="camera-x-value">480</output>
+                <input id="camera-x" type="range" min="200" max="760" step="1" value="480" />
+              </label>
+              <label class="slider-row" for="camera-y">
+                <span>机位 Y</span>
+                <output id="camera-y-value">124</output>
+                <input id="camera-y" type="range" min="70" max="235" step="1" value="124" />
+              </label>
+              <label class="slider-row focal-row" for="focal-length">
+                <span>焦距</span>
+                <output id="focal-value">50mm</output>
+                <input id="focal-length" type="range" min="28" max="85" step="1" value="50" />
+              </label>
+            </div>
+          </section>
+
+          <section class="control-card lighting-card">
+            <div class="section-label">
+              <span>LIGHTING</span>
+              <span class="hotkey-note">拖动灯位旋转</span>
+            </div>
+            <label class="light-row" for="light-a">
+              <span class="light-name"><i class="light-dot amber"></i>主灯 A</span>
+              <output id="light-a-value">6°</output>
+              <input id="light-a" type="range" min="0" max="359" step="1" value="6" />
+            </label>
+            <label class="light-row" for="light-b">
+              <span class="light-name"><i class="light-dot coral"></i>辅灯 B</span>
+              <output id="light-b-value">184°</output>
+              <input id="light-b" type="range" min="0" max="359" step="1" value="184" />
+            </label>
+            <div class="exposure-block">
+              <div class="exposure-head">
+                <span>曝光</span>
+                <output id="exposure-value">--</output>
+              </div>
+              <div class="exposure-track">
+                <div class="exposure-target" id="exposure-target"></div>
+                <div class="exposure-fill" id="exposure-fill"></div>
+              </div>
+              <div class="exposure-scale"><span>欠曝</span><span>正常</span><span>过曝</span></div>
+            </div>
+          </section>
+
+          <div class="action-row">
+            <button class="shutter-button" id="shutter-button" type="button">
+              <span class="shutter-iris" aria-hidden="true"></span>
+              <span><strong>按下快门</strong><small>SPACE</small></span>
+            </button>
+            <button class="pause-button" id="pause-button" type="button">
+              <span id="pause-icon">Ⅱ</span>
+              <span><strong id="pause-label">暂停</strong><small>P</small></span>
+            </button>
+          </div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite">
+            <span class="feedback-icon">◌</span>
+            <span id="feedback-text">调整机位，等待演员进入构图区</span>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div class="start-overlay" id="start-overlay">
+      <div class="start-panel">
+        <div class="start-kicker">STUDIO 08 · TAKE THREE</div>
+        <h2>在节拍里<br /><em>抓住三帧。</em></h2>
+        <p>演员每拍移动一次。移动悬浮机位、改变焦距、旋转两盏灯，等构图窗口开启时按下快门。</p>
+        <div class="start-rules">
+          <span><b>01</b> 主体入框</span>
+          <span><b>02</b> 命中构图</span>
+          <span><b>03</b> 控制曝光</span>
+        </div>
+        <button class="start-button" id="start-button" type="button">
+          <span>进入摄影棚</span><small>点击启用节拍声音</small>
+        </button>
+        <div class="start-foot">耳机体验更佳 · 按 P 可随时冻结时间</div>
+      </div>
+    </div>
+
+    <div class="round-overlay" id="round-overlay" hidden>
+      <div class="round-panel">
+        <div class="round-stamp">APPROVED</div>
+        <span class="eyebrow">ROLL COMPLETE</span>
+        <h2>三帧全部通过</h2>
+        <p>灯光、机位与节拍已经对齐。下一轮演员会提速，构图窗口更短。</p>
+        <button class="start-button" id="next-round-button" type="button">
+          <span>进入下一轮</span><small>ROUND <b id="next-round-label">02</b></small>
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
