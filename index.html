@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#191713" />
+    <title>Lumen 灯箱工坊 · 晚风入梦</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d1b17'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23d6ad6a'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23e6c991'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Lumen 灯箱工坊">
+          <span class="brand-mark" aria-hidden="true"><i></i></span>
+          <span class="brand-name">LUMEN</span>
+          <span class="brand-divider"></span>
+          <span class="brand-cn">灯箱工坊</span>
+        </a>
+
+        <div class="project-crumbs" aria-label="当前项目">
+          <span>橱窗计划</span>
+          <span class="crumb-slash">/</span>
+          <strong>暮色香氛 01</strong>
+          <span class="saved-indicator"><i></i> 已保存</span>
+        </div>
+
+        <div class="top-actions">
+          <div class="history-actions">
+            <button class="icon-button" id="undoButton" title="撤销 (Ctrl+Z)" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M4.8 12H14a5 5 0 0 1 5 5v1"/></svg>
+              <span class="sr-only">撤销</span>
+            </button>
+            <button class="icon-button" id="redoButton" title="重做 (Ctrl+Shift+Z)" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5M19.2 12H10a5 5 0 0 0-5 5v1"/></svg>
+              <span class="sr-only">重做</span>
+            </button>
+          </div>
+          <button class="export-button" id="exportButton">
+            <span>导出 PNG</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="left-rail" aria-label="构图与图层">
+          <section class="composition-intro">
+            <p class="eyebrow">WINDOW LIGHTBOX · 01</p>
+            <h1>晚风入梦</h1>
+            <p class="intro-copy">一张为暮色香氛打造的橱窗灯箱。拖动画面中的文字，在安全区内完成构图。</p>
+          </section>
+
+          <section class="rail-section">
+            <div class="section-heading">
+              <span>画布</span>
+              <span class="section-meta">720 × 960</span>
+            </div>
+            <div class="canvas-spec">
+              <div class="spec-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="2"/><path d="M10 9h12M10 15h12M10 21h7"/></svg>
+              </div>
+              <div>
+                <strong>3 : 4 竖版灯箱</strong>
+                <span>导出尺寸 1440 × 1920 px</span>
+              </div>
+              <span class="ratio-badge">2×</span>
+            </div>
+          </section>
+
+          <section class="rail-section layers-section">
+            <div class="section-heading">
+              <span>画面元素</span>
+              <span class="section-meta">5 层</span>
+            </div>
+            <div class="layer-list" id="layerList"></div>
+          </section>
+
+          <section class="rail-section safe-section">
+            <div class="section-heading">
+              <span>边缘安全区</span>
+              <span class="ok-badge"><i></i> 已锁定</span>
+            </div>
+            <div class="safe-meter">
+              <span class="safe-track"><i style="width: 8%"></i></span>
+              <span>内缩 54 px</span>
+            </div>
+            <p class="rail-note">元素被限制在边框内，不会遮住灯箱边缘。</p>
+          </section>
+
+          <section class="rail-section thumb-section">
+            <div class="section-heading">
+              <span>小尺寸自检</span>
+              <span class="section-meta">25%</span>
+            </div>
+            <div class="thumb-row">
+              <div class="thumb-frame">
+                <canvas id="thumbCanvas" width="160" height="214" aria-label="灯箱小尺寸预览"></canvas>
+              </div>
+              <div class="thumb-copy">
+                <span class="check-mark" aria-hidden="true">
+                  <svg viewBox="0 0 20 20"><path d="m5 10 3.2 3.2L15 6.5"/></svg>
+                </span>
+                <strong id="readabilityStatus">清晰可读</strong>
+                <span>标题、价格与标签<br />仍保持辨识度</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <section class="stage" aria-label="灯箱画布">
+          <div class="stage-toolbar">
+            <div class="toolbar-state"><i></i><span>实时预览</span></div>
+            <div class="stage-tools">
+              <button class="tool-toggle is-active" id="guideToggle" aria-pressed="true">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="1"/><rect x="6.5" y="6.5" width="7" height="7" rx=".5"/></svg>
+                安全区
+              </button>
+              <span class="zoom-label">适应画布 · <strong id="zoomValue">82%</strong></span>
+            </div>
+          </div>
+
+          <div class="stage-body">
+            <div class="artboard-wrap" id="artboardWrap">
+              <canvas id="artboard" width="1440" height="1920" aria-label="晚风入梦灯箱海报"></canvas>
+              <canvas id="overlay" width="1440" height="1920" aria-label="拖拽与安全区辅助层"></canvas>
+              <div class="canvas-callout" id="canvasCallout" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="stage-footer">
+            <span><kbd>拖动</kbd> 调整位置</span>
+            <span><kbd>↑↓←→</kbd> 精细移动</span>
+            <span class="stage-footer-right">内容始终保持在安全区内</span>
+          </div>
+        </section>
+
+        <aside class="inspector" aria-label="元素设置">
+          <div class="inspector-head">
+            <div>
+              <p class="eyebrow">ELEMENT SETTINGS</p>
+              <h2 id="selectedName">标题</h2>
+            </div>
+            <span class="selection-dot" id="selectionDot"></span>
+          </div>
+
+          <section class="setting-block">
+            <label class="setting-label" for="textInput">文字内容</label>
+            <div class="text-field">
+              <input id="textInput" type="text" maxlength="24" value="晚风入梦" autocomplete="off" />
+              <span id="charCount">4 / 24</span>
+            </div>
+          </section>
+
+          <section class="setting-block">
+            <div class="setting-title-row">
+              <span class="setting-label">对齐到安全区</span>
+              <span class="setting-value" id="alignValue">居中</span>
+            </div>
+            <div class="align-grid" role="group" aria-label="对齐方式">
+              <button data-align-x="left" title="左对齐"><svg viewBox="0 0 20 20"><path d="M3 3v14M6 6h10M6 10h7M6 14h10"/></svg></button>
+              <button data-align-x="center" class="is-active" title="水平居中"><svg viewBox="0 0 20 20"><path d="M10 2v16M4 6h12M6 10h8M4 14h12"/></svg></button>
+              <button data-align-x="right" title="右对齐"><svg viewBox="0 0 20 20"><path d="M17 3v14M4 6h10M7 10h7M4 14h10"/></svg></button>
+              <button data-align-y="top" title="顶部对齐"><svg viewBox="0 0 20 20"><path d="M3 3h14M6 6v10M10 6v7M14 6v10"/></svg></button>
+              <button data-align-y="middle" title="垂直居中"><svg viewBox="0 0 20 20"><path d="M2 10h16M6 4v12M10 6v8M14 4v12"/></svg></button>
+              <button data-align-y="bottom" title="底部对齐"><svg viewBox="0 0 20 20"><path d="M3 17h14M6 4v10M10 7v7M14 4v10"/></svg></button>
+            </div>
+          </section>
+
+          <section class="setting-block">
+            <div class="setting-title-row">
+              <label class="setting-label" for="spacingInput">字距</label>
+              <output class="setting-value numeric" id="spacingValue">14 px</output>
+            </div>
+            <input class="range-input" id="spacingInput" type="range" min="0" max="34" step="1" value="14" />
+            <div class="range-scale"><span>紧凑</span><span>舒展</span></div>
+            <div class="inline-alert" id="spacingAlert" hidden>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3 17 16H3L10 3Z"/><path d="M10 8v3.5M10 13.5v.2"/></svg>
+              <span>字距偏密，光晕会在字间黏连</span>
+            </div>
+          </section>
+
+          <section class="setting-block">
+            <div class="setting-title-row">
+              <label class="setting-label" for="glowInput">光晕强度</label>
+              <output class="setting-value numeric" id="glowValue">68%</output>
+            </div>
+            <div class="glow-control">
+              <input class="range-input range-glow" id="glowInput" type="range" min="0" max="100" step="1" value="68" />
+              <span class="glow-orb" aria-hidden="true"></span>
+            </div>
+            <div class="glow-preview">
+              <span class="glow-swatch" id="glowSwatch"></span>
+              <span id="glowDescription">暖光均匀，文字边缘柔和</span>
+            </div>
+          </section>
+
+          <section class="setting-block palette-block">
+            <div class="setting-title-row">
+              <span class="setting-label">纸张色温</span>
+              <span class="setting-value">暖象牙</span>
+            </div>
+            <div class="palette-row" aria-label="纸张色温">
+              <button class="palette-swatch" data-palette="0" style="--swatch:#efe3cc" title="暖象牙" aria-pressed="true"></button>
+              <button class="palette-swatch" data-palette="1" style="--swatch:#e5ddcf" title="雾灰" aria-pressed="false"></button>
+              <button class="palette-swatch" data-palette="2" style="--swatch:#ecd7c3" title="陶粉" aria-pressed="false"></button>
+              <button class="palette-swatch" data-palette="3" style="--swatch:#d8decf" title="鼠尾草" aria-pressed="false"></button>
+            </div>
+          </section>
+
+          <div class="inspector-footer">
+            <button class="text-button" id="resetButton">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1-.6 5M4 3v4h4"/></svg>
+              恢复初始构图
+            </button>
+            <span>更改会实时保存</span>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span class="toast-icon"><svg viewBox="0 0 20 20"><path d="m4.5 10 3.3 3.3L15.5 5.8"/></svg></span>
+      <span id="toastMessage">已导出 PNG</span>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
