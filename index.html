@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>沙丘固沙播种车 · 等高线撒播模拟</title>
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>沙丘固沙播种车</h1>
+      <div class="seed-line">
+        <label>固定 seed <input id="seedInput" type="text" value="dune-2026" /></label>
+        <button id="newSeedBtn">换一个 seed</button>
+        <button id="muteBtn">声音：开</button>
+      </div>
+    </header>
+    <main>
+      <canvas id="scene" width="1200" height="800"></canvas>
+      <aside id="panel">
+        <section class="hud">
+          <h2>状态</h2>
+          <div id="hud"></div>
+        </section>
+        <section class="controls">
+          <h2>控制</h2>
+          <div class="row"><label>油门</label><input id="throttle" type="range" min="0" max="100" value="0" /></div>
+          <div class="row"><label>播撒宽度</label>
+            <select id="widthSel">
+              <option value="8">8 m（窄）</option>
+              <option value="14" selected>14 m（中）</option>
+              <option value="22">22 m（宽）</option>
+            </select>
+          </div>
+          <div class="row toggle"><label><input type="checkbox" id="contourAssist" checked /> 等高线辅助</label></div>
+          <div class="row toggle"><label><input type="checkbox" id="windComp" checked /> 风偏补偿</label></div>
+          <div class="row toggle"><label><input type="checkbox" id="sowingChk" /> 开始撒播</label></div>
+          <div class="buttons">
+            <button id="brakeBtn">刹车</button>
+            <button id="leftBtn">左转</button>
+            <button id="rightBtn">右转</button>
+            <button id="resetBtn">重置</button>
+          </div>
+        </section>
+        <section class="auto">
+          <h2>自动测试</h2>
+          <button id="autoCoverBtn">▶ 完整覆盖（带补偿）</button>
+          <button id="autoMissBtn">▶ 风偏漏播（无补偿）</button>
+          <button id="stopAutoBtn">停止自动驾驶</button>
+        </section>
+        <section id="testOut" class="test-out"></section>
+        <section class="help">
+          <h2>键位</h2>
+          <p>W/S 油门 · A/D 转向 · 空格 刹车 · B 撒播 · C 等高线辅助 · X 风偏补偿 · 1/2/3 宽度 · R 重置</p>
+        </section>
+      </aside>
+    </main>
+  </div>
+  <script src="src/prng.js"></script>
+  <script src="src/terrain.js"></script>
+  <script src="src/wind.js"></script>
+  <script src="src/coverage.js"></script>
+  <script src="src/zones.js"></script>
+  <script src="src/vehicle.js"></script>
+  <script src="src/sim.js"></script>
+  <script src="src/autopilot.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/render.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>

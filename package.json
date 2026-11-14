@@ -1,0 +1,28 @@
+{
+  "name": "uid229",
+  "version": "1.0.0",
+  "description": "Seeded sand-dune contour seeding simulation (Canvas + headless tests)",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/sim.test.js && node test/scenarios.test.js",
+    "test:browser": "node test/browser.e2e.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "playwright-core": "^1.65.1"
+  }
+}
