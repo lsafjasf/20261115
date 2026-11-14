@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071316">
+  <title>巡线 · 峡谷三号</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app">
+    <canvas id="scene" aria-label="输电线路巡检场景"></canvas>
+    <div class="scene-grade" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">GV</span>
+        <span class="brand-copy"><b>GRID//VISION</b><small>输电线路智能巡检系统</small></span>
+      </div>
+      <div class="mission-strip">
+        <span class="live-dot"></span>
+        <span id="missionClock">T+ 00:00</span>
+        <span class="strip-divider"></span>
+        <span>峡谷线 03#</span>
+        <span class="strip-divider"></span>
+        <span id="missionPhase">待命 / 塔基</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" id="soundButton" type="button" aria-label="切换声音">
+          <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span id="soundLabel">声音 开</span>
+        </button>
+        <button class="icon-button" id="helpButton" type="button">操作</button>
+      </div>
+    </header>
+
+    <section class="mission-panel panel">
+      <p class="eyebrow">INSPECTION / NIGHT WATCH</p>
+      <h1>峡谷线 <em>03#</em></h1>
+      <p class="mission-copy">横风过谷，局地电磁干扰。沿塔基起飞，依次完成三处疑似缺陷取证后返航。</p>
+      <div class="target-list" id="targetList">
+        <div class="target-row" data-target="0">
+          <span class="target-index">01</span>
+          <span class="target-copy"><b>导线异常</b><small>2#—3# 档距 · 中相</small></span>
+          <span class="target-state">待取证</span>
+        </div>
+        <div class="target-row" data-target="1">
+          <span class="target-index">02</span>
+          <span class="target-copy"><b>绝缘子串</b><small>2# 塔 · 右横担</small></span>
+          <span class="target-state">待取证</span>
+        </div>
+        <div class="target-row" data-target="2">
+          <span class="target-index">03</span>
+          <span class="target-copy"><b>金具磨损</b><small>1# 塔 · 左横担</small></span>
+          <span class="target-state">待取证</span>
+        </div>
+      </div>
+      <div class="route-note"><span>计划航线</span><b>03 → 02 → 01 → 03</b></div>
+    </section>
+
+    <aside class="telemetry">
+      <section class="telemetry-card panel">
+        <div class="telemetry-head"><span>WIND / 横风</span><b id="windValue">-- m/s</b></div>
+        <div class="wind-gauge">
+          <span class="wind-label">W</span>
+          <div class="wind-track"><i id="windNeedle"></i></div>
+          <span class="wind-label">E</span>
+        </div>
+        <p id="windCaption">阵风 6.2 m/s · 向东</p>
+      </section>
+
+      <section class="telemetry-card compass-card panel">
+        <div class="telemetry-head"><span>MAG / 罗盘</span><b id="interferenceValue">低干扰</b></div>
+        <canvas id="compass" width="220" height="110" aria-label="指南针"></canvas>
+        <p class="compass-warning" id="compassWarning">磁场稳定</p>
+      </section>
+
+      <section class="telemetry-card panel">
+        <div class="telemetry-head"><span>UAV / 状态</span><b id="flightMode">READY</b></div>
+        <dl class="readouts">
+          <div><dt>航速</dt><dd><span id="speedValue">0</span><small>km/h</small></dd></div>
+          <div><dt>高度</dt><dd><span id="altitudeValue">0</span><small>m</small></dd></div>
+          <div><dt>镜头</dt><dd><span id="cameraValue">000</span><small>°</small></dd></div>
+        </dl>
+      </section>
+    </aside>
+
+    <div class="reticle-hint" id="reticleHint">
+      <span class="hint-bracket"></span>
+      <span id="hintText">移动鼠标调整镜头</span>
+    </div>
+
+    <section class="bottom-hud">
+      <div class="battery-block">
+        <span class="hud-kicker">POWER</span>
+        <div class="battery-line">
+          <div class="battery-shell"><i id="batteryFill"></i></div>
+          <b id="batteryValue">100%</b>
+        </div>
+        <span class="battery-note"><i></i> 返航余量 <b id="returnReserve">36%</b></span>
+      </div>
+
+      <div class="control-hint">
+        <span><kbd>A</kbd><kbd>D</kbd> 横移</span>
+        <span><kbd>W</kbd><kbd>S</kbd> 高度</span>
+        <span><kbd>↑</kbd><kbd>↓</kbd> 航速</span>
+        <span><i class="mouse-icon"></i> 镜头</span>
+      </div>
+
+      <div class="shutter-block">
+        <button id="captureButton" class="shutter-button" type="button" disabled>
+          <span class="shutter-ring"><i></i></span>
+          <b>拍摄</b><small>SPACE</small>
+        </button>
+        <p id="captureStatus">等待起飞</p>
+      </div>
+    </section>
+
+    <section class="start-screen" id="startScreen">
+      <div class="start-grid" aria-hidden="true"></div>
+      <div class="start-content">
+        <p class="eyebrow">NIGHT INSPECTION / 20:42</p>
+        <h2>穿过风场，<br><span>带回三张证据。</span></h2>
+        <p class="start-lede">固定峡谷场景 · 一次完整巡检<br>横风会推偏航迹，塔体附近磁场不稳。悬停会持续耗电。</p>
+        <div class="start-meta">
+          <div><span>任务</span><b>03# 线路复检</b></div>
+          <div><span>目标</span><b>3 处</b></div>
+          <div><span>天气</span><b>侧风 / 轻雾</b></div>
+        </div>
+        <div class="start-actions">
+          <button id="startButton" class="primary-button" type="button"><span>开始巡检</span><small>手动操控</small></button>
+          <button id="demoButton" class="secondary-button" type="button"><span>示范巡检</span><small>自动完成全程</small></button>
+        </div>
+        <p class="start-tip">建议先观看示范，再手动飞行。按 <kbd>H</kbd> 随时查看操作。</p>
+      </div>
+      <div class="start-visual" aria-hidden="true">
+        <span class="visual-ring ring-a"></span>
+        <span class="visual-ring ring-b"></span>
+        <span class="visual-cross"></span>
+        <span class="visual-label label-a">WIND<br><b>6.2</b> m/s</span>
+        <span class="visual-label label-b">MAG<br><b>Δ 12°</b></span>
+        <span class="visual-coord">N 31°14' 08"<br>E 103°55' 21"</span>
+      </div>
+    </section>
+
+    <section class="result-screen" id="resultScreen" hidden>
+      <div class="result-card panel">
+        <p class="eyebrow" id="resultEyebrow">MISSION COMPLETE</p>
+        <h2 id="resultTitle">巡检完成</h2>
+        <p id="resultCopy">三处目标均已取证，无人机安全返航。</p>
+        <div class="result-stats">
+          <div><span>取证</span><b id="resultTargets">3 / 3</b></div>
+          <div><span>用时</span><b id="resultTime">00:00</b></div>
+          <div><span>剩余电量</span><b id="resultBattery">00%</b></div>
+        </div>
+        <div class="result-actions">
+          <button id="againButton" class="primary-button" type="button"><span>再次巡检</span><small>固定场景重启</small></button>
+          <button id="finishButton" class="secondary-button" type="button"><span>查看成果</span><small>留在现场</small></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span class="toast-icon"></span>
+      <div><b id="toastTitle">已取证</b><small id="toastCopy">导线异常 · 图像质量 96</small></div>
+    </div>
+
+    <section class="help-modal" id="helpModal" hidden>
+      <div class="help-card panel">
+        <div class="help-head"><p class="eyebrow">FLIGHT MANUAL</p><button id="closeHelp" type="button" aria-label="关闭">×</button></div>
+        <h3>飞行与取证</h3>
+        <div class="help-grid">
+          <div><kbd>A</kbd><kbd>D</kbd><b>水平移动</b><small>横风会持续推偏位置</small></div>
+          <div><kbd>W</kbd><kbd>S</kbd><b>升降高度</b><small>保持与目标高度接近</small></div>
+          <div><kbd>↑</kbd><kbd>↓</kbd><b>调整航速</b><small>低速悬停更容易拍清</small></div>
+          <div><i class="mouse-icon"></i><b>镜头方向</b><small>移动鼠标对准故障点</small></div>
+          <div><kbd>Space</kbd><b>拍摄取证</b><small>目标居中并稳定时按</small></div>
+          <div><kbd>R</kbd><b>自动返航</b><small>取证后也可手动飞回</small></div>
+        </div>
+        <p class="help-foot">照片需同时满足：目标入框、距离足够近、航速稳定。完成三处后返回右侧塔基。</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
