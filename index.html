@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>峡谷哨塔 · 镜面传信</title>
+  <style>
+    :root {
+      --panel: #141a2b;
+      --line: #2c3650;
+      --text: #dce4f5;
+      --accent: #ffd34d;
+      --hot: #ff7a4e;
+      --lock: #ff4e4e;
+      --ok: #6fe3a1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #0b0f1c;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px;
+      gap: 12px;
+    }
+    h1 { font-size: 20px; margin: 0; letter-spacing: 2px; }
+    .layout { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .stage { position: relative; }
+    canvas {
+      width: 960px;
+      max-width: 94vw;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #1d2b53;
+      display: block;
+    }
+    #win-banner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 800;
+      color: #fff7d6;
+      text-shadow: 0 0 24px rgba(255,200,80,.9);
+      background: rgba(10,14,26,.35);
+      border-radius: 10px;
+      pointer-events: none;
+    }
+    .hidden { display: none !important; }
+    .panel {
+      width: 250px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .panel h2 { font-size: 14px; margin: 0; color: #9fb0d4; }
+    .mirror-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #1b2338;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .mirror-btn.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .sig { font-size: 18px; color: #4a5572; }
+    .sig.on { color: var(--ok); text-shadow: 0 0 8px rgba(111,227,161,.8); }
+    .heat-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .bar {
+      flex: 1;
+      height: 9px;
+      background: #0c1120;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; background: linear-gradient(90deg,#5ad1ff,#6fe3a1); transition: width .15s; }
+    .bar-fill.hot { background: linear-gradient(90deg,#ffd34d,#ff7a4e); }
+    .bar-fill.locked { background: var(--lock); }
+    .wind-bar { height: 8px; }
+    .controls { display: flex; gap: 8px; }
+    .controls button {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #24304d;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .controls button:active { transform: translateY(1px); }
+    .ghost { background: #1b2338 !important; font-size: 13px !important; }
+    .hint { font-size: 12px; line-height: 1.7; color: #8fa0c4; }
+    #status { font-size: 13px; color: var(--accent); min-height: 18px; }
+  </style>
+</head>
+<body>
+  <h1>峡谷哨塔 · 镜面传信</h1>
+  <div class="layout">
+    <div class="stage">
+      <canvas id="scene"></canvas>
+      <div id="win-banner" class="hidden">三组信号已建立 ✦ 通信完成</div>
+    </div>
+    <div class="panel">
+      <h2>镜片选择（数字键 1/2/3）</h2>
+      <div id="mirror-list"></div>
+      <h2>调角（方向键 ← →，最小步长 3°）</h2>
+      <div class="controls">
+        <button id="btn-left">↺ 逆时针</button>
+        <button id="btn-right">顺时针 ↻</button>
+      </div>
+      <h2>三段信号</h2>
+      <div class="heat-row">
+        <span class="sig" id="sig-0">○</span><span class="sig" id="sig-1">○</span>
+        <span class="sig" id="sig-2">○</span>
+        <span style="flex:1"></span><span id="status"></span>
+      </div>
+      <h2>镜片温度</h2>
+      <div id="heat-list"></div>
+      <h2>风向 / 云层漂移</h2>
+      <div class="bar wind-bar"><div class="bar-fill" id="wind" style="width:50%"></div></div>
+      <div class="controls">
+        <button class="ghost" id="btn-mute">🔊 声音开</button>
+        <button class="ghost" id="btn-reset">重置场景</button>
+      </div>
+      <p class="hint">
+        阳光从太阳出发，依次经三面镜片反射到右侧接收窗。<br>
+        连续快速转动会积热，过热将锁定约 2.6 秒；云层会降低光束可见度。<br>
+        三组信号同时建立且镜片温度低于 80° 即获胜。
+      </p>
+    </div>
+  </div>
+
+  <script src="src/engine.js"></script>
+  <script src="src/game.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/render.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
