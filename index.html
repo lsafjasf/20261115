@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>夜间车窗雨痕模拟</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #04060c; }
+  #view { display: block; }
+  #panel {
+    position: fixed; top: 14px; left: 14px; z-index: 10;
+    width: 240px; padding: 14px 16px;
+    background: rgba(10, 14, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    color: #cfd6e4;
+    font: 13px/1.6 "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    user-select: none;
+  }
+  #panel h1 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #eef2fa; }
+  .row { margin-bottom: 10px; }
+  .row label { display: flex; justify-content: space-between; margin-bottom: 2px; }
+  .row label span:last-child { color: #8fa0bd; font-variant-numeric: tabular-nums; }
+  input[type="range"] { width: 100%; accent-color: #6ea8ff; }
+  input[type="color"] {
+    width: 100%; height: 26px; padding: 0; border: none;
+    border-radius: 6px; background: none; cursor: pointer;
+  }
+  .btns { display: flex; gap: 8px; margin-top: 12px; }
+  button {
+    flex: 1; padding: 7px 0; border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px; background: rgba(110, 168, 255, 0.14);
+    color: #dbe6fa; font-size: 13px; cursor: pointer;
+  }
+  button:hover { background: rgba(110, 168, 255, 0.28); }
+  .hint { margin-top: 10px; font-size: 11px; color: #6b7891; }
+</style>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="panel">
+  <h1>夜间车窗雨痕</h1>
+  <div class="row">
+    <label><span>车速</span><span id="speedVal">60 km/h</span></label>
+    <input id="speed" type="range" min="0" max="160" value="60">
+  </div>
+  <div class="row">
+    <label><span>雨量</span><span id="rainVal">55%</span></label>
+    <input id="rain" type="range" min="0" max="100" value="55">
+  </div>
+  <div class="row">
+    <label><span>对焦距离</span><span id="focusVal">8.0 m</span></label>
+    <input id="focus" type="range" min="0" max="1000" value="620">
+  </div>
+  <div class="row">
+    <label><span>街灯颜色</span></label>
+    <input id="lamp" type="color" value="#ffb46b">
+  </div>
+  <div class="btns">
+    <button id="pauseBtn">暂停</button>
+    <button id="exportBtn">导出当前帧</button>
+  </div>
+  <div class="hint">空格键暂停 / 继续 · 近焦看清雨滴，远焦看清城市</div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
