@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="霜湖冰芯：驾驶钻取车穿越固定冰湖，完成三层采样并安全返航。"
+    />
+    <title>霜湖冰芯 / CRYO CORE 07</title>
+    <link
+      rel="preload"
+      href="./assets/fonts/noto-sans-sc-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="gameCanvas" aria-label="霜湖冰面钻探现场"></canvas>
+
+    <div class="interface" id="interface">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">CC</span>
+          <div>
+            <strong>霜湖冰芯</strong>
+            <span>CRYO CORE / UNIT 07</span>
+          </div>
+        </div>
+        <div class="route-readout">
+          <span class="eyebrow">安全路线</span>
+          <strong id="routeStatus">扫描中…</strong>
+          <span id="routeDetail">等待导航数据</span>
+        </div>
+        <div class="clock">
+          <span class="eyebrow">湖面时间</span>
+          <strong id="missionClock">00:00</strong>
+          <span id="weather">-31°C · 微风</span>
+        </div>
+      </header>
+
+      <aside class="mission-panel">
+        <div class="panel-heading">
+          <span class="eyebrow">任务 07-A</span>
+          <span class="live-dot">LIVE</span>
+        </div>
+        <h1 id="objectiveTitle">前往 S-01 湖湾脊</h1>
+        <p id="objectiveDetail">沿虚线安全路线抵达首个采样层位。</p>
+        <div class="core-slots" id="coreSlots">
+          <div class="core-slot" data-core="0">
+            <span class="core-index">01</span>
+            <span class="core-strata surface"></span>
+            <span class="core-name">湖湾脊</span>
+            <span class="core-state">待采样</span>
+          </div>
+          <div class="core-slot" data-core="1">
+            <span class="core-index">02</span>
+            <span class="core-strata blue"></span>
+            <span class="core-name">蓝冰槽</span>
+            <span class="core-state">未解锁</span>
+          </div>
+          <div class="core-slot" data-core="2">
+            <span class="core-index">03</span>
+            <span class="core-strata deep"></span>
+            <span class="core-name">东岸拱</span>
+            <span class="core-state">未解锁</span>
+          </div>
+        </div>
+      </aside>
+
+      <aside class="telemetry-panel">
+        <div class="telemetry-row">
+          <span>车体</span>
+          <strong id="hullValue">100%</strong>
+        </div>
+        <div class="mini-meter"><i id="hullBar"></i></div>
+        <div class="telemetry-row">
+          <span>载重</span>
+          <strong id="loadValue">0 / 3</strong>
+        </div>
+        <div class="mini-meter load"><i id="loadBar"></i></div>
+        <div class="telemetry-row">
+          <span>速度</span>
+          <strong id="speedValue">0 km/h</strong>
+        </div>
+        <div class="sample-bay">
+          <span class="eyebrow">样本仓</span>
+          <div class="bay-slots" id="baySlots">
+            <i></i><i></i><i></i>
+          </div>
+          <span id="weightWarning">空载</span>
+        </div>
+      </aside>
+
+      <div class="site-prompt hidden" id="sitePrompt">
+        <span class="prompt-key">E</span>
+        <div>
+          <strong id="promptTitle">部署钻机</strong>
+          <span id="promptCopy">停稳后开始钻取</span>
+        </div>
+      </div>
+
+      <section class="drill-console hidden" id="drillConsole">
+        <div class="drill-head">
+          <div>
+            <span class="eyebrow">主动钻探 / <b id="drillSite">S-01</b></span>
+            <h2>双参数取芯</h2>
+          </div>
+          <strong class="progress-number"><span id="drillProgress">0</span><small>%</small></strong>
+        </div>
+        <div class="progress-track"><i id="drillProgressBar"></i></div>
+        <div class="drill-metrics">
+          <div class="metric">
+            <label>转速 <span>RPM</span></label>
+            <strong id="rpmValue">24</strong>
+            <div class="metric-track rpm"><i id="rpmBar"></i><em class="safe-band"></em></div>
+          </div>
+          <div class="metric">
+            <label>下压力 <span>kN</span></label>
+            <strong id="pressureValue">12</strong>
+            <div class="metric-track pressure"><i id="pressureBar"></i><em class="safe-band"></em></div>
+          </div>
+          <div class="metric danger">
+            <label>扭矩 <span>N·m</span></label>
+            <strong id="torqueValue">18</strong>
+            <div class="metric-track torque"><i id="torqueBar"></i></div>
+          </div>
+          <div class="metric temperature">
+            <label>钻头温度 <span>°C</span></label>
+            <strong id="heatValue">22</strong>
+            <div class="metric-track heat"><i id="heatBar"></i></div>
+          </div>
+        </div>
+        <div class="drill-footer">
+          <span><b>R</b> 提升转速</span>
+          <span><b>F</b> 增加下压力</span>
+          <span><b>E</b> 收钻暂停</span>
+          <span class="advice" id="drillAdvice">轻推双控，保持绿色区间</span>
+        </div>
+      </section>
+
+      <footer class="control-strip" id="controlStrip">
+        <span><b>W / S</b> 前进 · 倒车</span>
+        <span><b>A / D</b> 转向</span>
+        <span><b>E</b> 交互</span>
+        <span><b>M</b> 声音</span>
+        <span class="audio-state" id="audioState">音频待启用</span>
+      </footer>
+
+      <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+      <div class="damage-flash" id="damageFlash"></div>
+    </div>
+
+    <section class="overlay start-screen" id="startScreen">
+      <div class="overlay-grid"></div>
+      <article class="briefing">
+        <span class="eyebrow">北纬 78° 12′ · 永久冰盖</span>
+        <div class="hero-code">CC<span>07</span></div>
+        <h1>霜湖冰芯</h1>
+        <p>
+          驾驶小型钻取车穿越固定冰湖。三层冰芯，三次精确钻进，
+          然后带着不断增加的重量回到岸边。
+        </p>
+        <div class="briefing-rules">
+          <div><span>01</span> 转速与下压力共同决定进尺</div>
+          <div><span>02</span> 过快卡钻，过慢升温</div>
+          <div><span>03</span> 载重越高，裂缝越危险</div>
+        </div>
+        <div class="start-actions">
+          <button id="startButton">进入冰湖 <small>ENTER</small></button>
+          <span>建议开启声音 · 固定地图 · 单次任务约 3 分钟</span>
+        </div>
+      </article>
+      <aside class="briefing-spec">
+        <span class="eyebrow">钻机参数</span>
+        <strong>RPM 108</strong>
+        <span>最大转速</span>
+        <strong>82 kN</strong>
+        <span>最大下压力</span>
+        <strong>3 × 1.2 m</strong>
+        <span>目标冰芯</span>
+      </aside>
+    </section>
+
+    <section class="overlay result-screen hidden" id="resultScreen">
+      <article class="result-card">
+        <span class="eyebrow" id="resultEyebrow">任务报告</span>
+        <h2 id="resultTitle">三根冰芯已返航</h2>
+        <p id="resultCopy">样本仓密封，钻取车已停靠岸基。</p>
+        <div class="result-stats" id="resultStats"></div>
+        <button id="restartButton">再次出勤 <small>R</small></button>
+      </article>
+    </section>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

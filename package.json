@@ -1,0 +1,15 @@
+{
+  "name": "frost-lake-core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Canvas ice-core drilling expedition game",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.js",
+    "verify": "node test/browser-verify.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}
