@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>磁浮托盘交叉换线模拟</title>
+  <style>
+    :root {
+      --bg: #0b1622;
+      --panel: #122336;
+      --line: #22384f;
+      --text: #d7e4f2;
+      --muted: #8aa0b8;
+      --accent: #4fc3f7;
+      --warn: #ffb74d;
+      --danger: #ff6b6b;
+      --ok: #81c784;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 30% 0%, #14304d 0%, var(--bg) 60%);
+      color: var(--text);
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", monospace;
+      min-height: 100vh;
+      padding: 18px;
+    }
+    h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: 1px; }
+    .sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+    .layout { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+    .stage {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    canvas { display: block; border-radius: 8px; background: #0a141f; }
+    .panel {
+      width: 340px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .hud .cell {
+      background: #0e1d2e;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .hud b { display: block; font-size: 16px; color: var(--accent); margin-top: 2px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    button {
+      flex: 1 1 auto;
+      min-width: 96px;
+      background: #16324c;
+      color: var(--text);
+      border: 1px solid #2a4d6e;
+      border-radius: 8px;
+      padding: 9px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    button:hover { border-color: var(--accent); }
+    button.danger { border-color: #7a3535; background: #3a1d22; }
+    button.warn { border-color: #7a5a2a; background: #3a2d18; }
+    .mission {
+      background: #0e1d2e;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .mission .title { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .mission .title b { color: var(--accent); }
+    .row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+    .row label { width: 78px; color: var(--muted); }
+    .row input[type="range"] { flex: 1; }
+    .row span.val { width: 52px; text-align: right; color: var(--warn); }
+    .log {
+      margin-top: 12px;
+      background: #08121d;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      height: 180px;
+      overflow-y: auto;
+      padding: 8px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .log .e-conflict, .log .e-fail { color: var(--danger); }
+    .log .e-switch { color: #ffe082; }
+    .log .e-stop, .log .e-home, .log .e-success { color: var(--ok); }
+    .log .e-zone-enter, .log .e-zone-leave { color: var(--muted); }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      border: 1px solid var(--line);
+    }
+    .badge.run { color: var(--accent); }
+    .badge.ok { color: var(--ok); border-color: #2e5d3a; }
+    .badge.bad { color: var(--danger); border-color: #6e2f2f; }
+    .cargo { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <h1>磁浮托盘 · 交叉轨道换线模拟</h1>
+  <div class="sub">无轮胎摩擦 · 错过制动点会滑过目标 · 占用区强行切换道岔触发急停 · 完成 6 次换线且无碰撞即成功（seed 固定为 239）</div>
+  <div class="layout">
+    <div class="stage">
+      <canvas id="canvas" width="820" height="820"></canvas>
+    </div>
+    <div class="panel">
+      <div class="hud">
+        <div class="cell">状态<b id="hudStatus"><span class="badge run">待开始</span></b></div>
+        <div class="cell">完成换线<b id="hudDone">0 / 6</b></div>
+        <div class="cell">仿真时间<b id="hudTime">0.0 s</b></div>
+        <div class="cell">碰撞 / 冲突<b id="hudFault">0 / 0</b></div>
+      </div>
+      <div class="controls">
+        <button id="btnStart">开始</button>
+        <button id="btnPause">暂停</button>
+        <button id="btnAuto" class="warn">自动求解参数</button>
+        <button id="btnConflict" class="danger">道岔冲突演示</button>
+        <button id="btnReset">重置</button>
+      </div>
+      <div id="missionList"></div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <script src="sim.js"></script>
+  <script src="solver.js"></script>
+  <script src="audio.js"></script>
+  <script src="renderer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
