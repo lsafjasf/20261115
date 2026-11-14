@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三层投影布舞台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>三层投影布舞台</h1>
+  <div class="header-actions">
+    <button id="noiseToggle" type="button">🔇 投影机噪声：关</button>
+    <button id="exportBtn" type="button">📸 导出当前帧</button>
+  </div>
+</header>
+
+<main>
+  <section class="stage-wrap">
+    <canvas id="stage" width="960" height="600"></canvas>
+    <p class="hint">拖动画面可移动投影机（光源偏斜会产生梯形变形与光斑偏移）</p>
+  </section>
+
+  <aside class="panel">
+    <section class="presets">
+      <h2>预设画面</h2>
+      <div class="preset-row">
+        <button class="preset-btn" data-preset="0" type="button">预设一 · 晨曦森林</button>
+        <button class="preset-btn" data-preset="1" type="button">预设二 · 霓虹都市</button>
+        <button class="preset-btn" data-preset="2" type="button">预设三 · 深海气泡</button>
+      </div>
+      <p id="presetStatus" class="preset-status">尚未完成任何预设（0 / 3）</p>
+    </section>
+
+    <section class="projector">
+      <h2>投影机</h2>
+      <label>水平偏斜 <input id="projX" type="range" min="-1" max="1" step="0.01" value="0"></label>
+      <label>垂直偏斜 <input id="projY" type="range" min="-1" max="1" step="0.01" value="0"></label>
+      <label>布间距（影响边缘模糊）<input id="spacing" type="range" min="0" max="1" step="0.01" value="0.4"></label>
+    </section>
+
+    <section id="layers"></section>
+  </aside>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
