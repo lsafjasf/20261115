@@ -1,0 +1,26 @@
+{
+  "name": "station-luggage-cart",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u00002\u00000\u00002\u00006\u00001\u00001\u00001\u00005\u0000\r\u0000 \u0000",
+  "scripts": {
+    "test": "node test/playtest.mjs",
+    "test:topple": "node test/playtest.mjs topple",
+    "test:round": "node test/playtest.mjs round",
+    "test:sweep": "node test/playtest.mjs sweep"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

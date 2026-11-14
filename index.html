@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>繁忙车站 · 行李推车</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #14171c;
+    color: #dfe6ee;
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 12px 0 6px;
+    letter-spacing: 2px;
+  }
+  #hint {
+    font-size: 13px;
+    color: #9fb0c3;
+    margin-bottom: 8px;
+  }
+  #game {
+    background: #1d232c;
+    border: 2px solid #3a4656;
+    border-radius: 6px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  }
+  #overlay {
+    margin-top: 8px;
+    font-size: 14px;
+    min-height: 20px;
+    color: #ffd27d;
+  }
+</style>
+</head>
+<body>
+  <h1>繁忙车站 · 行李推车</h1>
+  <div id="hint">方向键 / WASD 控制速度与转向 · 把 5 件行李送上 3 列火车 · 撞人 3 次即失败</div>
+  <canvas id="game" width="1000" height="640"></canvas>
+  <div id="overlay"></div>
+  <script src="game.js"></script>
+</body>
+</html>
