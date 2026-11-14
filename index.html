@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>池塘蓝藻净化模拟</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1>池塘蓝藻净化模拟</h1>
+      <div class="timer">
+        <span>剩余时间</span>
+        <strong id="clock">04:00</strong>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="pond-panel">
+        <canvas id="pond" width="720" height="460" aria-label="池塘水体模拟画面"></canvas>
+        <div id="status-banner" class="banner">准备开始</div>
+      </section>
+
+      <aside class="side-panel">
+        <h2>治理设备</h2>
+
+        <div class="control" id="control-aeration">
+          <div class="control-head">
+            <label for="aeration">曝气机强度</label>
+            <span class="value" id="aeration-val">0%</span>
+          </div>
+          <input type="range" id="aeration" min="0" max="100" step="1" value="0" />
+          <p class="hint">增溶氧；强度过高会扰动底泥，浊度反弹。</p>
+        </div>
+
+        <div class="control" id="control-pump">
+          <div class="control-head">
+            <label for="pump">循环泵流量</label>
+            <span class="value" id="pump-val">0%</span>
+          </div>
+          <input type="range" id="pump" min="0" max="100" step="1" value="0" />
+          <p class="hint">促进混合、絮凝沉降，降低藻密度。</p>
+        </div>
+
+        <div class="control" id="control-shade">
+          <div class="control-head">
+            <label for="shade">遮光网覆盖率</label>
+            <span class="value" id="shade-val">0%</span>
+          </div>
+          <input type="range" id="shade" min="0" max="100" step="1" value="0" />
+          <p class="hint">抑制光合作用；覆盖过久会伤害水生植物。</p>
+        </div>
+
+        <div class="buttons">
+          <button id="btn-start" class="primary">开始模拟</button>
+          <button id="btn-pause">暂停</button>
+          <button id="btn-reset">重置</button>
+          <button id="btn-sound">声音：开</button>
+        </div>
+
+        <div class="metrics">
+          <h2>实时指标</h2>
+          <ul>
+            <li>
+              <span>藻密度</span>
+              <strong id="m-algae">--</strong>
+              <em class="safe-tag" id="tag-algae"></em>
+            </li>
+            <li>
+              <span>溶氧 DO</span>
+              <strong id="m-do">--</strong>
+              <em class="safe-tag" id="tag-do"></em>
+            </li>
+            <li>
+              <span>浊度</span>
+              <strong id="m-turbidity">--</strong>
+              <em id="tag-turb"></em>
+            </li>
+            <li>
+              <span>水生植物活力</span>
+              <strong id="m-plant">--</strong>
+            </li>
+            <li>
+              <span>底泥稳定度</span>
+              <strong id="m-sediment">--</strong>
+            </li>
+          </ul>
+        </div>
+
+        <div class="event-log">
+          <h2>事件日志</h2>
+          <ul id="log"></ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="goal">
+      目标：4 分钟内让 <b>藻密度 ≤ 30</b> 且 <b>溶氧 ≥ 5.0 mg/L</b>，并同时保持 3 秒即通过。
+      溶氧低于 2.0 会造成鱼群死亡；植物活力归零则治理失败。
+    </footer>
+  </div>
+
+  <script src="js/simulation.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
