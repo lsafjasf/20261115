@@ -1,0 +1,9 @@
+{
+  "name": "tide-shaft-rescue",
+  "version": "1.0.0",
+  "description": "潮水升降井吊篮物资运输模拟游戏（Canvas 2D + Web Audio）",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}

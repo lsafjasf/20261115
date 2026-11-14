@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>潮水升降井 · 吊篮物资运输</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0a1120;
+      color: #e6eefc;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+    }
+    canvas {
+      background: #0e1726;
+      border: 1px solid #2a3a55;
+      border-radius: 10px;
+      max-width: 100%;
+    }
+    .panel {
+      width: 1000px;
+      max-width: 100%;
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    button {
+      background: #1d2c46;
+      color: #e6eefc;
+      border: 1px solid #35507a;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover { background: #274064; }
+    button.on { background: #2c6fb5; border-color: #5aa0e8; }
+    #status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #9fb4d4;
+    }
+    .help {
+      width: 1000px;
+      max-width: 100%;
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #8fa4c4;
+    }
+    kbd {
+      background: #1d2c46;
+      border: 1px solid #35507a;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="1000" height="640"></canvas>
+  <div class="panel">
+    <button id="btnInlet">进水阀 开/关</button>
+    <button id="btnOverflow">溢流闸 开/关</button>
+    <button id="btnBrake">吊篮制动器 开/关</button>
+    <button id="btnPause">暂停</button>
+    <button id="btnReset">重置</button>
+    <button id="btnDemo">自动演示（三批送达）</button>
+    <button id="btnFail">过压失败演示</button>
+    <button id="btnWall">失衡撞壁演示</button>
+    <button id="btnMute">静音</button>
+  </div>
+  <div id="status"></div>
+  <div class="help">
+    目标：潮水持续灌入，操纵三件设备把 <b>3 批维修物资</b> 经吊篮送到上层平台对接区，稳定制动 2 秒完成一批，吊篮回落到底部自动装下一批。<br />
+    键盘：<kbd>Q</kbd>/<kbd>A</kbd> 调进水阀，<kbd>W</kbd>/<kbd>S</kbd> 调溢流闸，<kbd>Space</kbd> 暂停 / 继续，<kbd>R</kbd> 重置，<kbd>D</kbd> 自动演示。<br />
+    风险：阀门切换存在惯性滞后（白色游标为目标、彩条为实际开度）；压力条到顶会<b>裂管</b>；水流过急使吊篮摆倾到极限会<b>撞壁</b>。溢流闸可泄压并抑制摆倾。
+  </div>
+
+  <script src="js/sim.js"></script>
+  <script src="js/controller.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
