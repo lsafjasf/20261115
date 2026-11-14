@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="潮闸三分钟：在三分钟潮峰内依次关闭四道防洪闸，疏散车辆并控制港区水位。"
+    />
+    <title>潮闸三分钟 · Harbor Surge</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient-grid" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="brand-block">
+        <p class="eyebrow">PORT AUTHORITY / STORM SURGE 07</p>
+        <h1>潮闸三分钟</h1>
+        <p class="subtitle">低洼港区 · 防洪调度终端</p>
+      </div>
+      <div class="hud" aria-label="实时状态">
+        <div class="hud-item hud-time">
+          <span class="hud-label">潮峰倒计时</span>
+          <strong id="timeValue">03:00</strong>
+          <i id="timeBar"></i>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">港区水位</span>
+          <strong id="waterValue">0.20 m</strong>
+          <span id="waterState" class="state-tag safe">安全</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">泵站电量</span>
+          <strong id="powerValue">100%</strong>
+          <i id="powerBar"></i>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">闸门</span>
+          <strong id="gateValue">0 / 4</strong>
+          <span id="stormLabel" class="state-tag storm">风力 6</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="stage-column">
+        <div class="stage-meta">
+          <span class="live-dot"><i></i> LIVE SECTOR 04</span>
+          <span id="statusMessage" class="status-message" aria-live="polite">
+            系统待命 · 所有闸门开启
+          </span>
+          <span class="coordinate">30°14′N / 121°52′E</span>
+        </div>
+        <div class="canvas-frame">
+          <canvas
+            id="gameCanvas"
+            width="1200"
+            height="720"
+            aria-label="港区俯视地图与潮位剖面。点击闸门可开始关闭。"
+          >
+            当前浏览器不支持 Canvas。
+          </canvas>
+          <div class="canvas-vignette" aria-hidden="true"></div>
+          <div id="startOverlay" class="overlay start-overlay">
+            <div class="overlay-card">
+              <p class="eyebrow">03:00 TO PEAK TIDE / FOUR GATES</p>
+              <h2>把海水挡在外面，<br />也把车放出去。</h2>
+              <p class="brief">
+                车辆正沿撤离通道穿过多道闸门。按
+                <b>A → B → C → D</b> 依次落闸，必须在门区清空后动手。
+                水泵能压低水位，但电池只够全速运转约四十秒。
+              </p>
+              <div class="condition-strip">
+                <span><b>4/4</b> 闸门关闭</span>
+                <span><b>&lt; 0.68 m</b> 港区水位</span>
+                <span><b>10/10</b> 车辆撤离</span>
+              </div>
+              <button id="startButton" class="primary-button" type="button">
+                <span>开始值守</span><kbd>ENTER</kbd>
+              </button>
+              <p class="micro-copy">
+                点击闸门或按 1–4 / 空格启停水泵 / R 重置
+              </p>
+            </div>
+          </div>
+          <div id="resultOverlay" class="overlay result-overlay hidden" role="dialog" aria-modal="true">
+            <div class="overlay-card result-card">
+              <p id="resultEyebrow" class="eyebrow">SIMULATION COMPLETE</p>
+              <h2 id="resultTitle">港区守住</h2>
+              <p id="resultReason" class="result-reason"></p>
+              <div class="result-stats">
+                <div><span>用时</span><b id="resultTime">--</b></div>
+                <div><span>水位</span><b id="resultWater">--</b></div>
+                <div><span>撤离</span><b id="resultSafe">--</b></div>
+              </div>
+              <button id="restartButton" class="primary-button" type="button">
+                <span>重新演练</span><kbd>R</kbd>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="legend-row">
+          <span><i class="legend-dot tide"></i>外海潮位</span>
+          <span><i class="legend-dot water"></i>港区水位</span>
+          <span><i class="legend-dot pump"></i>泵送流量</span>
+          <span><i class="legend-dot vehicle"></i>撤离车辆</span>
+          <span class="legend-help">危险线 0.91 m · 警戒线 0.68 m</span>
+        </div>
+      </section>
+
+      <aside class="side-column">
+        <section class="panel pump-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PUMP STATION / P-01</p>
+              <h2>排水泵</h2>
+            </div>
+            <span id="pumpState" class="state-tag off">待机</span>
+          </div>
+          <div class="pump-gauge">
+            <div class="pump-ring" id="pumpRing">
+              <span id="pumpPercent">0</span><small>m³/s</small>
+            </div>
+            <div class="pump-copy">
+              <p>全速排水约 <b>0.009 m/s</b></p>
+              <p>耗电 <b>2.45%/s</b></p>
+            </div>
+          </div>
+          <div class="battery-track"><i id="batteryFill"></i></div>
+          <button id="pumpButton" class="secondary-button" type="button">
+            <span id="pumpButtonText">启动水泵</span><kbd>SPACE</kbd>
+          </button>
+        </section>
+
+        <section class="panel gates-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">FLOOD GATE SEQUENCE</p>
+              <h2>闸门序列</h2>
+            </div>
+            <span class="sequence-chip">A → D</span>
+          </div>
+          <div id="gateControls" class="gate-controls"></div>
+        </section>
+
+        <section class="panel intel-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">SURGE INTEL</p>
+              <h2>潮情</h2>
+            </div>
+            <span id="stormLevel" class="storm-level">6</span>
+          </div>
+          <div class="intel-grid">
+            <div><span>外海潮位</span><b id="tideValue">0.41 m</b></div>
+            <div><span>风力等级</span><b id="windValue">6 级</b></div>
+            <div><span>安全余量</span><b id="marginValue">+0.48 m</b></div>
+            <div><span>已撤离</span><b id="safeValue">0 / 10</b></div>
+          </div>
+          <div class="audio-line">
+            <span class="audio-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span id="audioStatus">点击开始后启用风暴声场</span>
+          </div>
+        </section>
+
+        <button id="resetButton" class="text-button" type="button">重置模拟 <kbd>R</kbd></button>
+      </aside>
+    </main>
+
+    <footer>
+      <span>潮闸三分钟 // FLOOD CONTROL SIMULATION</span>
+      <span>车辆进入门区后落闸将立即判定撤离通道阻断</span>
+    </footer>
+    <script type="module" src="./src/main.mjs"></script>
+  </body>
+</html>

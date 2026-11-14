@@ -1,0 +1,15 @@
+{
+  "name": "harbor-surge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A three-minute floodgate defense game rendered with Canvas and Web Audio.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify:browser": "node scripts/browser-verify.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}
