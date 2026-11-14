@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#08191c" />
+    <meta
+      name="description"
+      content="潮汐清运：驾驶港口垃圾船，在满潮前完成三次收集、压缩垃圾并安全送抵处理点。"
+    />
+    <title>潮汐清运 · 港口垃圾船</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main id="app" aria-label="潮汐清运游戏">
+      <div class="game-shell">
+        <canvas id="gameCanvas" aria-label="港口河面、垃圾船、压缩仓与泄漏区"></canvas>
+        <div class="screen-shade" aria-hidden="true"></div>
+
+        <header class="hud">
+          <section class="brand-block">
+            <div class="eyebrow"><span></span> HARBOR UNIT 07</div>
+            <h1>潮汐清运</h1>
+            <p>三次靠港 · 压缩装舱 · 赶在满潮前</p>
+          </section>
+
+          <section class="tide-block" aria-label="满潮倒计时">
+            <div class="tide-copy">
+              <span id="phaseLabel">距满潮</span>
+              <strong id="timer">01:15</strong>
+            </div>
+            <div class="tide-rail"><i id="tideFill"></i></div>
+            <div class="tide-meta">
+              <span>潮位 <b id="tideLevel">0.8m</b></span>
+              <span id="tideState">安全窗口</span>
+            </div>
+          </section>
+
+          <section class="resource-grid" aria-label="船舶状态">
+            <article class="resource-card load-card">
+              <div class="resource-head"><span>载重</span><b id="massValue">0.0 t</b></div>
+              <div class="meter"><i id="loadFill"></i></div>
+              <small id="speedValue">航速 0.0 kn</small>
+            </article>
+            <article class="resource-card power-card">
+              <div class="resource-head"><span>电池</span><b id="batteryValue">100%</b></div>
+              <div class="meter"><i id="batteryFill"></i></div>
+              <small id="powerState">压缩系统待机</small>
+            </article>
+            <article class="resource-card leak-card">
+              <div class="resource-head"><span>泄漏</span><b id="leakValue">0%</b></div>
+              <div class="meter"><i id="leakFill"></i></div>
+              <small id="leakState">密封正常</small>
+            </article>
+          </section>
+        </header>
+
+        <aside class="mission-panel" aria-label="任务进度">
+          <div class="mission-title">
+            <span>本班任务</span>
+            <b id="missionCount">0 / 3</b>
+          </div>
+          <ol class="mission-list">
+            <li id="stepCollect"><i>01</i><span>收集三处码头垃圾</span><b>0/3</b></li>
+            <li id="stepCompact"><i>02</i><span>启动压缩，腾出货舱</span><b>待命</b></li>
+            <li id="stepDeliver"><i>03</i><span>送抵东岸处理点</span><b>未解锁</b></li>
+          </ol>
+          <div class="hold-strip">
+            <div class="hold-label"><span>压缩仓</span><b id="volumeValue">0 / 100 m³</b></div>
+            <div class="hold-meter"><i id="volumeFill"></i><em id="compactBand"></em></div>
+            <span id="holdHint">空舱，等待靠泊</span>
+          </div>
+        </aside>
+
+        <div class="toast" id="toast" role="status" aria-live="polite">
+          <span class="toast-icon">!</span><span id="toastText">靠近码头后按 E 收集</span>
+        </div>
+
+        <nav class="controls" aria-label="操作说明">
+          <div class="control-group">
+            <span class="key-pair"><kbd>A</kbd><kbd>D</kbd></span>
+            <span>驾驶</span>
+          </div>
+          <div class="control-group">
+            <span class="key-pair"><kbd>E</kbd></span>
+            <span id="actionHint">收集 / 卸货</span>
+          </div>
+          <div class="control-group">
+            <span class="key-pair"><kbd>SPACE</kbd></span>
+            <span>按住压缩</span>
+          </div>
+          <button id="audioButton" class="icon-button" type="button" aria-label="切换声音">
+            <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="audioLabel">声音开</span>
+          </button>
+        </nav>
+
+        <div class="touch-controls" aria-label="触屏操作">
+          <button id="leftButton" type="button" aria-label="向左驾驶">←</button>
+          <button id="compactButton" type="button" class="touch-compact">压缩</button>
+          <button id="actionButton" type="button" class="touch-action">E</button>
+          <button id="rightButton" type="button" aria-label="向右驾驶">→</button>
+        </div>
+
+        <section class="overlay start-overlay" id="startOverlay" aria-labelledby="gameTitle">
+          <div class="start-card">
+            <div class="card-stamp">TIDE / 07</div>
+            <p class="card-kicker">潮汐窗口 · 环保清运任务</p>
+            <h2 id="gameTitle">把最后一船垃圾<br /><em>赶在涨潮前</em>送走。</h2>
+            <p class="card-lead">
+              沿河完成三处码头收集。垃圾会拖慢船速，压缩机能腾出空间但耗电；
+              高速航行会让泄漏加剧，别让环保警报响起。
+            </p>
+            <div class="brief-grid">
+              <div><b>3</b><span>处码头</span></div>
+              <div><b>75s</b><span>满潮时限</span></div>
+              <div><b>100%</b><span>泄漏红线</span></div>
+            </div>
+            <button class="primary-button" id="startButton" type="button">
+              <span>启航</span><i>→</i>
+            </button>
+            <p class="card-foot">A / D 驾驶 · E 靠泊操作 · 按住 SPACE 压缩</p>
+          </div>
+        </section>
+
+        <section class="overlay end-overlay hidden" id="endOverlay" aria-live="polite">
+          <div class="end-card">
+            <p class="card-kicker" id="endKicker">任务完成</p>
+            <h2 id="endTitle">满潮之前，<br />河道清空。</h2>
+            <p id="endMessage">三处码头垃圾已全部收集并送抵处理点。</p>
+            <div class="result-grid">
+              <div><span>靠港</span><b id="resultDocks">3 / 3</b></div>
+              <div><span>耗电</span><b id="resultPower">14%</b></div>
+              <div><span>峰值泄漏</span><b id="resultLeak">31%</b></div>
+              <div><span>剩余时间</span><b id="resultTime">00:38</b></div>
+            </div>
+            <button class="primary-button" id="restartButton" type="button">
+              <span>再跑一班</span><i>↻</i>
+            </button>
+          </div>
+        </section>
+
+        <div class="rotate-note">横屏体验更佳</div>
+      </div>
+    </main>
+    <script type="module" src="./src/game.js"></script>
+  </body>
+</html>

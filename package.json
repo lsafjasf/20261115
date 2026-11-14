@@ -1,0 +1,14 @@
+{
+  "name": "tide-clearance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "潮汐清运：满潮前的港口垃圾船 Canvas 游戏",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node tests/playtest.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
+}
