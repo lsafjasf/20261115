@@ -1,0 +1,6 @@
+{
+  "name": "seeded-island-map",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Seed-based scalable island map generator (canvas, no map assets)"
+}

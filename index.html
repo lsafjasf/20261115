@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>种子岛屿地图生成器</title>
+  <style>
+    body { margin: 0; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #10222e; color: #eee; }
+    #bar { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: #16303f; flex-wrap: wrap; }
+    #bar input { width: 140px; padding: 4px 8px; border-radius: 4px; border: 1px solid #3a5a6e; background: #0d1c26; color: #eee; }
+    #bar button { padding: 5px 12px; border: 0; border-radius: 4px; background: #2e7d5b; color: #fff; cursor: pointer; }
+    #bar button:hover { background: #37996f; }
+    #hint { font-size: 12px; color: #9fc3d8; }
+    #map { display: block; width: 100vw; height: calc(100vh - 46px); cursor: grab; touch-action: none; }
+  </style>
+</head>
+<body>
+  <div id="bar">
+    <label>Seed <input id="seed" value="20261114" /></label>
+    <button id="gen">生成岛屿</button>
+    <button id="rand">随机种子</button>
+    <button id="svg">导出 SVG</button>
+    <button id="png">导出 PNG</button>
+    <span id="hint">滚轮缩放 · 拖动空白平移 · 拖动海岸控制点重绘边界（水系自动回流入海）</span>
+  </div>
+  <canvas id="map"></canvas>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
