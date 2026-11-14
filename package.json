@@ -1,0 +1,13 @@
+{
+  "name": "lunar-sampler-rover",
+  "version": "1.0.0",
+  "description": "低重力月面采样车：三罐尘土返航模拟（Canvas + Web Audio + 可测试物理内核）",
+  "type": "module",
+  "scripts": {
+    "test": "node --test 'tests/**/*.test.js'",
+    "start": "node --version && echo '用浏览器打开 index.html，或: npx serve .'"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

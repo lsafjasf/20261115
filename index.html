@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>月面采样车 · 三罐返航</title>
+<style>
+  body { margin: 0; background: #0e0d0c; color: #e8e2d4; font-family: ui-monospace, "Cascadia Mono", monospace; }
+  header { padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  button { background: #2a2621; color: #e8e2d4; border: 1px solid #5d574d; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; }
+  button:hover { background: #3a352e; }
+  #status { font-size: 12px; color: #b8b0a0; }
+  #wrap { padding: 0 16px 16px; }
+  canvas { width: min(100%, 1100px); aspect-ratio: 90 / 66; background: #191614; border: 1px solid #3a352e; border-radius: 8px; display: block; }
+  .help { font-size: 12px; color: #9a9284; margin-top: 8px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<header>
+  <h1>月面采样车 · 低重力三罐返航</h1>
+  <button id="btn-mission">执行三罐返航</button>
+  <button id="btn-auto">自驾/手动</button>
+  <button id="btn-reset">重置 (R)</button>
+  <button id="btn-audio">开启声音 (M)</button>
+  <span id="status"></span>
+</header>
+<div id="wrap">
+  <canvas id="game" width="1170" height="858"></canvas>
+  <div class="help">
+    规则：收集 3 罐月尘并返回着陆器；载荷每增加一罐，制动距离变长；高速急转会在月尘上打滑并甩偏路径；
+    碾过陨坑边缘触发一次性滑坡并造成损伤，损伤 100% 任务中止；陡坡会在低重力下把车抛起并留下跳痕。<br>
+    操作：W/↑ 加速，S/↓ 倒车，A D/←→ 转向，空格制动；固定 seed 保证路线可达，自动驾驶沿安全航点走廊完成任务。
+  </div>
+</div>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
