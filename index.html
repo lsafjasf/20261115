@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#09131a" />
+    <title>雪线补给 / Whiteout Run</title>
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="game" aria-label="雪线补给驾驶场景"></canvas>
+      <div class="vignette" aria-hidden="true"></div>
+      <div class="scanlines" aria-hidden="true"></div>
+
+      <header class="topbar hud">
+        <div class="brand-block">
+          <div class="brand-mark">01</div>
+          <div>
+            <p class="eyebrow">MOUNTAIN RESCUE / 高山救援</p>
+            <h1>雪线补给</h1>
+          </div>
+        </div>
+        <section class="route-card" aria-label="运输路线">
+          <div class="route-heading">
+            <span>补给线 WHITEOUT-7</span>
+            <span id="route-count">0 / 3 已送达</span>
+          </div>
+          <div class="route-line">
+            <span class="route-node active" data-node="0">01</span>
+            <span class="route-segment"></span>
+            <span class="route-node" data-node="1">02</span>
+            <span class="route-segment"></span>
+            <span class="route-node" data-node="2">03</span>
+          </div>
+        </section>
+        <section class="weather-card" aria-label="天气与能见度">
+          <div class="weather-top">
+            <span id="clock">06:42</span>
+            <span class="signal"><i></i><i></i><i></i></span>
+          </div>
+          <div class="weather-main">
+            <span class="wind-arrow" id="wind-arrow">↗</span>
+            <div>
+              <strong id="visibility">能见度 72%</strong>
+              <small id="weather-label">侧风 / 小雪</small>
+            </div>
+          </div>
+        </section>
+      </header>
+
+      <aside class="cargo-panel hud" aria-label="车况">
+        <div class="panel-title">
+          <span>载荷状态</span>
+          <span class="live"><i></i> LIVE</span>
+        </div>
+        <div class="cargo-row">
+          <span>货箱偏移</span>
+          <div class="meter"><i id="cargo-bar"></i><b class="danger-notch"></b></div>
+          <strong id="cargo-value">0 cm</strong>
+        </div>
+        <div class="cargo-row">
+          <span>固定带</span>
+          <div class="meter straps"><i id="strap-bar"></i></div>
+          <strong id="strap-value">35%</strong>
+        </div>
+        <div class="cargo-row">
+          <span>翻车风险</span>
+          <div class="meter risk"><i id="risk-bar"></i></div>
+          <strong id="risk-value">低</strong>
+        </div>
+        <div class="cargo-strip" id="cargo-strip">
+          <i></i><i></i><i></i>
+        </div>
+      </aside>
+
+      <section class="speed-panel hud" aria-label="速度">
+        <div class="gear" id="gear">D</div>
+        <div class="speed-readout">
+          <strong id="speed">00</strong>
+          <span>km/h</span>
+        </div>
+        <div class="drift">
+          <span>侧滑</span>
+          <div><i id="slip-bar"></i></div>
+          <b id="slip-value">0.0</b>
+        </div>
+      </section>
+
+      <div class="prompt hud hidden" id="prompt">
+        <span class="key">E</span>
+        <div><strong id="prompt-title">卸下物资</strong><small id="prompt-sub">停稳后交付给观测点</small></div>
+      </div>
+
+      <div class="toast" id="toast" role="status"></div>
+
+      <footer class="controls hud" aria-label="驾驶操作">
+        <div><span class="keys"><b>W</b><b>S</b></span><em>油门 / 倒车</em></div>
+        <div><span class="keys"><b>A</b><b>D</b></span><em>转向</em></div>
+        <div><span class="keys"><b>SPACE</b></span><em>急刹</em></div>
+        <div><span class="keys"><b>R</b><b>T</b></span><em>收紧 / 放松绑带</em></div>
+        <div class="audio-state"><span id="audio-dot"></span><em id="audio-label">音频待启动</em></div>
+      </footer>
+
+      <section class="overlay start-screen" id="start-screen">
+        <div class="overlay-grid">
+          <div class="start-copy">
+            <p class="eyebrow accent">RESCUE DISPATCH / 06:42</p>
+            <h2>雪线以北，<br /><span>还有人在等药。</span></h2>
+            <p class="brief">
+              风暴正在收紧能见度。驾驶履带雪橇，沿 WHITEOUT-7 线把三箱医疗物资送到观测点。
+              坡面会让车体侧滑，急刹会把货箱推向驾驶室。握稳方向，绑紧货箱。
+            </p>
+            <div class="start-actions">
+              <button id="start-button" type="button"><span>开始运输</span><i>→</i></button>
+              <small>建议使用键盘 · 点击后启用引擎音效</small>
+            </div>
+          </div>
+          <div class="mission-card">
+            <div class="mission-card-head">
+              <span>任务参数</span><span>SEED 7A3F</span>
+            </div>
+            <dl>
+              <div><dt>路线</dt><dd>WHITEOUT-7 / 固定生成</dd></div>
+              <div><dt>载荷</dt><dd>医疗物资 × 3</dd></div>
+              <div><dt>天气</dt><dd>侧风 18 m/s · 小雪</dd></div>
+              <div><dt>观测点</dt><dd>KHAN / RIDGE / NORTH</dd></div>
+            </dl>
+            <div class="mission-note">
+              <span>!</span>
+              <p><strong>绑带会随时间松动。</strong>进入坡面或长下坡前按住 R 收紧，急刹时能显著抑制货箱前移。</p>
+            </div>
+          </div>
+        </div>
+        <div class="start-footer">
+          <span>↑ 北</span><span>海拔 3,480 m</span><span>气温 −21 °C</span><span>CH.07 / EMERGENCY</span>
+        </div>
+      </section>
+
+      <section class="overlay result-screen hidden" id="result-screen">
+        <div class="result-card">
+          <p class="eyebrow accent" id="result-kicker">DELIVERY COMPLETE</p>
+          <h2 id="result-title">三站物资，全部送达。</h2>
+          <p id="result-copy">风雪还在继续，但灯还亮着。</p>
+          <div class="result-stats">
+            <div><span>总用时</span><strong id="stat-time">--:--</strong></div>
+            <div><span>最大货箱偏移</span><strong id="stat-cargo">-- cm</strong></div>
+            <div><span>最高翻车风险</span><strong id="stat-risk">--</strong></div>
+            <div><span>绑带操作</span><strong id="stat-straps">--</strong></div>
+          </div>
+          <button id="restart-button" type="button"><span>再次出发</span><i>↻</i></button>
+        </div>
+      </section>
+
+      <div class="touch-controls hidden" id="touch-controls" aria-label="触屏操作">
+        <div class="touch-steer">
+          <button data-control="left" type="button">‹</button>
+          <button data-control="right" type="button">›</button>
+        </div>
+        <div class="touch-drive">
+          <button data-control="brake" type="button">刹</button>
+          <button data-control="straps" type="button">绑</button>
+          <button data-control="throttle" type="button">油</button>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
