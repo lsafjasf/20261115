@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071b18" />
+    <title>雨冠索道 · Canopy Relay</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a211b'/%3E%3Cpath d='M31 52C13 40 16 17 31 9c15 8 18 31 0 43Z' fill='%23d8ef91'/%3E%3Cpath d='M31 52V17' stroke='%230a211b' stroke-width='3'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="game">
+      <canvas id="world" aria-label="雨林树冠滑索投递场景"></canvas>
+      <div class="grain" aria-hidden="true"></div>
+
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <p class="eyebrow">RANGER FIELD OPS · 07</p>
+          <h1>雨冠索道</h1>
+        </div>
+      </header>
+
+      <section class="briefing" aria-label="任务简报">
+        <div class="briefing-top">
+          <span class="live-dot"></span>
+          <span>树冠救护站</span>
+          <span class="weather">持续降雨</span>
+        </div>
+        <p>把三个急救包送到中央树冠平台。选择放行时机与制动强度，避开过速撞击。</p>
+        <div class="progress" aria-label="投递进度">
+          <strong id="delivered-count">0</strong><span>/ 3</span>
+          <div class="progress-track"><i id="progress-fill"></i></div>
+        </div>
+      </section>
+
+      <div class="wind-hud" aria-live="polite">
+        <div class="wind-label">
+          <span>实时风况</span>
+          <strong id="wind-speed">0.0 m/s</strong>
+        </div>
+        <div class="wind-track">
+          <i class="wind-zero"></i>
+          <b id="wind-needle"></b>
+        </div>
+        <div class="wind-scale"><span>迎风</span><span>顺风</span></div>
+      </div>
+
+      <nav class="route-stack" aria-label="选择滑索">
+        <button class="route-card is-active" type="button" data-route="A">
+          <span class="route-letter">A</span>
+          <span class="route-copy">
+            <strong>苔痕线</strong>
+            <small>血浆 · 18 kg</small>
+          </span>
+          <span class="route-status">待发</span>
+        </button>
+        <button class="route-card" type="button" data-route="B">
+          <span class="route-letter">B</span>
+          <span class="route-copy">
+            <strong>白雾线</strong>
+            <small>抗毒血清 · 25 kg</small>
+          </span>
+          <span class="route-status">待发</span>
+        </button>
+        <button class="route-card" type="button" data-route="C">
+          <span class="route-letter">C</span>
+          <span class="route-copy">
+            <strong>藤桥线</strong>
+            <small>止血包 · 14 kg</small>
+          </span>
+          <span class="route-status">待发</span>
+        </button>
+      </nav>
+
+      <aside class="console" aria-label="滑索控制台">
+        <div class="console-head">
+          <div>
+            <p class="eyebrow">SLACKLINE CONTROL</p>
+            <h2><span id="selected-letter">A</span> · <span id="selected-name">苔痕线</span></h2>
+          </div>
+          <span id="cargo-tag" class="cargo-tag">血浆 18 kg</span>
+        </div>
+
+        <div class="route-facts">
+          <div><span>钢索下垂</span><strong id="fact-sag">36 m</strong></div>
+          <div><span>侧风暴露</span><strong id="fact-wind">低</strong></div>
+          <div><span>安全到站</span><strong>4.5–8.8</strong></div>
+        </div>
+
+        <label class="control-row" for="delay">
+          <span class="control-name">
+            <strong>放行延时</strong>
+            <output id="delay-output">0.0 s</output>
+          </span>
+          <input id="delay" type="range" min="0" max="5" step="0.1" value="0" />
+          <span class="range-hint"><span>立即</span><span>观察风隙</span><span>5.0 s</span></span>
+        </label>
+
+        <label class="control-row" for="brake">
+          <span class="control-name">
+            <strong>制动强度</strong>
+            <output id="brake-output">35%</output>
+          </span>
+          <input id="brake" type="range" min="0" max="100" step="1" value="35" />
+          <span class="range-hint"><span>自由滑行</span><span>钢索夹持</span><span>全力</span></span>
+        </label>
+
+        <div class="telemetry">
+          <div>
+            <span>当前速度</span>
+            <strong><b id="live-speed">0.0</b> m/s</strong>
+          </div>
+          <div>
+            <span>到站余量</span>
+            <strong id="arrival-estimate">—</strong>
+          </div>
+        </div>
+
+        <button id="dispatch" class="dispatch" type="button">
+          <span id="dispatch-icon" aria-hidden="true">↗</span>
+          <span>
+            <strong id="dispatch-label">放行急救包</strong>
+            <small id="dispatch-note">按下后开始延时计时</small>
+          </span>
+        </button>
+        <button id="recover" class="recover" type="button" hidden>呼叫回收绳</button>
+      </aside>
+
+      <div class="audio-toggle">
+        <button id="audio-button" type="button" aria-pressed="false">
+          <span class="audio-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span id="audio-label">开启环境声</span>
+        </button>
+      </div>
+
+      <p class="key-hint"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 切换线路　<kbd>Space</kbd> 放行</p>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+      <div id="modal" class="modal" hidden>
+        <div class="modal-card">
+          <p id="modal-kicker" class="eyebrow">MISSION REPORT</p>
+          <h2 id="modal-title">全部送达</h2>
+          <p id="modal-copy"></p>
+          <div id="modal-stats" class="modal-stats"></div>
+          <button id="modal-action" type="button">重新布置三包</button>
+        </div>
+      </div>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
