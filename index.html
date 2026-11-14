@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111312" />
+    <title>熔光玻璃工坊 · Molten Glass Atelier</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="atelier">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <div>
+            <p class="eyebrow">ATELIER 07 / THERMAL FORMING</p>
+            <h1>熔光玻璃工坊</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="run-clock">
+            <span>本次用时</span>
+            <strong id="timer">00:00</strong>
+          </div>
+          <button class="icon-button" id="soundToggle" type="button" aria-pressed="false">
+            <span class="sound-icon" aria-hidden="true">◖</span>
+            <span id="soundLabel">声音</span>
+          </button>
+          <button class="icon-button" id="resetButton" type="button">
+            <span aria-hidden="true">↺</span>
+            <span>重开</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="stage-shell" aria-labelledby="stageTitle">
+          <div class="stage-heading">
+            <div>
+              <p class="eyebrow">KILN FLOOR / BENCH 04</p>
+              <h2 id="stageTitle">瓶体 07 · 自由吹制</h2>
+            </div>
+            <div class="live-pill"><span></span> LIVE HEAT</div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="stage" aria-label="玻璃吹制工作台动画"></canvas>
+            <div class="target-legend" aria-hidden="true">
+              <span class="target-line"></span>
+              <span>目标轮廓</span>
+            </div>
+            <div class="status-banner" id="statusBanner" aria-live="polite">
+              夹持稳定，开始吹制
+            </div>
+            <div class="egg-tip" id="tipText" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <aside class="telemetry" aria-label="实时状态">
+          <div class="panel-title">
+            <span class="index">01</span>
+            <div>
+              <p class="eyebrow">GLASS STATE</p>
+              <h3>玻璃状态</h3>
+            </div>
+          </div>
+
+          <div class="metric temperature">
+            <div class="metric-label">
+              <span>温度</span>
+              <strong><span id="tempValue">880</span><small>°C</small></strong>
+            </div>
+            <div class="heat-track"><i id="heatFill"></i><b id="heatSafe"></b></div>
+            <div class="metric-foot">
+              <span id="plasticityLabel">可塑性良好</span>
+              <span>500 / 1060</span>
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">
+              <span>壁厚均匀度</span>
+              <strong><span id="wallValue">—</span><small>mm</small></strong>
+            </div>
+            <div class="band-track"><i id="wallFill"></i><b></b></div>
+            <div class="metric-foot">
+              <span>差值容差 ≤ 0.55</span>
+              <span id="wallDelta">Δ 0.16</span>
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">
+              <span>轮廓吻合</span>
+              <strong><span id="contourValue">0</span><small>%</small></strong>
+            </div>
+            <div class="match-track"><i id="contourFill"></i></div>
+            <div class="metric-foot">
+              <span>沿目标曲线采样</span>
+              <span id="contourDelta">误差 1.00</span>
+            </div>
+          </div>
+
+          <div class="split-metrics">
+            <div class="mini-metric">
+              <span>转速</span>
+              <strong id="rpmValue">0 <small>rpm</small></strong>
+              <div class="mini-track"><i id="rpmFill"></i><b></b></div>
+            </div>
+            <div class="mini-metric">
+              <span>气泡</span>
+              <strong id="bubbleValue">0</strong>
+              <div class="bubble-dots" id="bubbleDots"></div>
+            </div>
+          </div>
+
+          <div class="process-note">
+            <span class="note-mark">!</span>
+            <p id="processNote">先小口吹气，再稳住转速。玻璃离开炉口后会持续降温。</p>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="console">
+        <div class="console-intro">
+          <p class="eyebrow">BENCH CONTROLS</p>
+          <p>吹气塑形 · 保持匀速旋转 · 及时回炉</p>
+        </div>
+        <div class="control-strip">
+          <button class="control-card blow-card" id="blowButton" type="button">
+            <span class="control-key">SPACE</span>
+            <span class="control-copy"><b>吹气</b><small>按住，轻吹</small></span>
+            <span class="pressure-ring"><i id="pressureFill"></i></span>
+          </button>
+          <button class="control-card spin-card" id="spinButton" type="button">
+            <span class="control-key">D</span>
+            <span class="control-copy"><b>旋转</b><small>保持 30–46 rpm</small></span>
+            <span class="rpm-mark" id="spinLight">↻</span>
+          </button>
+          <div class="control-card heater-card">
+            <span class="control-key pair">Q <em>E</em></span>
+            <span class="control-copy"><b>炉口位置</b><small>对准瓶底回温</small></span>
+            <div class="heater-slider-wrap">
+              <span class="slider-fire">♨</span>
+              <input id="heaterSlider" type="range" min="0" max="100" value="20" aria-label="炉口位置" />
+              <span class="slider-offset" id="heaterOffset">偏左</span>
+            </div>
+          </div>
+        </div>
+        <button class="finish-button" id="finishButton" type="button">
+          <span>完成瓶体</span>
+          <small>退火定型</small>
+        </button>
+      </footer>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="overlay-card">
+        <span class="overlay-kicker" id="overlayKicker">SHIFT BRIEF / 07</span>
+        <h2 id="overlayTitle">让一团火，成为一只瓶。</h2>
+        <p id="overlayBody">
+          交替吹气、稳住旋转，并把炉口对准瓶底回温。吹得太猛会留下气泡，
+          转速失稳会让瓶身倾斜；离开炉火太久，玻璃将失去可塑性。
+        </p>
+        <div class="briefing-grid">
+          <div><b>01</b><span>轻吹成形</span><small>气泡风险随气压升高</small></div>
+          <div><b>02</b><span>匀速旋转</span><small>目标 30–46 rpm</small></div>
+          <div><b>03</b><span>及时回炉</span><small>保持 560°C 以上</small></div>
+        </div>
+        <button class="start-button" id="overlayAction" type="button">
+          <span>点火开炉</span><em>→</em>
+        </button>
+        <p class="briefing-foot">Canvas + Web Audio · 建议佩戴耳机</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

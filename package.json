@@ -1,0 +1,19 @@
+{
+  "name": "molten-glass-atelier",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "test": "node --test tests/simulation.test.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "vite": "^8.3.8"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-sc": "^5.3.1"
+  }
+}
