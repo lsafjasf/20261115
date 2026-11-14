@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172822" />
+    <title>阴天补光计划 · 温室灯架</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23182922'/%3E%3Cpath d='M6 22h20M8 18h16' stroke='%23c8f27b' stroke-width='3'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">OVERCAST / 12 MINUTE SHIFT</p>
+          <h1>阴天补光计划</h1>
+        </div>
+        <div class="weather-card" aria-label="天气：阴，温室温度 22 摄氏度">
+          <span class="weather-icon" aria-hidden="true">☁</span>
+          <span>阴 · 22°C</span>
+          <span class="weather-note">自然光不足</span>
+        </div>
+      </header>
+
+      <section class="sim-card" aria-label="温室模拟">
+        <div class="status-strip">
+          <div><span class="status-label">剩余</span><strong id="time-readout">12:00</strong></div>
+          <div><span class="status-label">目标</span><strong>三排生长 ≥ 100%</strong></div>
+          <div><span class="status-label">灯架</span><strong id="rack-readout">A 排</strong></div>
+          <div><span class="status-label">峰值温度</span><strong id="temp-readout">23.1°C</strong></div>
+          <button id="sound-toggle" class="icon-button" type="button" aria-pressed="true">声音 开</button>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="greenhouse" width="1180" height="590" aria-label="温室剖面：三排幼苗、灯架与光斑"></canvas>
+          <div id="event-toast" class="event-toast" role="status" aria-live="polite"></div>
+          <div class="canvas-hint">拖动灯架 · 方向键移动 · 空格暂停</div>
+        </div>
+      </section>
+
+      <section class="control-deck" aria-label="灯架控制">
+        <div class="control-block movement-block">
+          <div class="block-heading">
+            <span class="step-index">01</span>
+            <div><h2>移动灯架</h2><p>滑轨对准幼苗排，灯架会遮挡邻近自然光</p></div>
+          </div>
+          <div class="rack-buttons" role="group" aria-label="移动到指定育苗排">
+            <button class="row-target" data-row="0" type="button"><span>A</span>左排</button>
+            <button class="row-target active" data-row="1" type="button"><span>B</span>中排</button>
+            <button class="row-target" data-row="2" type="button"><span>C</span>右排</button>
+          </div>
+          <label class="range-row" for="rack-position">
+            <span>滑轨位置</span>
+            <input id="rack-position" type="range" min="0" max="2.4" step="0.01" value="0.75" />
+          </label>
+          <div class="move-buttons">
+            <button id="move-left" type="button" aria-label="向左移动灯架">←</button>
+            <button id="move-right" type="button" aria-label="向右移动灯架">→</button>
+            <span>移动时暂时遮光</span>
+          </div>
+        </div>
+
+        <div class="control-block">
+          <div class="block-heading">
+            <span class="step-index">02</span>
+            <div><h2>光强整形</h2><p>降低高度更亮更窄；占空比控制平均辐照</p></div>
+          </div>
+          <label class="range-row" for="lamp-height">
+            <span>灯高 <output id="height-output">62 cm</output></span>
+            <input id="lamp-height" type="range" min="35" max="105" step="1" value="62" />
+          </label>
+          <label class="range-row" for="lamp-duty">
+            <span>占空比 <output id="duty-output">78%</output></span>
+            <input id="lamp-duty" type="range" min="35" max="100" step="1" value="78" />
+          </label>
+          <div class="meter-row">
+            <span>当前点位</span>
+            <div class="ppfd-meter"><i id="ppfd-fill"></i></div>
+            <strong id="ppfd-readout">0 µmol</strong>
+          </div>
+        </div>
+
+        <div class="control-block">
+          <div class="block-heading">
+            <span class="step-index">03</span>
+            <div><h2>暗周期</h2><p>短暂熄灯降温，防止叶温越过灼伤线</p></div>
+          </div>
+          <label class="range-row" for="dark-every">
+            <span>每隔 <output id="every-output">40 s</output></span>
+            <input id="dark-every" type="range" min="24" max="70" step="1" value="40" />
+          </label>
+          <label class="range-row" for="dark-for">
+            <span>熄灯 <output id="dark-output">6 s</output></span>
+            <input id="dark-for" type="range" min="2" max="10" step="1" value="6" />
+          </label>
+          <div id="cycle-state" class="cycle-state">灯照中 · 下次暗周期 34s</div>
+        </div>
+      </section>
+
+      <footer class="mission-bar">
+        <div class="mission-copy">
+          <span class="signal-dot"></span>
+          <p id="mission-message">先向任意一排补光。每排达到 100% 且无灼伤即可提前完成。</p>
+        </div>
+        <div class="speed-group" role="group" aria-label="模拟速度">
+          <button class="speed-button active" data-speed="1" type="button">1×</button>
+          <button class="speed-button" data-speed="4" type="button">4×</button>
+          <button class="speed-button" data-speed="12" type="button">12×</button>
+        </div>
+        <button id="run-toggle" class="primary-button" type="button">开始值守</button>
+        <button id="reset-button" class="secondary-button" type="button">重置</button>
+      </footer>
+    </main>
+    <script type="module" src="./src/game.js"></script>
+  </body>
+</html>
