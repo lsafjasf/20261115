@@ -1,0 +1,28 @@
+{
+  "name": "uid345",
+  "version": "1.0.0",
+  "description": "Interactive pan/zoom/layer map tool with resolution-independent 4x PNG, legend, scale bar and layer JSON export",
+  "main": "src/map-engine.js",
+  "scripts": {
+    "export": "node scripts/export.js",
+    "reload": "node scripts/reload-view.js",
+    "verify": "node scripts/verify-reload.js",
+    "check": "node --check src/map-data.js && node --check src/map-engine.js && node --check src/app.js && node --check scripts/export.js && node --check scripts/verify-reload.js && node --check scripts/reload-view.js",
+    "test": "npm run check && node scripts/export.js && node scripts/verify-reload.js && node scripts/reload-view.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.1.1"
+  }
+}

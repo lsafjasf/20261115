@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Interactive Map Exporter</title>
+  <style>
+    body { font-family: "DejaVu Sans", "Ubuntu Sans", sans-serif; margin: 24px; color: #22301f; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    .toolbar { display: flex; gap: 18px; align-items: center; margin-bottom: 10px; }
+    .toolbar label { display: flex; gap: 5px; align-items: center; font-size: 14px; }
+    button { font: inherit; padding: 6px 14px; border: 1px solid #5a7a45; border-radius: 6px;
+      background: #eef6e8; cursor: pointer; }
+    button:hover { background: #dcecd2; }
+    canvas { border: 1px solid #8a8f86; border-radius: 4px; cursor: grab; touch-action: none; }
+    canvas:active { cursor: grabbing; }
+    #state { margin-top: 8px; font-size: 13px; color: #55604e; }
+    .hint { margin-top: 6px; font-size: 12px; color: #7a8174; }
+  </style>
+</head>
+<body>
+  <h1>Interactive Map &mdash; pan, zoom, toggle layers, export 4x PNG</h1>
+  <div class="toolbar">
+    <label><input type="checkbox" id="layer-terrain" checked> Terrain</label>
+    <label><input type="checkbox" id="layer-roads" checked> Roads</label>
+    <label><input type="checkbox" id="layer-water" checked> Water network</label>
+    <button id="reset" type="button">Fit world</button>
+    <button id="export" type="button">Export 4x PNG + layers.json</button>
+  </div>
+  <canvas id="map"></canvas>
+  <div id="state"></div>
+  <div class="hint">Drag to pan &middot; scroll wheel to zoom at cursor &middot; exports are re-rasterized
+    at 3840&times;2400 with legend and scale bar, never upscaled from the 960&times;600 canvas.</div>
+  <script src="src/map-data.js"></script>
+  <script src="src/map-engine.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
