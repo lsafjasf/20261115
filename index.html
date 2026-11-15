@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101216">
+  <title>Cutline — 八秒镜头</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+        <div class="brand-copy">
+          <strong>CUTLINE</strong>
+          <span>CAMERA / SHOT 08</span>
+        </div>
+      </div>
+
+      <div class="project-title">
+        <span class="project-dot"></span>
+        <div>
+          <b>屋顶穿行</b>
+          <small>ROOFTOP PASS · 8.0 SEC</small>
+        </div>
+        <span class="save-state" id="saveState">已保存</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn ghost compact" id="loadSampleBtn" title="恢复内置八秒镜头">载入样例</button>
+        <button class="btn ghost compact" id="checkBoundsBtn">
+          <svg class="crosshair-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.5"/><path d="M8 1v4M8 11v4M1 8h4M11 8h4"/></svg>检查边界
+        </button>
+        <button class="btn ghost compact" id="reloadBtn" title="从本地保存重新载入并校验四轴">
+          <span class="btn-icon">↻</span>重载校验
+        </button>
+        <button class="btn primary compact" id="exportBtn">
+          <span class="btn-icon">↓</span>导出 JSON
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="viewer-panel" aria-label="舞台监视器">
+        <div class="panel-heading">
+          <div class="heading-left">
+            <span class="eyebrow">VIEWPORT</span>
+            <span class="view-label">CAM A · 960 × 540</span>
+          </div>
+          <div class="viewer-badges">
+            <span class="mini-pill"><i class="live-dot"></i>实时取景</span>
+            <span class="mini-pill">24 FPS</span>
+            <button class="icon-btn fit-btn" id="fitViewBtn" title="适应窗口">FIT</button>
+          </div>
+        </div>
+
+        <div class="canvas-shell" id="canvasShell">
+          <canvas id="stageCanvas" aria-label="二维舞台、镜头路线和取景框"></canvas>
+          <div class="canvas-corner top-left">STAGE / 960 × 540</div>
+          <div class="canvas-corner top-right" id="canvasStatus">SAFE</div>
+          <div class="canvas-hint">拖动时间线或播放以预览运镜</div>
+          <div class="boundary-notice" id="boundaryNotice" role="alert" hidden>
+            <span class="notice-icon">!</span>
+            <div>
+              <strong>取景框越过舞台边界</strong>
+              <small id="boundaryDetail">请调整位置或缩放后保存</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport">
+          <div class="transport-controls">
+            <button class="icon-btn" id="toStartBtn" title="回到开头">↤</button>
+            <button class="icon-btn" id="prevKeyBtn" title="上一个关键帧">‹</button>
+            <button class="play-btn" id="playBtn" title="播放 / 暂停">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIcon" d="M7 4.5 19 12 7 19.5Z"/></svg>
+            </button>
+            <button class="icon-btn" id="nextKeyBtn" title="下一个关键帧">›</button>
+            <button class="icon-btn" id="toEndBtn" title="跳到结尾">↦</button>
+          </div>
+          <div class="timecode">
+            <span id="currentTimecode">00:00:00:00</span>
+            <i>/</i>
+            <span>00:00:08:00</span>
+          </div>
+          <div class="transport-right">
+            <label class="loop-toggle" title="循环播放">
+              <input type="checkbox" id="loopToggle" checked><span></span>循环
+            </label>
+            <div class="zoom-readout" id="zoomReadout">100%</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="inspector" aria-label="镜头属性">
+        <div class="inspector-head">
+          <div>
+            <span class="eyebrow">INSPECTOR</span>
+            <h2>镜头控制</h2>
+          </div>
+          <span class="axis-count">4 AXES</span>
+        </div>
+
+        <div class="keyframe-strip">
+          <div>
+            <span>当前时间</span>
+            <strong id="inspectorTime">00:00:00:00</strong>
+          </div>
+          <button class="btn key-btn" id="addKeyBtn"><span>◆</span>添加关键帧</button>
+        </div>
+
+        <div class="property-list">
+          <section class="property-card" data-axis="position">
+            <div class="property-title">
+              <span class="axis-swatch"></span><strong>位置</strong><small>POSITION</small>
+              <span class="value-badge" id="positionSummary">480, 270</span>
+            </div>
+            <div class="field-grid two">
+              <label><span>X</span><input id="positionX" type="number" step="1" min="-500" max="1500" value="480"></label>
+              <label><span>Y</span><input id="positionY" type="number" step="1" min="-500" max="1500" value="270"></label>
+            </div>
+          </section>
+
+          <section class="property-card" data-axis="scale">
+            <div class="property-title">
+              <span class="axis-swatch"></span><strong>缩放</strong><small>SCALE</small>
+              <span class="value-badge" id="scaleSummary">100%</span>
+            </div>
+            <div class="field-row">
+              <input id="scaleRange" type="range" min="0.5" max="2.2" step="0.01" value="1" aria-label="缩放滑块">
+              <label class="field-compact"><input id="scaleValue" type="number" step="0.01" min="0.5" max="2.2" value="1"><span>×</span></label>
+            </div>
+          </section>
+
+          <section class="property-card" data-axis="rotation">
+            <div class="property-title">
+              <span class="axis-swatch"></span><strong>旋转</strong><small>ROTATION</small>
+              <span class="value-badge" id="rotationSummary">0°</span>
+            </div>
+            <div class="field-row">
+              <input id="rotationRange" type="range" min="-20" max="20" step="0.1" value="0" aria-label="旋转滑块">
+              <label class="field-compact"><input id="rotationValue" type="number" step="0.1" min="-180" max="180" value="0"><span>°</span></label>
+            </div>
+          </section>
+
+          <section class="property-card" data-axis="focus">
+            <div class="property-title">
+              <span class="axis-swatch"></span><strong>焦点</strong><small>FOCUS</small>
+              <span class="value-badge" id="focusSummary">0%, 0%</span>
+            </div>
+            <div class="field-grid two">
+              <label><span>X</span><input id="focusX" type="number" step="1" min="-100" max="100" value="0"></label>
+              <label><span>Y</span><input id="focusY" type="number" step="1" min="-100" max="100" value="0"></label>
+            </div>
+          </section>
+        </div>
+
+        <section class="curve-card">
+          <div class="curve-head">
+            <div>
+              <span class="eyebrow">EASING CURVE</span>
+              <strong id="curveSegment">0.0s → 1.6s</strong>
+            </div>
+            <div class="axis-tabs" id="axisTabs" role="tablist" aria-label="选择缓动轴">
+              <button class="axis-tab active" data-axis="position" role="tab">位置</button>
+              <button class="axis-tab" data-axis="scale" role="tab">缩放</button>
+              <button class="axis-tab" data-axis="rotation" role="tab">旋转</button>
+              <button class="axis-tab" data-axis="focus" role="tab">焦点</button>
+            </div>
+          </div>
+          <div class="curve-editor" id="curveEditor">
+            <svg id="curveSvg" viewBox="0 0 320 172" role="img" aria-label="贝塞尔缓动曲线编辑器">
+              <defs>
+                <pattern id="curveGrid" width="26.666" height="28.666" patternUnits="userSpaceOnUse">
+                  <path d="M 26.666 0 L 0 0 0 28.666" fill="none" stroke="currentColor" stroke-width="1" opacity=".08"/>
+                </pattern>
+                <linearGradient id="curveFill" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="var(--axis-color)" stop-opacity=".24"/>
+                  <stop offset="1" stop-color="var(--axis-color)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <rect class="curve-bg" x="24" y="16" width="272" height="132" rx="3" fill="url(#curveGrid)"/>
+              <line class="curve-axis-line" x1="24" y1="148" x2="296" y2="148"/>
+              <line class="curve-axis-line" x1="24" y1="16" x2="24" y2="148"/>
+              <path id="curveArea" class="curve-area" d=""></path>
+              <line id="handleLine1" class="handle-line" x1="24" y1="148" x2="80" y2="60"/>
+              <line id="handleLine2" class="handle-line" x1="296" y1="16" x2="240" y2="104"/>
+              <path id="curvePath" class="curve-path" d=""></path>
+              <circle id="curveStart" class="curve-endpoint" cx="24" cy="148" r="3.5"/>
+              <circle id="curveEnd" class="curve-endpoint" cx="296" cy="16" r="3.5"/>
+              <circle id="handle1" class="curve-handle" cx="80" cy="60" r="6" data-handle="1" tabindex="0"/>
+              <circle id="handle2" class="curve-handle" cx="240" cy="104" r="6" data-handle="2" tabindex="0"/>
+              <circle id="curveProgress" class="curve-progress" cx="24" cy="148" r="4"/>
+            </svg>
+          </div>
+          <div class="curve-footer">
+            <div class="curve-values">
+              <span>P1 <b id="curveP1">0.32, 0.00</b></span>
+              <span>P2 <b id="curveP2">0.68, 1.00</b></span>
+            </div>
+            <div class="preset-row">
+              <button data-preset="linear">线性</button>
+              <button data-preset="easeIn">缓入</button>
+              <button data-preset="easeOut">缓出</button>
+              <button data-preset="smooth">平滑</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <section class="timeline-panel" aria-label="动画时间线">
+      <div class="timeline-head">
+        <div class="timeline-title">
+          <span class="eyebrow">TIMELINE</span>
+          <strong>SHOT 08</strong>
+          <span class="timeline-meta">8.0s · 24fps · 6 keys</span>
+        </div>
+        <div class="beat-control">
+          <span class="sound-icon" aria-hidden="true">♩</span>
+          <label class="beat-toggle">
+            <input type="checkbox" id="beatToggle"><span></span>
+            节拍参考
+          </label>
+          <span class="beat-note">仅作听觉参考 · 不驱动动画</span>
+          <label class="bpm-field"><input id="bpmInput" type="number" min="40" max="220" value="96" aria-label="节拍 BPM"><span>BPM</span></label>
+        </div>
+        <div class="timeline-actions">
+          <span class="boundary-pill" id="boundaryPill"><i></i>路径安全</span>
+          <button class="icon-btn" id="deleteKeyBtn" title="删除当前关键帧">×</button>
+          <button class="btn ghost small" id="saveBtn">保存</button>
+        </div>
+      </div>
+
+      <div class="timeline-body">
+        <div class="track-labels">
+          <div class="label-ruler"><span>CAMERA AXES</span><span>VALUE</span></div>
+          <div class="track-label" data-track="position"><span class="axis-swatch"></span><strong>位置</strong><small>X / Y</small><output id="trackPosition">480, 270</output></div>
+          <div class="track-label" data-track="scale"><span class="axis-swatch"></span><strong>缩放</strong><small>SCALE</small><output id="trackScale">1.00×</output></div>
+          <div class="track-label" data-track="rotation"><span class="axis-swatch"></span><strong>旋转</strong><small>ANGLE</small><output id="trackRotation">0.0°</output></div>
+          <div class="track-label" data-track="focus"><span class="axis-swatch"></span><strong>焦点</strong><small>X / Y</small><output id="trackFocus">0%, 0%</output></div>
+        </div>
+
+        <div class="timeline-grid" id="timelineGrid">
+          <div class="ruler-row" id="rulerRow"></div>
+          <div class="track-row" data-track="position"></div>
+          <div class="track-row" data-track="scale"></div>
+          <div class="track-row" data-track="rotation"></div>
+          <div class="track-row" data-track="focus"></div>
+          <div class="beat-row" id="beatRow"></div>
+          <div class="playhead" id="playhead">
+            <span class="playhead-grip"></span>
+            <span class="playhead-time" id="playheadTime">0.0s</span>
+          </div>
+          <div class="timeline-cursor" id="timelineCursor"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="statusbar">
+      <div><span class="status-key">SPACE</span> 播放/暂停 <span class="status-key">K</span> 添加关键帧 <span class="status-key">S</span> 保存</div>
+      <div id="statusMessage">镜头已就绪 · 四轴已载入</div>
+      <div class="status-right"><span id="fpsReadout">24 FPS</span><span id="boundsReadout">BOUNDS OK</span></div>
+    </footer>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <dialog class="verify-dialog" id="verifyDialog">
+    <div class="dialog-accent"></div>
+    <div class="dialog-head">
+      <div>
+        <span class="eyebrow">RELOAD CHECK</span>
+        <h2>四轴恢复校验</h2>
+      </div>
+      <button class="icon-btn" id="closeDialogBtn" aria-label="关闭">×</button>
+    </div>
+    <p class="dialog-copy">已从本地工程重新载入 8 秒镜头，并对关键帧与中间采样逐轴比对。</p>
+    <div class="verify-list" id="verifyList"></div>
+    <div class="verify-summary" id="verifySummary">
+      <strong>4 / 4</strong><span>轴完全恢复</span>
+    </div>
+    <div class="dialog-actions">
+      <span>JSON v1 · localStorage</span>
+      <button class="btn primary" id="dialogDoneBtn">完成</button>
+    </div>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
