@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三维点云查看器</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0e14; }
+  #glcanvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  #glcanvas:active { cursor: grabbing; }
+  #panel {
+    position: fixed; top: 12px; left: 12px; width: 250px;
+    background: rgba(16, 20, 30, 0.88); color: #dfe6f0;
+    border: 1px solid #2a3346; border-radius: 10px;
+    padding: 12px 14px; font: 13px/1.5 "Segoe UI", system-ui, sans-serif;
+    user-select: none; backdrop-filter: blur(6px);
+  }
+  #panel h1 { font-size: 14px; margin: 0 0 8px; color: #8fd0ff; }
+  .row { margin: 8px 0; }
+  .row label { display: flex; justify-content: space-between; margin-bottom: 2px; color: #9fb0c8; }
+  .row output { color: #ffd479; font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: #4da3ff; }
+  .seg { display: flex; gap: 6px; }
+  .seg button {
+    flex: 1; padding: 5px 0; border: 1px solid #3a4763; border-radius: 6px;
+    background: #1a2130; color: #c8d4e6; cursor: pointer; font-size: 12px;
+  }
+  .seg button.active { background: #2f6fd0; border-color: #5b9bff; color: #fff; }
+  #stats {
+    margin-top: 10px; padding-top: 8px; border-top: 1px solid #2a3346;
+    font-variant-numeric: tabular-nums; color: #a8f0c8;
+  }
+  #shotBtn {
+    width: 100%; margin-top: 10px; padding: 6px 0; border: none; border-radius: 6px;
+    background: #2f8f5b; color: #fff; cursor: pointer; font-size: 13px;
+  }
+  #shotBtn:hover { background: #37a568; }
+  .hint { color: #6b7a93; font-size: 11px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<canvas id="glcanvas"></canvas>
+<div id="panel">
+  <h1>三维点云查看器</h1>
+  <div class="row">
+    <label>着色方式</label>
+    <div class="seg">
+      <button id="colorHeight" class="active">按高度</button>
+      <button id="colorDensity">按密度</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>剖切 X <output id="ox"></output></label>
+    <input type="range" id="clipX" min="0" max="100" value="100">
+  </div>
+  <div class="row">
+    <label>剖切 Y <output id="oy"></output></label>
+    <input type="range" id="clipY" min="0" max="100" value="100">
+  </div>
+  <div class="row">
+    <label>剖切 Z <output id="oz"></output></label>
+    <input type="range" id="clipZ" min="0" max="100" value="100">
+  </div>
+  <div class="seg">
+    <button id="presetFull">完整范围</button>
+    <button id="presetHalf">半剖</button>
+    <button id="presetCore">核心盒</button>
+  </div>
+  <div id="stats">剩余点数: <span id="count">-</span> / <span id="total">-</span><br>
+       FPS: <span id="fps">-</span></div>
+  <button id="shotBtn">导出当前视角截图</button>
+  <div class="hint">拖动旋转 · 滚轮缩放 · 右键拖动平移</div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
