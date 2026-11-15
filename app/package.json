@@ -1,0 +1,15 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "盲地回响 Echo Field — procedural audio terrain survey puzzle",
+  "scripts": {
+    "e2e": "node e2e.mjs",
+    "audio": "node audio-check.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "playwright": "^1.65.1"
+  }
+}

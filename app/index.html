@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>盲地回响 · Echo Field</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="brand-text">
+      <strong>盲地回响</strong>
+      <em>ECHO FIELD · SURVEY 06</em>
+    </div>
+  </div>
+  <div class="seed-badge">FIXED SEED <b id="seedLabel">0x--------</b></div>
+  <div class="top-actions">
+    <button id="rulesBtn" class="ghost-btn" type="button"><i>?</i> 规则</button>
+    <button id="resetBtn" class="ghost-btn" type="button"><i>↺</i> 重设</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="map-pane">
+    <div class="map-head">
+      <div>
+        <p class="kicker">SUBTERRANEAN ACOUSTIC SURVEY</p>
+        <h1>只凭回声，<br />重建这段路。</h1>
+        <p class="sub">六段地面藏在黑暗里。先听完整声迹，再把材质放入 I→II→III 的六个空白路径节点。提交后才会显影真实材质。</p>
+      </div>
+      <div class="head-status">
+        <div class="sector">SECTOR 09</div>
+        <div class="status-line"><span id="statusDot" class="dot"></span><span id="statusText">未测绘 / UNMAPPED</span></div>
+        <div class="attempts">尝试 <b id="attemptCount">01</b></div>
+      </div>
+    </div>
+
+    <div class="grid-frame">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div id="grid" class="grid" aria-label="回声测绘网格"></div>
+      <div class="grid-badge" id="resultBadge" hidden></div>
+    </div>
+
+    <div class="map-footer">
+      <div class="legend">
+        <span><i class="lg-src lg-a"></i>起始声源</span>
+        <span><i class="lg-src lg-b"></i>中继声源</span>
+        <span><i class="lg-src lg-c"></i>终端声源</span>
+      </div>
+      <span class="hint">虚线为待测路径，不代表真实地面</span>
+      <span class="path-state" id="pathState">PATH 00 · SIGNAL LOST</span>
+    </div>
+  </section>
+
+  <aside class="side-pane">
+    <section class="panel panel-listen">
+      <div class="panel-head">
+        <span class="panel-no">01 / LISTEN</span>
+        <span id="liveTag" class="tag">● LIVE</span>
+      </div>
+      <h2>声迹监听</h2>
+      <div class="scope">
+        <canvas id="scope" width="560" height="150"></canvas>
+        <div class="scope-meta">
+          <span id="scopeLabel">等待信号</span>
+          <span id="scopeTime">00.0 s</span>
+        </div>
+        <div class="seg-ticks" id="segTicks"></div>
+      </div>
+      <button id="playBtn" class="play-btn" type="button">
+        <span class="play-ic">▶</span>
+        <span class="play-tx"><b id="playTitle">播放六段回声</b><em id="playSub">PLAYBACK · 6 SOURCES</em></span>
+        <kbd>SPACE</kbd>
+      </button>
+      <p class="note">每次播放均为实时合成；混响、阻尼与声像随材质变化。<button id="stopBtn" class="link-btn" type="button">停止</button></p>
+    </section>
+
+    <section class="panel panel-mats">
+      <div class="panel-head">
+        <span class="panel-no">02 / IDENTIFY</span>
+        <span class="tag muted">单击试听 · 拖入节点</span>
+      </div>
+      <h2>材质声纹</h2>
+      <div id="materialDeck" class="material-deck"></div>
+    </section>
+
+    <section class="panel panel-seq">
+      <div class="panel-head">
+        <span class="panel-no">03 / SEQUENCE</span>
+        <span class="tag muted"><span id="fillCount">0</span> / 6</span>
+      </div>
+      <h2>路径编排</h2>
+      <div id="sequence" class="sequence"></div>
+      <div id="verdict" class="verdict" hidden></div>
+      <button id="submitBtn" class="submit-btn" type="button" disabled>
+        <span id="submitLabel">提交测绘</span><span class="arrow">↗</span>
+      </button>
+    </section>
+  </aside>
+</main>
+
+<footer class="bottombar">
+  <span>PROCEDURAL AUDIO FIELD TEST · NO SAMPLES</span>
+  <span>9×9 / 6 MATERIALS / 3 SOURCES</span>
+  <span>SEED <b id="seedLabel2"></b></span>
+</footer>
+
+<div id="rulesModal" class="modal" hidden>
+  <div class="modal-card">
+    <h3>测绘规则</h3>
+    <ol>
+      <li>点击「播放六段回声」，按顺序聆听从起始声源到终端声源的六段脚步回声。</li>
+      <li>每段回声的混响、阻尼与声像由其真实地面材质实时合成。</li>
+      <li>作答期间网格保持空白，只有路径节点编号与波形可见。</li>
+      <li>把六个材质按听到的顺序拖入（或点击填入）六个节点，然后提交。</li>
+      <li>提交后才显影真实材质；全部吻合即测绘闭合，错位则需重新校准。</li>
+    </ol>
+    <button id="rulesClose" class="submit-btn" type="button"><span>明白了</span></button>
+  </div>
+</div>
+
+<script src="audio.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
