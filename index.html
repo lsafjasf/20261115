@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="十六根经线与四面节拍鼓驱动的虚拟织机，用节奏编织颜色。"
+    />
+    <title>虚拟织机 · 十六经线节拍织机</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%232b231e'/%3E%3Cpath d='M5 7h22v18H5z' fill='%236b5842'/%3E%3Cpath d='M8 10h16v12H8z' fill='%23fbf6ea'/%3E%3Cpath d='M11 10v12M16 10v12M21 10v12M8 14h16M8 19h16' stroke='%236b5842' stroke-width='1'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <h1>虚拟织机 <span>· 十六经线节拍织机</span></h1>
+      </div>
+      <label class="project-field">
+        <span class="sr-only">作品名称</span>
+        <input id="projectTitle" maxlength="30" value="我的第一匹布" />
+      </label>
+    </header>
+
+    <main class="workspace">
+      <section class="loom-column" aria-label="织布画面">
+        <div class="loom-frame">
+          <canvas id="loomCanvas" width="936" height="936">
+            十六根经线正在等待第一拍。
+          </canvas>
+          <div class="loom-glow" aria-hidden="true"></div>
+        </div>
+        <div id="checkCard" class="check-card is-idle" aria-live="polite">
+          <span id="checkIcon" class="check-icon" aria-hidden="true">○</span>
+          <div>
+            <strong id="checkTitle">图案检查 · 等待演奏</strong>
+            <p id="checkDetail">完成十六拍后，将自动核对命中、漏拍、错拍与休止。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="control-column" aria-label="节拍与颜色控制">
+        <div class="transport">
+          <button id="playButton" class="button button-primary" type="button">
+            <span class="button-icon play-icon" aria-hidden="true"></span>
+            <span id="playLabel">开始织造</span>
+          </button>
+          <button id="pauseButton" class="button" type="button" disabled>
+            <span class="button-icon pause-icon" aria-hidden="true"></span>
+            <span id="pauseLabel">暂停</span>
+          </button>
+          <button id="resetButton" class="button" type="button">
+            <span class="button-icon reset-icon" aria-hidden="true">↻</span>
+            <span>重新开始</span>
+          </button>
+        </div>
+
+        <div class="settings-row">
+          <fieldset class="mode-switch">
+            <legend class="sr-only">演奏模式</legend>
+            <label>
+              <input type="radio" name="mode" value="auto" checked />
+              <span>自动演示</span>
+            </label>
+            <label>
+              <input type="radio" name="mode" value="follow" />
+              <span>跟拍演奏</span>
+            </label>
+          </fieldset>
+          <div class="tempo-control">
+            <label for="bpmInput">速度</label>
+            <input id="bpmInput" type="number" min="40" max="240" value="100" />
+            <span>BPM</span>
+          </div>
+          <div id="beatReadout" class="beat-readout" aria-live="polite">
+            <span class="readout-dot"></span>
+            <span id="beatText">第 1 / 16 拍</span>
+          </div>
+        </div>
+
+        <div class="sequence-section">
+          <div class="section-heading">
+            <h2>十六拍节奏与颜色序列</h2>
+            <span id="sequenceHint">点击色块切换颜色 / 空拍</span>
+          </div>
+          <div id="sequenceGrid" class="sequence-grid" aria-label="十六拍序列"></div>
+          <p class="section-help">点击格子，在四面鼓颜色与空拍之间循环切换。</p>
+        </div>
+
+        <div class="drum-section">
+          <div class="section-heading">
+            <h2>四面节拍鼓</h2>
+            <span class="live-indicator"><i></i> 实时合成</span>
+          </div>
+          <div id="drumPads" class="drum-pads" aria-label="四面节拍鼓"></div>
+          <p class="section-help">
+            键盘 <kbd>d</kbd> <kbd>f</kbd> <kbd>j</kbd> <kbd>k</kbd> 击鼓；
+            跟拍模式下，错拍或漏拍会在布面留下错误或空白。
+          </p>
+        </div>
+
+        <div class="file-actions">
+          <button id="saveButton" class="button button-file" type="button">
+            <span aria-hidden="true">↓</span> 保存 JSON
+          </button>
+          <button id="loadButton" class="button button-file" type="button">
+            <span aria-hidden="true">↑</span> 载入 JSON
+          </button>
+          <input id="fileInput" type="file" accept="application/json,.json" hidden />
+          <span id="saveFeedback" class="save-feedback" role="status"></span>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
