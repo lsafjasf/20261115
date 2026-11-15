@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>逐帧动画字幕台</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>逐帧动画字幕台</h1>
+    <div class="fps-switch" role="group" aria-label="帧率切换">
+      <span>帧率</span>
+      <button id="fps-24" class="fps-btn active" data-fps="24">24 fps</button>
+      <button id="fps-30" class="fps-btn" data-fps="30">30 fps</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="stage">
+      <canvas id="stage-canvas" width="640" height="360"></canvas>
+      <div class="transport">
+        <button id="play-btn">▶ 播放</button>
+        <button id="metronome-btn" aria-pressed="false">♩ 节拍参考：关</button>
+        <span id="playhead-readout" class="readout">帧 0 · 00:00:00:00</span>
+      </div>
+    </section>
+
+    <section class="timeline">
+      <canvas id="timeline-canvas" height="96"></canvas>
+      <p class="hint">拖动标尺移动播放头；彩色块为字幕区间。</p>
+    </section>
+
+    <section class="cues">
+      <div class="cues-toolbar">
+        <button id="import-builtin-btn">导入内置字幕条目</button>
+        <button id="add-cue-btn">新增字幕</button>
+        <button id="save-btn">保存</button>
+        <button id="export-vtt-btn">导出 WebVTT</button>
+      </div>
+      <p id="save-status" class="status"></p>
+      <table id="cue-table">
+        <thead>
+          <tr>
+            <th>#</th><th>文本</th><th>入点(帧)</th><th>出点(帧)</th>
+            <th>入点时间码</th><th>出点时间码</th><th>状态</th><th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="export">
+      <h2>WebVTT 预览</h2>
+      <pre id="vtt-preview">（尚未导出）</pre>
+    </section>
+  </main>
+
+  <script src="js/timecode.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
