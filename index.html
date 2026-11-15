@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>光谱图拼接对比工具</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; padding: 16px; background: #16181d; color: #ddd;
+    font: 14px/1.5 system-ui, sans-serif;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  #stage { position: relative; }
+  canvas#view { display: block; background: #000; cursor: crosshair; }
+  canvas#view.drag-x { cursor: col-resize; }
+  canvas#view.drag-y { cursor: row-resize; }
+  canvas#view.drag-xy { cursor: move; }
+  #tooltip {
+    position: absolute; pointer-events: none; display: none;
+    background: rgba(10, 12, 16, 0.92); border: 1px solid #555;
+    padding: 6px 8px; font: 12px/1.4 monospace; white-space: pre;
+    border-radius: 4px; z-index: 2;
+  }
+  #panel { width: 260px; display: flex; flex-direction: column; gap: 12px; }
+  fieldset { border: 1px solid #3a3f4a; border-radius: 6px; margin: 0; }
+  legend { padding: 0 6px; color: #9ab; }
+  label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 6px 0; }
+  input[type="number"] { width: 70px; background: #0d0f13; color: #ddd; border: 1px solid #444; border-radius: 4px; padding: 2px 6px; }
+  input[type="range"] { flex: 1; }
+  button {
+    background: #2a6fdb; color: #fff; border: 0; border-radius: 5px;
+    padding: 7px 10px; cursor: pointer; font-size: 13px;
+  }
+  button.secondary { background: #3a3f4a; }
+  button.active { outline: 2px solid #8fc1ff; }
+  .row { display: flex; gap: 8px; }
+  .row button { flex: 1; }
+  #status { font-size: 12px; color: #8a8; min-height: 1.2em; }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="view" width="900" height="640"></canvas>
+    <div id="tooltip"></div>
+  </div>
+  <div id="panel">
+    <fieldset>
+      <legend>色标（全局统一）</legend>
+      <div class="row" id="cmapRow">
+        <button data-cmap="viridis" class="secondary">viridis</button>
+        <button data-cmap="jet" class="secondary">jet</button>
+      </div>
+      <label>vmin <input type="number" id="vmin" step="0.05"></label>
+      <input type="range" id="vminSlider" min="-0.5" max="3" step="0.01">
+      <label>vmax <input type="number" id="vmax" step="0.05"></label>
+      <input type="range" id="vmaxSlider" min="-0.5" max="3" step="0.01">
+    </fieldset>
+    <fieldset>
+      <legend>导出</legend>
+      <div class="row">
+        <button id="exportPng">导出 PNG</button>
+        <button id="exportJson" class="secondary">导出参数 JSON</button>
+      </div>
+    </fieldset>
+    <div id="status"></div>
+    <p style="color:#889;font-size:12px">
+      拖动画布中央的分界线调整四个子图的区域；悬停查看四个子图在同一相对位置的数值。
+      所有子图共享同一色标，分界线两侧不会出现色标不一致的色块。
+    </p>
+  </div>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
