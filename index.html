@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070b0f" />
+    <title>Tandem Weld Cell / 双人同步装配台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-phase="feed">
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span><span></span>
+          </div>
+          <div>
+            <p class="eyebrow">TANDEM CELL / BAY 03</p>
+            <h1>双人同步装配台</h1>
+          </div>
+        </div>
+
+        <div class="topbar-status">
+          <div class="online-pill"><i></i> 安全回路在线</div>
+          <div class="shift-clock"><span>SHIFT 01</span><b id="sessionClock">00:00</b></div>
+          <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9v6h4l5 4V5L8 9H4Z" />
+              <path class="sound-wave" d="M16 8c1.3 1.1 2 2.4 2 4s-.7 2.9-2 4M19 5c2.2 1.8 3.3 4 3.3 7s-1.1 5.2-3.3 7" />
+            </svg>
+            <span>声音</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="stage" id="stage">
+        <canvas id="scene" aria-label="双人装配台：左侧夹具、右侧焊枪、中央焊接轨迹"></canvas>
+
+        <section class="operator-card operator-a" aria-label="一号操作员 夹具">
+          <div class="operator-head">
+            <span class="station-id">A</span>
+            <div>
+              <p>FIXTURE</p>
+              <strong>夹具定位</strong>
+            </div>
+            <span class="operator-name">林 / 01</span>
+          </div>
+          <div class="operator-readout">
+            <span>侧向偏差</span>
+            <b id="fixtureReadout">+00 μm</b>
+            <i id="fixtureSignal"></i>
+          </div>
+          <div class="trim-controls">
+            <button class="trim-button" data-trim="fixture:-1" type="button" aria-label="夹具向左微调">
+              <span>◀</span><kbd>A</kbd>
+            </button>
+            <div class="trim-scale"><i></i><span></span><i></i></div>
+            <button class="trim-button" data-trim="fixture:1" type="button" aria-label="夹具向右微调">
+              <kbd>D</kbd><span>▶</span>
+            </button>
+          </div>
+          <button class="trigger-button trigger-a" data-trigger="fixture" type="button">
+            <span class="trigger-state"><i></i> 保持夹具</span>
+            <kbd>F</kbd>
+            <small>按住</small>
+          </button>
+        </section>
+
+        <section class="computer" aria-live="polite">
+          <div class="computer-top">
+            <span>SYNC CONTROLLER</span>
+            <span id="roundLabel">批次 01 / 03</span>
+          </div>
+          <div class="computer-main">
+            <div class="countdown" id="countdown" aria-label="倒计时">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="ring-track" cx="50" cy="50" r="42"></circle>
+                <circle class="ring-fill" id="countdownRing" cx="50" cy="50" r="42"></circle>
+              </svg>
+              <b id="countdownValue">3</b>
+            </div>
+            <div class="computer-copy">
+              <span class="state-kicker" id="stateKicker">INCOMING</span>
+              <strong id="stateTitle">两侧半成品进站</strong>
+              <p id="stateHint">等待夹具与焊枪定位</p>
+            </div>
+          </div>
+          <div class="sync-line">
+            <span>同步度</span>
+            <div class="sync-track"><i id="syncFill"></i></div>
+            <b id="syncValue">00%</b>
+          </div>
+        </section>
+
+        <section class="operator-card operator-b" aria-label="二号操作员 焊枪">
+          <div class="operator-head">
+            <span class="station-id">B</span>
+            <div>
+              <p>TORCH</p>
+              <strong>焊枪定位</strong>
+            </div>
+            <span class="operator-name">周 / 02</span>
+          </div>
+          <div class="operator-readout">
+            <span>侧向偏差</span>
+            <b id="torchReadout">-00 μm</b>
+            <i id="torchSignal"></i>
+          </div>
+          <div class="trim-controls">
+            <button class="trim-button" data-trim="torch:-1" type="button" aria-label="焊枪向左微调">
+              <span>◀</span><kbd>←</kbd>
+            </button>
+            <div class="trim-scale"><i></i><span></span><i></i></div>
+            <button class="trim-button" data-trim="torch:1" type="button" aria-label="焊枪向右微调">
+              <kbd>→</kbd><span>▶</span>
+            </button>
+          </div>
+          <button class="trigger-button trigger-b" data-trigger="torch" type="button">
+            <span class="trigger-state"><i></i> 同步起弧</span>
+            <kbd>J</kbd>
+            <small>按住</small>
+          </button>
+        </section>
+
+        <div class="table-caption table-caption-left" aria-hidden="true">
+          <span>FIXTURE STATION</span><i></i>
+        </div>
+        <div class="table-caption table-caption-right" aria-hidden="true">
+          <i></i><span>TORCH STATION</span>
+        </div>
+
+        <div class="phase-banner" id="phaseBanner" role="status">
+          <i></i>
+          <span id="bannerText">进料中 · 等待两侧半成品到位</span>
+        </div>
+
+        <div class="result-panel" id="resultPanel" hidden>
+          <span class="result-code" id="resultCode">SAFETY INTERLOCK</span>
+          <h2 id="resultTitle">零件已损毁</h2>
+          <p id="resultText">单侧提前触发。请重新装料。</p>
+          <button class="primary-button" id="resultAction" type="button">重新装料</button>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="mission-block">
+          <span class="footer-label">当前任务</span>
+          <div class="mission-copy">
+            <strong>完成三组装配</strong>
+            <span>并保留两套备件</span>
+          </div>
+          <div class="group-lights" id="groupLights" aria-label="装配进度 0/3">
+            <i data-group="1"></i><i data-group="2"></i><i data-group="3"></i>
+          </div>
+        </div>
+
+        <div class="footer-legend">
+          <span><kbd>A</kbd><kbd>D</kbd> 夹具微调</span>
+          <span><kbd>←</kbd><kbd>→</kbd> 焊枪微调</span>
+          <span class="legend-critical"><kbd>F</kbd> + <kbd>J</kbd> 同时按住</span>
+        </div>
+
+        <div class="inventory">
+          <div class="spare-stack" id="spareStack" aria-label="备件 2 套">
+            <i></i><i></i>
+          </div>
+          <div>
+            <span>备件保留</span>
+            <strong><b id="spareCount">2</b> / 2</strong>
+          </div>
+          <button class="reset-button" id="resetButton" type="button" aria-label="重新开始批次">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M5.5 15a7 7 0 0 0 11.8 2.3M18.5 9A7 7 0 0 0 6.7 6.7" /></svg>
+          </button>
+        </div>
+      </footer>
+    </div>
+
+    <div class="screen-flash" id="screenFlash" aria-hidden="true"></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

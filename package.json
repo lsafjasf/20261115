@@ -1,0 +1,15 @@
+{
+  "name": "tandem-weld-cell",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/engine.test.mjs",
+    "test:e2e": "playwright test",
+    "verify": "npm test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  }
+}
