@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>齿间 · TINE MUSIC BOX</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">▥</span>
+        <div><strong>齿间</strong><small>TINE MUSIC BOX</small></div>
+      </div>
+      <nav><a class="active">工作台</a><a>谱面</a><a>机芯</a></nav>
+      <span class="head-pill" id="head-pill">● 音频已唤醒</span>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <div class="hero-left">
+          <p class="opus"><span class="tag">OPUS 08</span> 手工发条音乐盒</p>
+          <h1>让金属，<br /><em>记住旋律。</em></h1>
+          <p class="lede">
+            两排齿片，一高一低。把音符放到谱面上，转动发条，听见钢针与黄铜在空气里留下的细小回声。
+          </p>
+          <dl class="hero-meta">
+            <div><dt>调性</dt><dd id="meta-key">D MAJOR</dd></div>
+            <div><dt>拍号</dt><dd>4 / 4</dd></div>
+            <div><dt>长度</dt><dd>8 BARS</dd></div>
+          </dl>
+        </div>
+        <aside class="hero-card">
+          <div class="hc-top"><span>当前曲目</span><span>01 — 08</span></div>
+          <h2 id="meta-title">苔上星光</h2>
+          <p id="meta-title-en">Starlight on Moss · Original</p>
+          <div class="hc-bottom">
+            <span id="position">小节 01 · 拍 1</span>
+            <span id="bpm-card">117 BPM</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="panel mechanism-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow"><span class="tag">MECHANISM</span> NO.08 / LIVE</p>
+            <h2>双排齿机芯</h2>
+          </div>
+          <div class="legend">
+            <span><i class="dot-gold"></i>左轨 · 低音</span>
+            <span><i class="dot-teal"></i>右轨 · 高音</span>
+          </div>
+        </div>
+        <canvas id="mechanism"></canvas>
+        <div class="transport">
+          <div class="wind">
+            <span class="wind-key">◔</span>
+            <div class="wind-slider">
+              <div class="wind-labels"><span>发条速度</span><b id="bpm-value">117 BPM</b></div>
+              <input id="bpm" type="range" />
+              <div class="wind-scale"><span>慢</span><span>中</span><span>急</span></div>
+            </div>
+          </div>
+          <div class="transport-btns">
+            <button id="stop" class="round" title="停止">◀|</button>
+            <button id="play" class="round big" title="播放/暂停（空格）">▶</button>
+            <button id="loop" class="round" title="循环开关">⟳</button>
+          </div>
+          <div class="transport-right">
+            <label class="dur">音符长度
+              <select id="duration">
+                <option value="1">16分</option>
+                <option value="2" selected>8分</option>
+                <option value="4">4分</option>
+              </select>
+            </label>
+            <button id="save" class="ghost">保存</button>
+            <button id="restore" class="ghost">恢复</button>
+            <button id="export" class="solid">⤓ 导出 JSON</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="mid-grid">
+        <section class="panel score-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow"><span class="tag">SCORE</span> DRAG TO COMPOSE</p>
+              <h2>八小节谱面</h2>
+            </div>
+            <span class="hint">拖入音符 · 双击移除 · 单击空格落音</span>
+          </div>
+          <div id="score-grid" class="score-grid"></div>
+        </section>
+
+        <aside class="panel monitor">
+          <p class="eyebrow"><span class="tag">RESONANCE</span> MONITOR</p>
+          <h2>共鸣监视</h2>
+          <div class="res-count"><b id="resonance-count">00</b><span>/ 08 齿</span></div>
+          <p id="resonance-state" class="state calm">安静待命</p>
+          <div id="resonance-bars" class="res-bars"></div>
+          <p id="resonance-hint" class="res-hint">
+            同时振动的齿片越多，声音越拥挤。发条转快时，注意留出呼吸。
+          </p>
+          <p class="mask-note"><b>MASKING</b><br />超过 3 根齿片共振时，声音会相互掩蔽。</p>
+        </aside>
+      </div>
+
+      <section class="panel plates-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow"><span class="tag">TONE PLATES</span> NOTE LIBRARY</p>
+            <h2>音片库</h2>
+          </div>
+          <span class="hint">选择音片后点击谱面，或直接拖放。</span>
+        </div>
+        <div class="plates-rows">
+          <div class="plate-row">
+            <p class="plate-label"><span class="lane-badge badge-left">L</span> 低音齿<small>LEFT COMB</small></p>
+            <div id="plates-left" class="plates"></div>
+          </div>
+          <div class="plate-row">
+            <p class="plate-label"><span class="lane-badge badge-right">R</span> 高音齿<small>RIGHT COMB</small></p>
+            <div id="plates-right" class="plates"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span><i id="save-dot" class="dot saved"></i><span id="save-text">示例曲目</span> · <span id="note-count">40 个音符</span></span>
+        <span class="footer-actions">
+          <button id="clear" class="link">清空谱面</button>
+          <button id="load-demo" class="link">载入示例</button>
+          <button id="import" class="link">导入 JSON</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </span>
+      </footer>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
