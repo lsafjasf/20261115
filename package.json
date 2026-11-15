@@ -1,0 +1,17 @@
+{
+  "name": "triple-sensor-calibration",
+  "version": "1.0.0",
+  "description": "三传感器温度采集、增益/偏置校准与 Canvas 可视化（数据由代码生成）",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "calibrate": "node scripts/run-calibration.mjs",
+    "test": "node scripts/run-calibration.mjs --assert",
+    "e2e": "node scripts/e2e-check.mjs",
+    "demo:over": "node scripts/demo-overcalibration.mjs",
+    "serve": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

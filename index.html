@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>三传感器温度校准台</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>三传感器温度校准台</h1>
+      <p class="subtitle">固定轨道 · 同一温度源 · 增益 / 偏置校准 · 均值与峰值双容差</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>轨道与传感器位置</h2>
+        <canvas id="track-canvas" height="150"></canvas>
+        <div id="track-legend" class="legend"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>原始曲线 vs 校准曲线</h2>
+          <div class="replay-controls">
+            <button id="btn-replay" type="button">▶ 重放数据</button>
+            <button id="btn-replay-reset" type="button">⏮ 复位</button>
+            <label class="speed">
+              速度
+              <select id="replay-speed">
+                <option value="1">1×</option>
+                <option value="2">2×</option>
+                <option value="4" selected>4×</option>
+                <option value="8">8×</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <canvas id="chart-canvas" height="420"></canvas>
+        <p class="hint">实线＝校准后曲线，淡色虚线＝原始读数，黑色粗线＝温度源真值，竖线＝校准点，黄色游标＝重放位置。</p>
+      </section>
+
+      <section class="panel">
+        <h2>校准点选择</h2>
+        <div class="row">
+          <label>
+            校准点数量
+            <input id="point-count" type="range" min="2" max="16" value="8" />
+            <span id="point-count-val">8</span>
+          </label>
+          <button id="btn-even-points" type="button">等间距布点</button>
+          <button id="btn-auto" type="button" class="primary">一键自动校准（最小二乘）</button>
+        </div>
+        <p class="hint">点击图表可在该时刻增删校准点；参考值取自温度源真值叠加仪表噪声。</p>
+        <div id="point-list" class="point-list"></div>
+      </section>
+
+      <section id="sensor-controls" class="panel grid"></section>
+
+      <section class="panel">
+        <h2>容差判定</h2>
+        <div id="status-board"></div>
+        <div class="row">
+          <button id="btn-save" type="button" class="primary">保存校准参数</button>
+          <button id="btn-export" type="button">导出 JSON 文件</button>
+          <span id="save-msg" class="save-msg"></span>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
