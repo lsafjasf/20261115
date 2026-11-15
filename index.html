@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0d0c">
+    <title>SEAM / 04 — 合成鼓采样器</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div>
+            <p class="eyebrow">SYNTHETIC DRUM WORKSTATION</p>
+            <h1>SEAM <span>/ 04</span></h1>
+          </div>
+        </div>
+        <div class="transport">
+          <div class="transport-clock" aria-live="polite">
+            <span class="transport-dot" id="transportDot"></span>
+            <span id="transportTime">00.000</span>
+            <small>SEC</small>
+          </div>
+          <button class="icon-button" id="stopButton" type="button" aria-label="停止播放">
+            <span class="stop-icon"></span>
+          </button>
+          <button class="primary-button" id="playButton" type="button">
+            <span class="play-icon"></span>
+            <span>播放音序</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="studio-grid" aria-label="波形裁切工作区">
+          <article class="panel waveform-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">SOURCE LOOP <span class="accent">/ 2.00 SEC</span></p>
+                <h2>接缝裁切台</h2>
+              </div>
+              <div class="heading-actions">
+                <span class="seam-legend"><i></i> LOOP SEAM</span>
+                <button class="ghost-button" id="addSampleButton" type="button">+ 新采样</button>
+              </div>
+            </div>
+
+            <div class="canvas-frame">
+              <canvas id="waveformCanvas" aria-label="鼓循环波形与裁切标尺"></canvas>
+              <div class="drag-hint" id="dragHint">拖动圆形手柄：起止点 / 淡化区间</div>
+            </div>
+
+            <div class="readout-grid">
+              <div class="readout">
+                <span>START</span>
+                <strong id="startReadout">0.000</strong>
+                <small>s</small>
+              </div>
+              <div class="readout">
+                <span>END</span>
+                <strong id="endReadout">0.300</strong>
+                <small>s</small>
+              </div>
+              <div class="readout">
+                <span>FADE IN</span>
+                <strong id="fadeInReadout">0.003</strong>
+                <small>s</small>
+              </div>
+              <div class="readout">
+                <span>FADE OUT</span>
+                <strong id="fadeOutReadout">0.060</strong>
+                <small>s</small>
+              </div>
+            </div>
+            <div class="notice-line" id="seamNotice">
+              <span class="notice-dot"></span>
+              <span>选择采样后拖动标尺；超出 2.000s 接缝的部分不会进入播放。</span>
+            </div>
+          </article>
+
+          <aside class="panel bank-panel">
+            <div class="panel-heading bank-heading">
+              <div>
+                <p class="eyebrow">SAMPLE BANK</p>
+                <h2>四段采样</h2>
+              </div>
+              <span class="count-pill" id="sampleCount">04</span>
+            </div>
+            <div class="sample-list" id="sampleList"></div>
+            <div class="bank-footer">
+              <p>每次触发会抢占正在发声的采样，最新触发优先。</p>
+              <div class="priority-meter">
+                <span>VOICE PRIORITY</span>
+                <b>LAST ↗</b>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="utility-grid">
+          <article class="panel keyboard-panel">
+            <div class="panel-heading compact-heading">
+              <div>
+                <p class="eyebrow">LIVE TRIGGER MAP</p>
+                <h2>键盘映射</h2>
+              </div>
+              <span class="live-label"><i></i> WEB AUDIO</span>
+            </div>
+            <canvas id="keyboardCanvas" aria-label="采样触发键盘映射"></canvas>
+          </article>
+
+          <article class="panel io-panel">
+            <div>
+              <p class="eyebrow">CONFIG / REBUILD</p>
+              <h2>交换与重建</h2>
+              <p class="io-copy">导出可移植采样配置，或从配置重新渲染一段音序 WAV。</p>
+            </div>
+            <div class="io-actions">
+              <button class="ghost-button" id="exportConfigButton" type="button">导出配置</button>
+              <button class="ghost-button" id="importConfigButton" type="button">导入配置</button>
+              <button class="rebuild-button" id="rebuildButton" type="button">重建音频 <span>WAV</span></button>
+            </div>
+            <div class="io-status" id="ioStatus" aria-live="polite">READY / 4 SAMPLES / 4 EVENTS</div>
+            <input id="configFileInput" type="file" accept="application/json,.json" hidden>
+          </article>
+        </section>
+      </main>
+
+      <footer>
+        <span>44.1 KHZ / MONO / 16-BIT</span>
+        <span>拖动标尺 · 键盘触发 · 接缝优先裁切</span>
+        <span id="footerClock">120 BPM</span>
+      </footer>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "seam-drum-sampler",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive Web Audio drum slicer with loop-seam truncation and voice priority.",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "test": "node --test test/*.test.mjs",
+    "render": "node scripts/render-artifacts.mjs",
+    "verify": "node scripts/verify-artifacts.mjs",
+    "test:browser": "node scripts/browser-verify.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "24.10.0"
+  }
+}
