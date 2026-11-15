@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>程序化转场实验台</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CANVAS / PROCEDURAL SCENES</p>
+          <h1>转场实验台</h1>
+        </div>
+        <div class="status-pill" id="playbackState">已暂停</div>
+      </header>
+
+      <section class="stage-card">
+        <canvas id="stage" width="960" height="540" aria-label="程序化转场预览"></canvas>
+        <div class="clock-row" aria-live="polite">
+          <span class="clock clock-a">A · <b id="clockA">0.00s</b></span>
+          <span class="phase-label" id="phaseLabel">A 预跑</span>
+          <span class="clock clock-b">B · <b id="clockB">待机</b></span>
+        </div>
+      </section>
+
+      <form class="controls" id="controls">
+        <fieldset>
+          <legend>转场</legend>
+          <div class="segmented" id="typeControl">
+            <label><input type="radio" name="type" value="push" checked /><span>推移</span></label>
+            <label><input type="radio" name="type" value="wipe" /><span>擦除</span></label>
+            <label><input type="radio" name="type" value="fog" /><span>雾化</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>方向</legend>
+          <div class="segmented directions" id="directionControl">
+            <label><input type="radio" name="direction" value="ltr" /><span>← 从左</span></label>
+            <label><input type="radio" name="direction" value="rtl" checked /><span>从右 →</span></label>
+            <label><input type="radio" name="direction" value="ttb" /><span>↓ 从上</span></label>
+            <label><input type="radio" name="direction" value="btt" /><span>↑ 从下</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="duration-field">
+          <legend>转场时长 <output id="durationOut">2.00s</output></legend>
+          <input id="duration" type="range" min="0.6" max="6" step="0.1" value="2" />
+        </fieldset>
+
+        <fieldset class="timeline-field">
+          <legend>时间线 <output id="timelineOut">0.00s</output></legend>
+          <input id="timeline" type="range" min="0" max="7.4" step="0.01" value="0" />
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" class="primary" id="playButton">播放</button>
+          <button type="button" id="midButton">跳到 50%</button>
+          <button type="button" id="exportButton">导出当前帧</button>
+          <label class="audio-toggle">
+            <input type="checkbox" id="audioToggle" checked />
+            <span>Web Audio 淡入淡出</span>
+          </label>
+        </div>
+      </form>
+
+      <p class="note">
+        A 先独立预跑 3.20s；进入转场后 A 与 B 同时推进，B 从自己的 0s 起步。
+        转场结束后 B 继续沿本地时间运行。
+      </p>
+    </main>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

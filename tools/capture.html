@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>转场帧捕获</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: #05070d; overflow: hidden; }
+      body { color: #dce7ff; font-family: "Segoe UI", "Noto Sans SC", sans-serif; }
+      #root { display: flex; width: max-content; }
+      .panel { margin: 0; }
+      .panel figcaption {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        padding: 0 10px;
+        color: #eef5ff;
+        background: #05070d;
+        font: 600 13px/1 "SFMono-Regular", Consolas, monospace;
+        letter-spacing: 0.02em;
+      }
+      canvas { display: block; }
+      #root.single .panel figcaption { display: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./capture.js"></script>
+  </body>
+</html>
