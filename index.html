@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0b0d">
+  <title>余像 · Afterimage — 四声道入场练习</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="brand-copy">
+          <span class="eyebrow">WEB AUDIO / SCENE 001</span>
+          <h1>余像 <em>AFTERIMAGE</em></h1>
+        </div>
+      </div>
+      <div class="project-meta">
+        <span class="project-state" id="projectState"><i></i> 未保存工程</span>
+        <button class="button button--ghost" id="saveButton" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 3.5h10l3 3v10h-13zM6 3.5v5h7v-5M6 16.5v-5h8v5"/></svg>
+          保存
+        </button>
+        <button class="button button--ghost" id="reloadButton" type="button" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.7 6.2A6.5 6.5 0 1 0 16 11M16 3v4h-4"/></svg>
+          重新载入
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="stage-panel" aria-label="场景舞台">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">LIVE STAGE / 四轨同步</span>
+            <h2>入场练习 <span>Entrance Study</span></h2>
+          </div>
+          <div class="stage-badges">
+            <span class="badge"><i class="badge-dot"></i>8.00 秒场景</span>
+            <span class="badge">4 TRACKS</span>
+          </div>
+        </div>
+
+        <div class="stage" id="stage">
+          <div class="stage-grid" aria-hidden="true"></div>
+          <div class="stage-glow" aria-hidden="true"></div>
+          <div class="stage-timecode">
+            <span>SCENE TIME</span>
+            <strong id="stageTime">00:00.000</strong>
+          </div>
+          <div class="stage-coordinates" aria-hidden="true">
+            <span>31°14′08″N</span><span>118°22′16″E</span>
+          </div>
+          <div class="stage-objects" id="stageObjects"></div>
+          <div class="stage-note" id="stageNote">
+            <span class="note-line"></span>
+            <p>四条音轨在八秒内依次抵达。<br>移动延迟，观察声音与形体一起偏移。</p>
+          </div>
+          <div class="transport">
+            <button class="transport-play" id="playButton" type="button" aria-label="播放">
+              <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h3v12H8zM13 6h3v12h-3z"/></svg>
+            </button>
+            <div class="transport-readout">
+              <span id="transportStatus">READY</span>
+              <strong id="transportTime">00:00.000</strong>
+            </div>
+            <button class="transport-icon" id="resetButton" type="button" aria-label="回到开头">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 4v12M15.5 5.5 8 10l7.5 4.5z"/></svg>
+            </button>
+            <div class="transport-volume">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8h3l4-3.5v11L7 12H4zM14 8.2a3 3 0 0 1 0 3.6M16 6.5a5.5 5.5 0 0 1 0 7"/></svg>
+              <input id="masterVolume" type="range" min="0" max="100" value="68" aria-label="主音量">
+              <output id="masterVolumeOut" for="masterVolume">68</output>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="mixer-panel" id="mixerMount" aria-label="场景混音台"></section>
+      <section class="timeline-panel" aria-label="八秒时间线">
+        <div class="timeline-head">
+          <div class="timeline-title">
+            <span class="eyebrow">TIMELINE / 00—08</span>
+            <h3>同步时间线</h3>
+          </div>
+          <div class="timeline-legend">
+            <span><i class="legend-entrance"></i>入场点</span>
+            <span><i class="legend-delay"></i>延迟</span>
+            <span id="timelineSpan">总时长 8.00s</span>
+          </div>
+        </div>
+        <div class="timeline" id="timeline">
+          <div class="ruler" id="ruler"></div>
+          <div class="lane-labels" id="laneLabels"></div>
+          <div class="lane-track" id="laneTrack" role="slider" tabindex="0"
+            aria-label="八秒时间线播放位置" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+            <div class="playhead" id="playhead"><span id="playheadLabel">0.000</span></div>
+            <div class="lane-grid" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
