@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟录音室 · 算法混响实验台</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>虚拟录音室 <span class="sub">实时算法混响 · 墙面材质 / 房间尺度</span></h1>
+    <div class="badge" title="混响完全由延迟网络与镜像声源实时合成">纯算法混响 · 无卷积 · 无 IR 采样</div>
+  </header>
+
+  <main class="layout">
+    <section class="card room-card">
+      <div class="card-head">
+        <h2>房间俯视图（拖动墙体边缘，或把材质拖到墙上）</h2>
+        <div class="dims" id="dimsLabel"></div>
+      </div>
+      <canvas id="roomCanvas" width="620" height="460"></canvas>
+      <div class="palette" id="palette"></div>
+      <p class="hint">提示：拖动 <b>左 / 右 / 后</b> 三面墙的手柄改变尺度；拖材质块到墙上换材质；前墙、地板、天花板为固定材质。</p>
+    </section>
+
+    <section class="card controls-card">
+      <div class="card-head"><h2>播放与混音</h2></div>
+      <div class="transport">
+        <button id="playBtn" class="primary">▶ 开始鼓循环</button>
+        <button id="kickBtn">底鼓单击</button>
+        <button id="measureBtn">脉冲测 RT60</button>
+      </div>
+      <label class="slider-row">高度 H：<span id="heightVal"></span> m
+        <input type="range" id="heightSlider" min="2.2" max="6" step="0.05" />
+      </label>
+      <label class="slider-row">混响量（湿声）：<span id="wetVal"></span>
+        <input type="range" id="wetSlider" min="0" max="1" step="0.01" />
+      </label>
+      <div id="measureResult" class="measure-out"></div>
+
+      <div class="card-head"><h2>声学指标（Eyring 模型）</h2></div>
+      <div class="metrics" id="metrics"></div>
+
+      <div class="card-head"><h2>场景对比</h2></div>
+      <div class="compare-btns">
+        <button id="loadSmall">载入：小房间</button>
+        <button id="loadHall">载入：长走廊</button>
+      </div>
+      <table class="compare-table" id="compareTable"></table>
+    </section>
+
+    <section class="card paths-card">
+      <div class="card-head"><h2>早期反射路径（镜像声源）</h2></div>
+      <table class="paths-table" id="pathsTable"></table>
+    </section>
+
+    <section class="card viz-card">
+      <div class="card-head"><h2>混响尾音电平（含 RT60 参考衰减线）</h2></div>
+      <canvas id="tailCanvas" width="620" height="180"></canvas>
+      <div class="card-head"><h2>湿声频谱</h2></div>
+      <canvas id="spectrumCanvas" width="620" height="180"></canvas>
+    </section>
+
+    <section class="card presets-card">
+      <div class="card-head"><h2>预设（自动保存在浏览器本地）</h2></div>
+      <div class="preset-row">
+        <input type="text" id="presetName" placeholder="预设名称" maxlength="24" />
+        <button id="savePresetBtn">保存预设</button>
+      </div>
+      <ul class="preset-list" id="presetList"></ul>
+    </section>
+  </main>
+
+  <div id="dragGhost" class="drag-ghost" hidden></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
