@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三传感器故障注入测试台</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font: 14px/1.5 system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f1f5f9; color: #0f172a;
+    }
+    header {
+      padding: 14px 20px; background: #0f172a; color: #f8fafc;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    header h1 { font-size: 17px; margin: 0; flex: 1 1 260px; }
+    .toolbar button, .toolbar label { margin-right: 8px; }
+    button {
+      border: 1px solid #cbd5e1; background: #fff; color: #0f172a;
+      border-radius: 8px; padding: 7px 14px; font-weight: 600; cursor: pointer;
+    }
+    button:hover { background: #f8fafc; }
+    button.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+    button.danger { background: #dc2626; border-color: #dc2626; color: #fff; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    main { padding: 16px 20px; max-width: 1280px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; }
+    .card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 12px; box-shadow: 0 1px 2px rgba(15,23,42,.06);
+    }
+    .card h2 { margin: 0 0 8px; font-size: 15px; display: flex; justify-content: space-between; }
+    .fault-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .fault-chip {
+      border: 1px solid #cbd5e1; border-radius: 999px; padding: 4px 10px;
+      font-size: 12px; cursor: pointer; user-select: none; background: #f8fafc;
+    }
+    .fault-chip.active { background: #fee2e2; border-color: #dc2626; color: #991b1b; font-weight: 700; }
+    canvas { width: 100%; display: block; }
+    canvas.gauge { height: 190px; }
+    canvas.chart { height: 170px; margin-top: 8px; }
+    .statusbar {
+      display: flex; gap: 18px; flex-wrap: wrap; padding: 8px 4px;
+      font-size: 13px; color: #334155;
+    }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    @media (max-width: 900px) { .panels { grid-template-columns: 1fr; } }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { text-align: left; padding: 5px 7px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    th { position: sticky; top: 0; background: #f8fafc; }
+    .log-box, .alarm-box { max-height: 320px; overflow: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+    .tag { padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; color: #fff; }
+    .tag.missing, .tag.out_of_order { background: #7c3aed; }
+    .tag.spike, .tag.alarm, .tag.error, .tag.critical { background: #dc2626; }
+    .tag.delay_hold, .tag.delay_release, .tag.delay { background: #0891b2; }
+    .tag.fault_on { background: #ea580c; }
+    .tag.fault_off, .tag.alarm_clear, .tag.recover, .tag.resume { background: #16a34a; }
+    .tag.pause, .tag.tick { background: #475569; }
+    .tag.warning { background: #d97706; }
+    #errorBanner {
+      display: none; background: #fef3c7; color: #92400e; padding: 8px 16px;
+      font-size: 13px; border-bottom: 1px solid #f59e0b;
+    }
+    .muted { color: #64748b; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div id="errorBanner"></div>
+  <header>
+    <h1>三传感器故障注入测试台 · 缺失 / 尖峰 / 延迟 / 乱序</h1>
+    <div class="toolbar">
+      <button id="btnPause" class="primary">暂停</button>
+      <button id="btnStep">单步注入</button>
+      <button id="btnRecover" class="danger">一键恢复正常</button>
+      <button id="btnExport">导出日志 CSV</button>
+      <label class="muted" style="color:#cbd5e1">速度
+        <select id="speedSel">
+          <option value="1000">1s</option>
+          <option value="500" selected>0.5s</option>
+          <option value="200">0.2s</option>
+        </select>
+      </label>
+    </div>
+  </header>
+  <main>
+    <div class="statusbar">
+      <span><span class="dot" style="background:#16a34a"></span><b id="runState">运行中</b></span>
+      <span>仿真步：<b id="stepCount">0</b></span>
+      <span>仿真时间：<b id="simTime">0</b> ms</span>
+      <span>日志条数：<b id="logCount">0</b></span>
+      <span class="muted">红菱=尖峰　紫方=乱序　紫底=缺失区间　虚线=告警阈值</span>
+    </div>
+    <div id="sensorGrid" class="grid"></div>
+    <div class="panels">
+      <section class="card">
+        <h2>告警列表 <span class="muted" id="alarmCount">0 条</span></h2>
+        <div class="alarm-box">
+          <table>
+            <thead><tr><th>传感器</th><th>级别</th><th>内容</th><th>仿真时间</th></tr></thead>
+            <tbody id="alarmBody"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="card">
+        <h2>故障注入日志 <span class="muted">按 seq 严格有序</span></h2>
+        <div class="log-box">
+          <table>
+            <thead><tr><th>seq</th><th>步</th><th>类型</th><th>传感器</th><th>详情</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

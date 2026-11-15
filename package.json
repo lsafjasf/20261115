@@ -1,0 +1,12 @@
+{
+  "name": "sensor-fault-injection-testbed",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "三传感器故障注入测试台：缺失/尖峰/延迟/乱序，Canvas 仪表与时序曲线，可导出注入日志",
+  "scripts": {
+    "test": "node test/engine.test.js && node test/ui.smoke.test.js",
+    "demo": "node scripts/demo-run.mjs",
+    "serve": "node scripts/serve.mjs"
+  }
+}
