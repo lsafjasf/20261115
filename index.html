@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>气象塔双人协作 · 仪器更换任务</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>气象塔协作任务</h1>
+      <p class="subtitle">塔顶调整旋转与锁定销 · 塔底切换主电源与备用电池 · 仅靠共享报警协作</p>
+    </header>
+
+    <section class="toolbar">
+      <button id="startBtn" type="button">开始任务</button>
+      <button id="resetBtn" type="button">重置</button>
+      <button id="muteBtn" type="button">静音</button>
+      <label class="debug">
+        <input id="debugToggle" type="checkbox" />
+        单人调试模式
+      </label>
+      <label class="debug">
+        时间倍率
+        <select id="speedSelect">
+          <option value="1">1×</option>
+          <option value="5">5×</option>
+          <option value="30" selected>30×</option>
+          <option value="60">60×</option>
+        </select>
+      </label>
+      <button id="breakLinkBtn" type="button" disabled>调试：强制切断链路</button>
+      <span id="help" class="help">点击开始任务；两人分别使用左右键盘区，F 与 Enter 发送共享报警。</span>
+    </section>
+
+    <main>
+      <canvas id="scene" aria-label="塔顶与塔底分栏画面"></canvas>
+    </main>
+
+    <section class="controls">
+      <div class="control-card">
+        <h2>塔顶玩家（左手区）</h2>
+        <ul>
+          <li><kbd>A</kbd>/<kbd>D</kbd> 旋转摇臂，抵消强风偏移</li>
+          <li><kbd>W</kbd> 插入锁定销（偏差 ≤10° 才能锁定）</li>
+          <li><kbd>S</kbd> 拔出锁定销</li>
+          <li><kbd>F</kbd> 向共享报警通道发送协作消息</li>
+        </ul>
+        <div class="debug-actions" data-debug-group="top" hidden>
+          <button type="button" data-debug-input="top:left">左转</button>
+          <button type="button" data-debug-input="top:right">右转</button>
+          <button type="button" data-debug-input="top:pinIn">插销</button>
+          <button type="button" data-debug-input="top:pinOut">拔销</button>
+        </div>
+      </div>
+      <div class="control-card">
+        <h2>塔底玩家（右手区）</h2>
+        <ul>
+          <li><kbd>Q</kbd> 接通主电源（会周期性中断）</li>
+          <li><kbd>E</kbd> 切换备用电池（耗电，主电时回充）</li>
+          <li><kbd>X</kbd> 断开传感器供电（更换仪器必需）</li>
+          <li><kbd>Enter</kbd> 向共享报警通道发送协作消息</li>
+        </ul>
+        <div class="debug-actions" data-debug-group="bottom" hidden>
+          <button type="button" data-debug-input="bottom:main">主电源</button>
+          <button type="button" data-debug-input="bottom:battery">电池</button>
+          <button type="button" data-debug-input="bottom:off">断电</button>
+        </div>
+      </div>
+      <div class="control-card">
+        <h2>胜利 / 失败条件</h2>
+        <ul>
+          <li>锁定销就位且断电时，仪器更换才会推进</li>
+          <li>完成 3 组更换 + 链路累计在线 5 分钟即成功</li>
+          <li>链路中断超过 12 秒宽限期即失败</li>
+        </ul>
+      </div>
+    </section>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

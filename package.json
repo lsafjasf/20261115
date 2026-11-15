@@ -1,0 +1,14 @@
+{
+  "name": "weather-tower-coop",
+  "version": "1.0.0",
+  "description": "气象塔双人协作：塔顶摇臂/锁定销 + 塔底供电/电池，Canvas 分栏与 Web Audio",
+  "type": "module",
+  "scripts": {
+    "test": "node --test 'tests/**/*.test.js'",
+    "serve": "python3 -m http.server 8080"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jsdom": "^31.0.1"
+  }
+}
