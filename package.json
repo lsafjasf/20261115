@@ -1,0 +1,13 @@
+{
+  "name": "lumen-stage-collab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test:e2e": "node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

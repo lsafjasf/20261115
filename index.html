@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080a0c" />
+    <title>LUMEN 光场协作台</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient--amber" aria-hidden="true"></div>
+    <div class="ambient ambient--blue" aria-hidden="true"></div>
+
+    <div class="app-shell" id="app">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="LUMEN 光场协作台">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span class="brand-copy">
+            <strong>LUMEN</strong>
+            <small>光场协作台 / STAGE 03</small>
+          </span>
+        </a>
+
+        <div class="session-strip" aria-label="排练状态">
+          <span class="live-light" id="liveLight"></span>
+          <span id="sessionState">联合排演中</span>
+          <span class="strip-divider"></span>
+          <span class="mono" id="sessionClock">00:00</span>
+          <span class="strip-divider"></span>
+          <span>构图 <b id="goalCounter">1</b> / 5</span>
+        </div>
+
+        <nav class="global-actions" aria-label="全局操作">
+          <button class="icon-button sound-button" id="soundBtn" type="button" aria-pressed="false">
+            <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="soundLabel">声场</span>
+          </button>
+          <button class="icon-button" id="helpBtn" type="button" aria-label="查看操作指南">?</button>
+          <button class="action-button" id="pauseBtn" type="button">
+            <span class="pause-icon" aria-hidden="true"></span>
+            <span id="pauseLabel">暂停</span>
+            <kbd>P</kbd>
+          </button>
+          <button class="action-button action-button--accent" id="replayBtn" type="button" disabled>
+            <span class="play-icon" aria-hidden="true"></span>
+            <span id="replayLabel">回放</span>
+            <kbd>R</kbd>
+          </button>
+        </nav>
+      </header>
+
+      <section class="crew-rail" aria-label="控制器连接状态">
+        <span class="crew-label">CONTROL LINK</span>
+        <button class="crew-chip is-online" data-focus-role="key" type="button">
+          <span class="status-dot"></span><b>01</b> 主光
+        </button>
+        <button class="crew-chip is-online" data-focus-role="rim" type="button">
+          <span class="status-dot"></span><b>02</b> 轮廓
+        </button>
+        <button class="crew-chip is-online" data-focus-role="gel" type="button">
+          <span class="status-dot"></span><b>03</b> 色片
+        </button>
+        <span class="crew-note">共享光场 · 独立面板</span>
+      </section>
+
+      <main class="workspace">
+        <section class="stage-panel" aria-label="共享舞台">
+          <header class="panel-heading">
+            <div>
+              <span class="eyebrow">SHARED LIGHT FIELD</span>
+              <h1>一块舞台，三束共同的光</h1>
+            </div>
+            <div class="stage-metrics">
+              <div class="metric">
+                <span>曝光</span>
+                <strong id="exposureValue">0%</strong>
+              </div>
+              <div class="metric">
+                <span>色片磨损</span>
+                <strong id="wearValue">0%</strong>
+              </div>
+            </div>
+          </header>
+
+          <div class="canvas-frame" id="canvasFrame">
+            <canvas id="stageCanvas" aria-label="舞台光场实时预览"></canvas>
+            <div class="canvas-topline">
+              <span class="on-air"><i></i> LIVE FIELD</span>
+              <span class="canvas-note">CANVAS / 60 FPS</span>
+            </div>
+            <div class="current-goal-chip" id="currentGoalChip">
+              <span>当前构图</span>
+              <strong id="currentGoalName">晨雾开场</strong>
+            </div>
+            <div class="exposure-alert" id="exposureAlert" role="status">
+              <span class="alert-glyph">!</span>
+              <span><b>过曝</b><small>降低任一光束强度</small></span>
+            </div>
+            <div class="pause-overlay" id="pauseOverlay" hidden>
+              <span class="pause-overlay-icon">Ⅱ</span>
+              <strong>光场已冻结</strong>
+              <small>所有控制器暂停响应 · 按 P 继续</small>
+            </div>
+            <div class="replay-hud" id="replayHud" hidden>
+              <span>SEQUENCE REPLAY</span>
+              <strong id="replayAction">正在还原操作序列</strong>
+              <time id="replayTime">00:00 / 00:00</time>
+            </div>
+            <div class="canvas-caption">
+              <span><i class="legend-key"></i>主光</span>
+              <span><i class="legend-rim"></i>轮廓</span>
+              <span><i class="legend-gel"></i>色片</span>
+              <span class="caption-tip" id="stageTip">移动灯架，让三束光在演员身上汇合</span>
+            </div>
+          </div>
+
+          <footer class="stage-footer">
+            <div class="exposure-gauge">
+              <div class="gauge-labels">
+                <span>最终曝光</span>
+                <span id="exposureHint">安全区</span>
+              </div>
+              <div class="gauge-track">
+                <span class="gauge-safe"></span>
+                <span class="gauge-hot"></span>
+                <i id="exposureNeedle"></i>
+              </div>
+            </div>
+            <div class="goal-progress">
+              <span class="progress-label">构图保持</span>
+              <div class="progress-track"><i id="goalHoldBar"></i></div>
+              <span class="mono" id="goalHoldValue">0.0s</span>
+            </div>
+          </footer>
+        </section>
+
+        <aside class="mission-rail">
+          <div class="rail-heading">
+            <div>
+              <span class="eyebrow">TONIGHT'S SCORE</span>
+              <h2>五个目标构图</h2>
+            </div>
+            <span class="goal-count" id="goalCount">01 — 05</span>
+          </div>
+          <ol class="goal-list" id="goalList"></ol>
+          <section class="brief-card" id="briefCard">
+            <div class="brief-topline">
+              <span>本帧提示</span>
+              <span class="difficulty" id="goalDifficulty">默契</span>
+            </div>
+            <h3 id="briefTitle">让主光与色片先暖起来</h3>
+            <p id="briefText">主光压低轮廓，保留舞台前缘的柔和渐变。</p>
+            <div class="target-grid" id="targetGrid"></div>
+          </section>
+          <section class="event-log">
+            <div class="event-log-head">
+              <span>操作记录</span>
+              <span class="recording-dot"><i></i> REC</span>
+            </div>
+            <div class="event-feed" id="eventFeed" aria-live="polite"></div>
+          </section>
+        </aside>
+      </main>
+
+      <section class="console-deck" aria-label="三组独立控制器">
+        <div class="deck-label">
+          <span class="eyebrow">OPERATOR CONSOLES</span>
+          <p>键盘分区已启用，可多人同时操作</p>
+        </div>
+
+        <article class="console-card console-card--key" data-role="key" id="consoleKey">
+          <header class="console-head">
+            <span class="role-index">01</span>
+            <div class="role-name">
+              <h2>主光</h2><span>KEY LIGHT</span>
+            </div>
+            <span class="connection-pill" id="keyStatus"><i></i>已接入</span>
+            <button class="link-toggle" type="button" data-disconnect="key" aria-label="断开主光控制器">断开</button>
+          </header>
+          <div class="console-body">
+            <div class="role-visual role-visual--key" aria-hidden="true">
+              <div class="rig-graphic">
+                <span class="rig-arm"></span>
+                <span class="rig-lamp"></span>
+                <span class="rig-beam"></span>
+              </div>
+              <div class="role-readout">
+                <span>LIVE VALUE</span>
+                <strong id="keyReadout">62<small>%</small></strong>
+              </div>
+            </div>
+            <div class="control-stack">
+              <label class="fader-row" for="keyIntensity">
+                <span class="fader-label">强度 <kbd>W</kbd><kbd>S</kbd></span>
+                <input id="keyIntensity" data-control="key.intensity" type="range" min="0" max="100" value="62" />
+                <output id="keyIntensityValue">62</output>
+              </label>
+              <label class="fader-row" for="keyPan">
+                <span class="fader-label">灯位 <kbd>A</kbd><kbd>D</kbd></span>
+                <input id="keyPan" data-control="key.pan" type="range" min="-100" max="100" value="0" />
+                <output id="keyPanValue">中</output>
+              </label>
+            </div>
+          </div>
+          <footer class="console-foot">
+            <span id="keyHint">前区主光 · 响应正常</span>
+            <span class="input-lamp"><i></i> INPUT 01</span>
+          </footer>
+        </article>
+
+        <article class="console-card console-card--rim" data-role="rim" id="consoleRim">
+          <header class="console-head">
+            <span class="role-index">02</span>
+            <div class="role-name">
+              <h2>轮廓</h2><span>RIM LIGHT</span>
+            </div>
+            <span class="connection-pill" id="rimStatus"><i></i>已接入</span>
+            <button class="link-toggle" type="button" data-disconnect="rim" aria-label="断开轮廓控制器">断开</button>
+          </header>
+          <div class="console-body">
+            <div class="role-visual role-visual--rim" aria-hidden="true">
+              <div class="rig-graphic">
+                <span class="rig-arm"></span>
+                <span class="rig-lamp"></span>
+                <span class="rig-beam"></span>
+              </div>
+              <div class="role-readout">
+                <span>LIVE VALUE</span>
+                <strong id="rimReadout">35<small>%</small></strong>
+              </div>
+            </div>
+            <div class="control-stack">
+              <label class="fader-row" for="rimIntensity">
+                <span class="fader-label">强度 <kbd>I</kbd><kbd>K</kbd></span>
+                <input id="rimIntensity" data-control="rim.intensity" type="range" min="0" max="100" value="35" />
+                <output id="rimIntensityValue">35</output>
+              </label>
+              <label class="fader-row" for="rimHeight">
+                <span class="fader-label">高度 <kbd>J</kbd><kbd>L</kbd></span>
+                <input id="rimHeight" data-control="rim.height" type="range" min="0" max="100" value="58" />
+                <output id="rimHeightValue">58</output>
+              </label>
+            </div>
+          </div>
+          <footer class="console-foot">
+            <span id="rimHint">后区勾边 · 响应正常</span>
+            <span class="input-lamp"><i></i> INPUT 02</span>
+          </footer>
+        </article>
+
+        <article class="console-card console-card--gel" data-role="gel" id="consoleGel">
+          <header class="console-head">
+            <span class="role-index">03</span>
+            <div class="role-name">
+              <h2>色片</h2><span>COLOR GEL</span>
+            </div>
+            <span class="connection-pill" id="gelStatus"><i></i>已接入</span>
+            <button class="link-toggle" type="button" data-disconnect="gel" aria-label="断开色片控制器">断开</button>
+          </header>
+          <div class="console-body console-body--gel">
+            <div class="gel-palette" id="gelPalette" role="group" aria-label="色片选择">
+              <button class="gel-swatch is-active" type="button" data-gel="amber" style="--swatch:#ffad53">
+                <span></span><small>琥珀</small><kbd>1</kbd>
+              </button>
+              <button class="gel-swatch" type="button" data-gel="steel" style="--swatch:#8db6d9">
+                <span></span><small>钢蓝</small><kbd>2</kbd>
+              </button>
+              <button class="gel-swatch" type="button" data-gel="rose" style="--swatch:#f06b94">
+                <span></span><small>玫瑰</small><kbd>3</kbd>
+              </button>
+              <button class="gel-swatch" type="button" data-gel="cyan" style="--swatch:#50d9d2">
+                <span></span><small>青绿</small><kbd>4</kbd>
+              </button>
+              <button class="gel-swatch" type="button" data-gel="gold" style="--swatch:#d8b85d">
+                <span></span><small>旧金</small><kbd>5</kbd>
+              </button>
+              <button class="gel-swatch" type="button" data-gel="white" style="--swatch:#e9e2d3">
+                <span></span><small>柔白</small><kbd>6</kbd>
+              </button>
+            </div>
+            <div class="gel-controls">
+              <label class="fader-row fader-row--compact" for="gelDensity">
+                <span class="fader-label">色浓度 <kbd>Q</kbd><kbd>E</kbd></span>
+                <input id="gelDensity" data-control="gel.density" type="range" min="0" max="100" value="64" />
+                <output id="gelDensityValue">64</output>
+              </label>
+              <div class="wear-meter">
+                <div class="wear-labels">
+                  <span>机械磨损</span><strong id="gelWearReadout">0%</strong>
+                </div>
+                <div class="wear-track"><i id="gelWearBar"></i><span class="wear-danger"></span></div>
+                <small id="wearHint">色片切换将累积磨损</small>
+              </div>
+            </div>
+          </div>
+          <footer class="console-foot">
+            <span id="gelHint">当前琥珀色片 · 切换时避免连击</span>
+            <span class="input-lamp"><i></i> INPUT 03</span>
+          </footer>
+        </article>
+      </section>
+
+      <footer class="app-footer">
+        <span>LUMEN COLLABORATIVE LIGHT RIG / 2026</span>
+        <span class="footer-shortcuts">
+          <kbd>P</kbd> 暂停
+          <kbd>R</kbd> 回放
+          <kbd>?</kbd> 指南
+        </span>
+        <span class="footer-status"><i></i> 操作序列自动录制</span>
+      </footer>
+    </div>
+
+    <aside class="help-drawer" id="helpDrawer" aria-hidden="true">
+      <div class="help-card">
+        <header>
+          <span class="eyebrow">HOW TO PLAY</span>
+          <button class="close-help" id="closeHelpBtn" type="button" aria-label="关闭指南">×</button>
+        </header>
+        <h2>三块键盘，一场戏</h2>
+        <p>每人负责一块独立面板，但所有人都在改写同一个最终光场。按目标区间的交集保持构图，五帧完成后自动解锁完整操作回放。</p>
+        <dl>
+          <div><dt>主光</dt><dd><kbd>W</kbd><kbd>S</kbd> 强度 · <kbd>A</kbd><kbd>D</kbd> 灯位</dd></div>
+          <div><dt>轮廓</dt><dd><kbd>I</kbd><kbd>K</kbd> 强度 · <kbd>J</kbd><kbd>L</kbd> 高度</dd></div>
+          <div><dt>色片</dt><dd><kbd>1</kbd>–<kbd>6</kbd> 换色 · <kbd>Q</kbd><kbd>E</kbd> 浓度</dd></div>
+          <div><dt>协作</dt><dd>任一灯位上调都可能让全场过曝；连续切色会加速磨损。</dd></div>
+          <div><dt>控制权</dt><dd>断开任一控制器，光场将保持其最后光位，其余面板仍可操作。</dd></div>
+        </dl>
+        <button class="primary-button" id="helpDoneBtn" type="button">继续排演</button>
+      </div>
+    </aside>
+
+    <section class="completion-dialog" id="completionDialog" aria-hidden="true">
+      <div class="completion-card">
+        <span class="completion-kicker">FIVE FRAMES / COMPLETE</span>
+        <h2>今晚的五帧，已经成立。</h2>
+        <p>三束光被你们调成了一个连续的视觉叙事。现在可以逐帧回看每一次调整、停顿与断线。</p>
+        <div class="completion-stats">
+          <div><span>总时长</span><strong id="finalDuration">00:00</strong></div>
+          <div><span>最终磨损</span><strong id="finalWear">0%</strong></div>
+          <div><span>过曝次数</span><strong id="finalOverexposure">0</strong></div>
+        </div>
+        <div class="completion-actions">
+          <button class="primary-button" id="startReplayBtn" type="button">
+            <span class="play-icon"></span>回放操作序列 <kbd>R</kbd>
+          </button>
+          <button class="ghost-button" id="restartBtn" type="button">重新排演</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
