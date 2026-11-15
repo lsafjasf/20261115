@@ -1,0 +1,11 @@
+{
+  "name": "mixed-script-typesetter",
+  "version": "1.0.0",
+  "description": "中文 / English / Arabic numerals 混排排版器：检测孤字、重叠、超框，支持局部锁定、自动修复与保留文本的 SVG 导出。",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "demo": "node demo/run.js",
+    "test": "node --test 'test/**/*.test.js'"
+  }
+}

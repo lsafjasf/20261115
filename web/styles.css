@@ -1,0 +1,125 @@
+:root {
+  color-scheme: light;
+  font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  padding: 24px;
+}
+
+.panel,
+.stage {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+h2 {
+  margin: 18px 0 8px;
+  font-size: 15px;
+}
+
+.hint {
+  margin: 0 0 14px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+
+select,
+button {
+  font: inherit;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+button {
+  flex: 1;
+  padding: 9px 10px;
+  border: 1px solid #9ca3af;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+button.primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.lock-row,
+.issue-list li,
+.log-list li {
+  font-size: 13px;
+}
+
+.lock-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.issue-list,
+.log-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.issue-list li[data-severity="error"] {
+  color: #b91c1c;
+}
+
+.issue-list li[data-severity="warning"] {
+  color: #b45309;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+canvas {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  max-width: 100%;
+  background: #fff;
+}
