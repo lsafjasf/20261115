@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>字幕智能避让 · Subtitle Avoidance</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>字幕智能避让</h1>
+    <div class="transport">
+      <button id="btnPlay">▶ 播放</button>
+      <input id="seek" type="range" min="0" max="15" step="0.05" value="0" />
+      <span id="timeLabel">0.0s</span>
+      <button id="btnBeat" title="Web Audio 节拍">🔇 节拍</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="stage">
+      <canvas id="stage" width="960" height="540"></canvas>
+      <p class="hint">拖动字幕可手动调整；绿色虚线为可行位置，红框表示碰撞。松手后自动吸附到最近可行位置。</p>
+    </section>
+
+    <aside class="panel">
+      <h2>字幕（5 条）</h2>
+      <table id="subTable">
+        <thead>
+          <tr><th>#</th><th>文本</th><th>时间</th><th>优先级</th><th>字号</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="actions">
+        <button id="btnAuto">↻ 重新自动避让</button>
+        <button id="btnVtt">⬇ 导出 WebVTT</button>
+        <button id="btnPng">⬇ 导出避让预览图</button>
+      </div>
+      <div id="alertBox" class="alert hidden"></div>
+      <h2>图例</h2>
+      <ul class="legend">
+        <li><span class="sw face"></span>人脸</li>
+        <li><span class="sw product"></span>商品信息</li>
+        <li><span class="sw logo"></span>台标</li>
+        <li><span class="sw safe"></span>安全区</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="avoid.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
