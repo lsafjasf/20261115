@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>云迹风速测量台</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <div>
+            <p class="eyebrow">CLOUD DRIFT LAB</p>
+            <h1>云迹风速测量台</h1>
+          </div>
+        </div>
+        <div class="topbar-readout" aria-label="相机与时间状态">
+          <span class="live-pill" id="livePill">
+            <span class="live-dot"></span>
+            <span id="liveLabel">实时观测</span>
+          </span>
+          <span class="sim-clock" id="simClock">SIM 00:00.0</span>
+          <span class="camera-chip">CAM 01 · 固定机位</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="scene-column" aria-label="云层观测画布">
+          <div class="scene-card" id="sceneCard">
+            <canvas id="skyCanvas"></canvas>
+            <div class="canvas-vignette" aria-hidden="true"></div>
+
+            <div class="hud hud-top">
+              <span class="hud-label">LIVE FRAME</span>
+              <span class="hud-divider"></span>
+              <span>1080 × 720</span>
+              <span class="hud-divider"></span>
+              <span>30 FPS</span>
+            </div>
+
+            <div class="target-hint" id="targetHint">
+              <span class="hint-icon" aria-hidden="true"></span>
+              <span id="targetHintText">拖拽框选一朵云团，释放即开始计时</span>
+            </div>
+
+            <div class="camera-reticle" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div class="pause-curtain" id="pauseCurtain" hidden>
+              <span class="pause-glyph" aria-hidden="true"><i></i><i></i></span>
+              <strong>观测已暂停</strong>
+              <span>云层位移与测量计时同步冻结</span>
+            </div>
+
+            <div class="scene-bottom">
+              <div class="scene-note">
+                <span class="compass" aria-hidden="true">→</span>
+                <span>云团横向漂移 · 单位像素</span>
+              </div>
+              <div class="scene-controls">
+                <button class="button button-ghost" id="pauseButton" type="button">
+                  <span class="button-icon pause-icon" id="pauseIcon" aria-hidden="true"></span>
+                  <span id="pauseButtonText">暂停观测</span>
+                </button>
+                <button class="button button-main" id="startButton" type="button">
+                  <span class="button-icon target-icon" aria-hidden="true"></span>
+                  <span id="startButtonText">开始测量</span>
+                </button>
+                <button class="button button-finish" id="finishButton" type="button" disabled>
+                  结束记录
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="scene-footer">
+            <div class="step-hint">
+              <span class="step-index">01</span>
+              <p><strong>框选</strong><br />在画布上框住移动的云团</p>
+            </div>
+            <div class="step-hint">
+              <span class="step-index">02</span>
+              <p><strong>校准</strong><br />拖动八个角点修正选框</p>
+            </div>
+            <div class="step-hint">
+              <span class="step-index">03</span>
+              <p><strong>记录</strong><br />完成三次测量并检查容差</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="metrics-column" aria-label="测量数据">
+          <div class="metrics-head">
+            <div>
+              <p class="eyebrow">MEASUREMENT</p>
+              <h2 id="measurementTitle">等待下一次测量</h2>
+            </div>
+            <span class="trial-badge" id="trialBadge">0 / 3</span>
+          </div>
+
+          <section class="current-readout" aria-label="当前测量数据">
+            <div class="metric metric-primary">
+              <span class="metric-label">像素位移</span>
+              <div class="metric-value-row">
+                <span class="metric-value" id="displacementValue">—</span>
+                <span class="metric-unit">px</span>
+              </div>
+              <span class="metric-meta" id="displacementMeta">等待框选云团</span>
+            </div>
+
+            <div class="metric-pair">
+              <div class="metric">
+                <span class="metric-label">测量时间</span>
+                <div class="metric-value-row">
+                  <span class="metric-value metric-small" id="timeValue">—</span>
+                  <span class="metric-unit">s</span>
+                </div>
+              </div>
+              <div class="metric">
+                <span class="metric-label">横向风速</span>
+                <div class="metric-value-row">
+                  <span class="metric-value metric-small" id="speedValue">—</span>
+                  <span class="metric-unit">km/h</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="formula-strip">
+              <span>换算</span>
+              <code id="formulaText">v = Δx × 0.32 m/px ÷ t × 3.6</code>
+            </div>
+          </section>
+
+          <section class="trial-section" aria-label="三次测量记录">
+            <div class="section-head">
+              <h3>测量记录</h3>
+              <button class="text-button" id="resetButton" type="button">重置</button>
+            </div>
+            <div class="trial-list" id="trialList">
+              <div class="trial-row trial-empty" data-trial="0">
+                <span class="trial-number">01</span>
+                <span class="trial-status">待测量</span>
+                <span class="trial-data">—</span>
+                <span class="trial-error">—</span>
+              </div>
+              <div class="trial-row trial-empty" data-trial="1">
+                <span class="trial-number">02</span>
+                <span class="trial-status">待测量</span>
+                <span class="trial-data">—</span>
+                <span class="trial-error">—</span>
+              </div>
+              <div class="trial-row trial-empty" data-trial="2">
+                <span class="trial-number">03</span>
+                <span class="trial-status">待测量</span>
+                <span class="trial-data">—</span>
+                <span class="trial-error">—</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="tolerance-card" aria-label="验收条件">
+            <div class="tolerance-head">
+              <div>
+                <p class="eyebrow">TOLERANCE CHECK</p>
+                <h3>三次一致性验收</h3>
+              </div>
+              <span class="tolerance-value" id="toleranceValue">± 6.0%</span>
+            </div>
+            <p class="tolerance-copy" id="toleranceCopy">
+              每次测量与参考风速的偏差需在容差内，完成三次且全部达标即通过。
+            </p>
+            <div class="progress-track" aria-hidden="true">
+              <span id="progressBar"></span>
+            </div>
+            <div class="progress-labels">
+              <span id="progressText">0 次有效测量</span>
+              <span id="progressState">未开始</span>
+            </div>
+            <div class="verdict" id="verdict">
+              <span class="verdict-mark" id="verdictMark" aria-hidden="true">✓</span>
+              <div>
+                <strong id="verdictTitle">验收待完成</strong>
+                <span id="verdictCopy">完成三次测量后自动判定</span>
+              </div>
+            </div>
+          </section>
+
+          <div class="calibration-note">
+            <span class="calibration-swatch" aria-hidden="true"></span>
+            <div>
+              <strong>空间标定</strong>
+              <span>0.32 m / px · 水平视场</span>
+            </div>
+            <span class="calibration-lock">LOCKED</span>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
