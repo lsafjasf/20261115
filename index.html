@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>山地水力侵蚀模拟</title>
+<style>
+  :root { --bg:#14171c; --panel:#1d222b; --line:#2c3442; --fg:#dfe6ef; --dim:#8b96a6; --acc:#4da3ff; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 "Segoe UI",system-ui,sans-serif; }
+  header { display:flex; align-items:center; gap:10px; padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0 12px 0 0; }
+  button { background:#2a3342; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:6px 12px; cursor:pointer; }
+  button:hover { border-color:var(--acc); }
+  button.active { background:var(--acc); color:#0b1522; font-weight:600; }
+  main { display:flex; gap:14px; padding:14px 16px; align-items:flex-start; flex-wrap:wrap; }
+  .map-wrap { position:relative; }
+  canvas#map { width:560px; height:560px; image-rendering:pixelated; border:1px solid var(--line); border-radius:6px; cursor:crosshair; background:#000; }
+  .panel { width:300px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+  .panel h2 { font-size:13px; color:var(--dim); margin:12px 0 6px; text-transform:uppercase; letter-spacing:.05em; }
+  .panel h2:first-child { margin-top:0; }
+  .row { display:flex; align-items:center; gap:8px; margin:6px 0; }
+  .row label { flex:0 0 76px; color:var(--dim); }
+  .row input[type=range] { flex:1; }
+  .row .val { flex:0 0 52px; text-align:right; font-variant-numeric:tabular-nums; }
+  .tools { display:flex; gap:6px; flex-wrap:wrap; }
+  .stats { display:grid; grid-template-columns:auto 1fr; gap:3px 10px; font-variant-numeric:tabular-nums; }
+  .stats dt { color:var(--dim); } .stats dd { margin:0; }
+  canvas#profile { width:100%; height:150px; display:block; background:var(--panel); border:1px solid var(--line); border-radius:6px; margin:0 16px 16px; }
+  .profile-wrap { padding:0 0 4px; }
+  .profile-wrap .caption { color:var(--dim); padding:0 16px 6px; }
+  dialog { background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:18px 20px; max-width:900px; }
+  dialog::backdrop { background:rgba(0,0,0,.55); }
+  .cmp { display:flex; gap:18px; }
+  .cmp figure { margin:0; text-align:center; }
+  .cmp canvas { width:300px; height:300px; image-rendering:pixelated; border:1px solid var(--line); border-radius:6px; }
+  table { border-collapse:collapse; margin-top:12px; width:100%; }
+  th,td { border:1px solid var(--line); padding:4px 10px; text-align:right; font-variant-numeric:tabular-nums; }
+  th { color:var(--dim); font-weight:500; }
+  .hint { color:var(--dim); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>山地水力侵蚀模拟</h1>
+  <button id="btnRun">▶ 运行</button>
+  <button id="btnStep">单步</button>
+  <button id="btnReset">重置</button>
+  <label>Seed <input id="seedInput" type="number" value="20261115" style="width:90px"></label>
+  <button id="btnCompare">对比降雨强度</button>
+  <span class="hint">在地图上涂抹：降雨区 / 岩层硬度 / 剖面线</span>
+</header>
+<main>
+  <div class="map-wrap"><canvas id="map" width="128" height="128"></canvas></div>
+  <div class="panel">
+    <h2>工具</h2>
+    <div class="tools">
+      <button class="tool active" data-tool="rain">降雨区</button>
+      <button class="tool" data-tool="hard">岩层硬度</button>
+      <button class="tool" data-tool="profile">剖面线</button>
+    </div>
+    <h2>参数</h2>
+    <div class="row"><label>降雨强度</label><input id="rainIntensity" type="range" min="0.01" max="0.3" step="0.005" value="0.08"><span class="val" id="rainIntensityVal"></span></div>
+    <div class="row"><label></label><button id="presetLight">小雨 0.03</button><button id="presetHeavy">暴雨 0.20</button></div>
+    <div class="row"><label>目标硬度</label><input id="hardValue" type="range" min="0.05" max="1" step="0.05" value="0.9"><span class="val" id="hardValueVal"></span></div>
+    <div class="row"><label>笔刷半径</label><input id="brushSize" type="range" min="3" max="20" step="1" value="8"><span class="val" id="brushSizeVal"></span></div>
+    <div class="row"><label>运行速度</label><input id="speed" type="range" min="1" max="20" step="1" value="4"><span class="val" id="speedVal"></span></div>
+    <h2>图层</h2>
+    <div class="tools">
+      <button class="layer active" data-layer="river">河道</button>
+      <button class="layer active" data-layer="deposit">沉积</button>
+      <button class="layer" data-layer="hardness">硬度</button>
+    </div>
+    <h2>统计</h2>
+    <dl class="stats">
+      <dt>步数</dt><dd id="stStep">0</dd>
+      <dt>最高点</dt><dd id="stMax">-</dd>
+      <dt>最低点</dt><dd id="stMin">-</dd>
+      <dt>河道格数</dt><dd id="stRiverCells">-</dd>
+      <dt>主河道长度</dt><dd id="stRiverLen">-</dd>
+      <dt>总侵蚀量</dt><dd id="stEroded">-</dd>
+      <dt>总沉积量</dt><dd id="stDeposited">-</dd>
+    </dl>
+  </div>
+</main>
+<div class="profile-wrap">
+  <div class="caption" id="profileCaption">剖面（点击地图“剖面线”工具选择行）</div>
+  <canvas id="profile" width="1100" height="150"></canvas>
+</div>
+<dialog id="cmpDialog">
+  <h2 style="margin-top:0">降雨强度对比（同 seed、同步数）</h2>
+  <div class="cmp">
+    <figure><canvas id="cmpA" width="128" height="128"></canvas><figcaption id="cmpATitle"></figcaption></figure>
+    <figure><canvas id="cmpB" width="128" height="128"></canvas><figcaption id="cmpBTitle"></figcaption></figure>
+  </div>
+  <table id="cmpTable"></table>
+  <div class="row" style="justify-content:flex-end;margin-top:12px"><button id="cmpClose">关闭</button></div>
+</dialog>
+<script src="js/sim.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
