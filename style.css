@@ -1,0 +1,140 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #0b1020;
+  color: #dfe7f5;
+}
+
+header {
+  padding: 16px 24px 8px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+header p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #8fa3c8;
+}
+
+main {
+  display: flex;
+  gap: 16px;
+  padding: 12px 24px 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.stage {
+  flex: 1 1 640px;
+  min-width: 320px;
+}
+
+canvas {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+  background: #05070f;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.timeline input[type="range"] {
+  flex: 1;
+}
+
+.panel {
+  flex: 0 0 280px;
+  background: #131a2e;
+  border: 1px solid #26304d;
+  border-radius: 8px;
+  padding: 12px 16px 16px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  margin: 14px 0 8px;
+  color: #9fd8c9;
+  letter-spacing: 1px;
+}
+
+.control {
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.control label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.control input[type="range"] {
+  width: 100%;
+}
+
+.control input[type="number"] {
+  width: 100%;
+  background: #0b1020;
+  color: #dfe7f5;
+  border: 1px solid #26304d;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.control.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button,
+.fileBtn {
+  display: inline-block;
+  background: #1d2a4a;
+  color: #cfe3ff;
+  border: 1px solid #33477a;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 4px 4px 0 0;
+}
+
+button:hover,
+.fileBtn:hover {
+  background: #27395f;
+}
+
+.fileBtn input {
+  display: none;
+}
+
+.result {
+  font-size: 12px;
+  min-height: 16px;
+  margin: 6px 0 0;
+}
+
+.result.ok {
+  color: #7fe0a8;
+}
+
+.result.fail {
+  color: #ff9a9a;
+}

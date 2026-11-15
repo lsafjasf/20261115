@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极光生成器 · Aurora Canvas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>高纬度夜空极光</h1>
+    <p>三层光带 · 种子噪声 · 山脊遮挡 · 雾层降饱和</p>
+  </header>
+
+  <main>
+    <section class="stage">
+      <canvas id="scene" width="960" height="540"></canvas>
+      <div class="timeline">
+        <label for="time">时间轴</label>
+        <input type="range" id="time" min="0" max="1000" value="0">
+        <button id="play" type="button">▶ 播放</button>
+        <span id="timeLabel">t = 0.000</span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>光带参数</h2>
+      <div class="control">
+        <label for="height">高度 <output id="heightOut"></output></label>
+        <input type="range" id="height" min="0" max="100" value="55">
+      </div>
+      <div class="control">
+        <label for="curvature">弯曲度 <output id="curvatureOut"></output></label>
+        <input type="range" id="curvature" min="0" max="100" value="45">
+      </div>
+      <div class="control">
+        <label for="density">密度 <output id="densityOut"></output></label>
+        <input type="range" id="density" min="5" max="100" value="60">
+      </div>
+      <div class="control">
+        <label for="coolShift">冷色偏移 <output id="coolShiftOut"></output></label>
+        <input type="range" id="coolShift" min="0" max="100" value="30">
+      </div>
+      <div class="control">
+        <label for="fog">雾层浓度 <output id="fogOut"></output></label>
+        <input type="range" id="fog" min="0" max="100" value="35">
+      </div>
+
+      <h2>种子与对比</h2>
+      <div class="control">
+        <label for="seedA">种子 A</label>
+        <input type="number" id="seedA" value="20261115" step="1">
+      </div>
+      <div class="control">
+        <label for="seedB">种子 B</label>
+        <input type="number" id="seedB" value="417" step="1">
+      </div>
+      <div class="control row">
+        <label for="compare">双种子对比</label>
+        <input type="checkbox" id="compare">
+      </div>
+      <button id="checkConsistency" type="button">重载一致性检查</button>
+      <p id="checkResult" class="result"></p>
+
+      <h2>导出</h2>
+      <div class="actions">
+        <button id="screenshot" type="button">保存截图 PNG</button>
+        <button id="saveJson" type="button">保存参数 JSON</button>
+        <label class="fileBtn">
+          载入参数 JSON
+          <input type="file" id="loadJson" accept="application/json">
+        </label>
+      </div>
+    </aside>
+  </main>
+
+  <script src="aurora.js"></script>
+</body>
+</html>
