@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机械钟三层视图仿真</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>机械钟拆解仿真</h1>
+    <div class="layer-toggles">
+      <label><input type="checkbox" id="layerGear" checked> 齿轮系统</label>
+      <label><input type="checkbox" id="layerEsc" checked> 擒纵机构</label>
+      <label><input type="checkbox" id="layerDial" checked> 指针面板</label>
+    </div>
+  </header>
+  <main>
+    <section class="canvas-wrap">
+      <canvas id="stage" width="960" height="720"></canvas>
+      <div class="sim-controls">
+        <button id="btnStart" disabled>启动仿真</button>
+        <button id="btnPause" disabled>暂停</button>
+        <button id="btnStep" disabled>单步</button>
+        <label>倍速 <input type="range" id="speed" min="1" max="120" value="20"><span id="speedVal">20x</span></label>
+        <label><input type="checkbox" id="audioOn"> 声音</label>
+      </div>
+    </section>
+    <aside class="panel">
+      <section class="box">
+        <h2>零件检测</h2>
+        <div id="partInfo" class="part-info">点击画布中的零件查看尺寸、转速与受力。</div>
+      </section>
+      <section class="box">
+        <h2>零件库（替换齿轮）</h2>
+        <div id="partsBin" class="parts-bin"></div>
+      </section>
+      <section class="box">
+        <h2>连接校验</h2>
+        <button id="btnVerify">校验齿轮连接</button>
+        <ul id="verifyLog" class="verify-log"></ul>
+      </section>
+      <section class="box">
+        <h2>运行记录</h2>
+        <button id="btnRecord" disabled>记录 10 秒转速曲线</button>
+        <div id="recordStatus">需先启动仿真。</div>
+        <canvas id="chart" width="360" height="180"></canvas>
+        <div class="export-btns">
+          <button id="btnCsv" disabled>导出 CSV</button>
+          <button id="btnPng" disabled>导出曲线图 PNG</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
