@@ -1,0 +1,9 @@
+{
+  "name": "procedural-water-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "实时程序化水面参数面板（WebGL），支持 JSON 保存/载入、自适应质量与页内自检",
+  "scripts": {
+    "test": "node --test test/**/*.test.js"
+  }
+}

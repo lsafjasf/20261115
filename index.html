@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>程序化水面 · 实时参数面板</title>
+  <style>
+    :root {
+      --bg: #0e1620;
+      --panel: #16222e;
+      --panel-2: #1d2d3c;
+      --line: #2a3f52;
+      --text: #dce7f0;
+      --muted: #8aa2b5;
+      --accent: #4cc2ff;
+      --ok: #54d18c;
+      --bad: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font: 13px/1.5 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 14px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 14px; margin: 0; font-weight: 600; }
+    .badge {
+      padding: 2px 10px;
+      border-radius: 10px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      font-variant-numeric: tabular-nums;
+    }
+    #fpsBadge.lowfps { color: var(--bad); border-color: var(--bad); }
+    #qualityBadge.tier-low { color: #ffd166; }
+    #qualityBadge.tier-medium { color: var(--accent); }
+    #qualityBadge.tier-high { color: var(--ok); }
+    main { flex: 1; display: flex; min-height: 0; }
+    #stage { flex: 1; position: relative; min-width: 0; }
+    #glCanvas { width: 100%; height: 100%; display: block; }
+    #glError {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      color: var(--bad); background: var(--bg); padding: 24px; text-align: center;
+    }
+    aside {
+      width: 300px;
+      overflow-y: auto;
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    fieldset {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin: 0;
+      padding: 10px;
+    }
+    legend { color: var(--muted); padding: 0 6px; font-size: 12px; }
+    .row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .row:last-child { margin-bottom: 0; }
+    .row label { flex: 0 0 64px; color: var(--muted); }
+    .row input[type="range"] { flex: 1; }
+    .row output { flex: 0 0 52px; text-align: right; font-variant-numeric: tabular-nums; }
+    .row input[type="color"] {
+      flex: 1; height: 26px; padding: 0; border: 1px solid var(--line);
+      border-radius: 4px; background: none; cursor: pointer;
+    }
+    select, button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button:hover, select:hover { border-color: var(--accent); }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .btn-grid .wide { grid-column: 1 / -1; }
+    .preset-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+    #testResults {
+      font-size: 12px;
+      max-height: 260px;
+      overflow: auto;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      display: none;
+    }
+    .pass { color: var(--ok); }
+    .fail { color: var(--bad); font-weight: 600; }
+    #toast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: var(--panel-2); border: 1px solid var(--line);
+      padding: 8px 16px; border-radius: 8px; opacity: 0;
+      transition: opacity .25s; pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+    @media (max-width: 760px) {
+      main { flex-direction: column; }
+      aside { width: 100%; max-height: 46%; border-left: none; border-top: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>程序化水面</h1>
+    <span class="badge" id="fpsBadge">FPS: --</span>
+    <span class="badge" id="qualityBadge">质量: --</span>
+    <span class="badge" id="modeBadge">模式: 自动</span>
+  </header>
+  <main>
+    <section id="stage">
+      <canvas id="glCanvas"></canvas>
+      <div id="glError"></div>
+    </section>
+    <aside id="panel">
+      <fieldset>
+        <legend>预设参数（三组对比）</legend>
+        <div class="preset-grid" id="presetButtons"></div>
+      </fieldset>
+      <fieldset>
+        <legend>波纹</legend>
+        <div class="row">
+          <label for="rippleScale">波纹尺度</label>
+          <input type="range" id="rippleScale" min="0.2" max="3" step="0.01" />
+          <output id="rippleScaleVal"></output>
+        </div>
+        <div class="row">
+          <label for="direction">方向°</label>
+          <input type="range" id="direction" min="0" max="360" step="1" />
+          <output id="directionVal"></output>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>颜色 / 雾 / 反射</legend>
+        <div class="row">
+          <label for="waterColor">水色</label>
+          <input type="color" id="waterColor" />
+        </div>
+        <div class="row">
+          <label for="fogColor">雾色</label>
+          <input type="color" id="fogColor" />
+        </div>
+        <div class="row">
+          <label for="fogDensity">雾浓度</label>
+          <input type="range" id="fogDensity" min="0" max="0.1" step="0.001" />
+          <output id="fogDensityVal"></output>
+        </div>
+        <div class="row">
+          <label for="reflection">反射强度</label>
+          <input type="range" id="reflection" min="0" max="1" step="0.01" />
+          <output id="reflectionVal"></output>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>质量</legend>
+        <div class="row">
+          <label for="quality">质量档</label>
+          <select id="quality">
+            <option value="auto">自动（低性能降档）</option>
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>JSON 配置</legend>
+        <div class="btn-grid">
+          <button id="btnSave" type="button">保存 JSON</button>
+          <button id="btnCopy" type="button">复制 JSON</button>
+          <button id="btnLoad" type="button">载入 JSON</button>
+          <button id="btnReset" type="button">恢复默认</button>
+          <input type="file" id="fileInput" accept=".json,application/json" hidden />
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>验证</legend>
+        <div class="btn-grid">
+          <button id="btnTest" class="wide" type="button">运行页内自检（三组参数 / 重载 / 色相 / 闪烁）</button>
+        </div>
+        <div id="testResults"></div>
+      </fieldset>
+    </aside>
+  </main>
+  <div id="toast"></div>
+  <script src="src/water-core.js"></script>
+  <script src="src/water-renderer.js"></script>
+  <script src="src/water-app.js"></script>
+</body>
+</html>
