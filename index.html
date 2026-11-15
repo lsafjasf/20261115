@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1112" />
+    <title>街区热岛观测站</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient-glow" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="街区热岛观测站首页">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <path d="M6 25h20M9 25v-7h5v7M17 25v-12h6v12" />
+              <path d="M22 8.5c2.1 0 3.7 1.6 3.7 3.6A3.7 3.7 0 0 1 22 15.8" />
+              <circle cx="12.5" cy="9" r="4.5" />
+            </svg>
+          </span>
+          <span>
+            <span class="brand-kicker">URBAN CLIMATE OBSERVATORY</span>
+            <span class="brand-title">街区热岛观测站</span>
+          </span>
+        </a>
+        <div class="station-meta">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span>HN-07</span>
+          <span class="meta-divider" aria-hidden="true"></span>
+          <span>内置观测样本</span>
+        </div>
+        <div class="top-actions">
+          <div class="timestamp">
+            <span>观测日期</span>
+            <strong>2026.08.14</strong>
+          </div>
+          <button class="export-button" id="exportButton" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 13V3m0 0-3.5 3.5M10 3l3.5 3.5M4 12v4.5h12V12" />
+            </svg>
+            导出 PNG
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="map-panel" aria-labelledby="mapTitle">
+          <div class="panel-heading map-heading">
+            <div>
+              <span class="eyebrow">HEAT ISLAND ATLAS / 01</span>
+              <h1 id="mapTitle">梧桐街区 <span>热环境图谱</span></h1>
+            </div>
+            <div class="map-heading-meta">
+              <span class="coordinate-label">31°12′N · 121°26′E</span>
+              <span class="data-pill"><i></i> 24 个街区</span>
+            </div>
+          </div>
+
+          <div class="layer-toolbar" role="group" aria-label="选择观测时段">
+            <button class="layer-option is-active" type="button" data-layer="day" aria-pressed="true">
+              <span class="layer-icon day-icon" aria-hidden="true"></span>
+              <span><b>白天</b><small>14:00 · 晴</small></span>
+              <em>35.0°</em>
+            </button>
+            <button class="layer-option" type="button" data-layer="night" aria-pressed="false">
+              <span class="layer-icon night-icon" aria-hidden="true"></span>
+              <span><b>夜间</b><small>23:00 · 无云</small></span>
+              <em>28.2°</em>
+            </button>
+            <button class="layer-option" type="button" data-layer="heatwave" aria-pressed="false">
+              <span class="layer-icon heatwave-icon" aria-hidden="true"></span>
+              <span><b>热浪</b><small>15:00 · 橙色预警</small></span>
+              <em>40.5°</em>
+            </button>
+            <span class="layer-toolbar-note">同一地图坐标系 · 切换图层不改变建筑位置</span>
+          </div>
+
+          <div class="map-frame" id="mapFrame">
+            <canvas id="mapCanvas" tabindex="0" aria-label="梧桐街区建筑表面温度热岛地图">
+              支持 Canvas 的浏览器可查看交互式热岛地图。
+            </canvas>
+            <div class="map-tooltip" id="mapTooltip" role="status" hidden>
+              <div class="tooltip-topline">
+                <span id="tooltipBlock">榆树里</span>
+                <span id="tooltipLayer">白天</span>
+              </div>
+              <div class="tooltip-temp"><span id="tooltipTemp">35.6</span><sup>°C</sup></div>
+              <div class="tooltip-meta">
+                <span id="tooltipBuilding">B-104 · 屋顶</span>
+                <span id="tooltipDelta">+1.2°C</span>
+              </div>
+            </div>
+            <div class="map-instructions" id="mapInstructions">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 4h4M4 4v4M16 4h-4M16 4v4M4 16h4M4 16v-4M16 16h-4M16 16v-4" />
+              </svg>
+              拖动框选建筑 · 悬停查看温度
+            </div>
+            <div class="map-scale"><span>0</span><i></i><span>200 m</span></div>
+            <div class="north-arrow" aria-label="地图指北针"><span>N</span><svg viewBox="0 0 20 28"><path d="m10 2 7 24-7-5-7 5Z" /></svg></div>
+          </div>
+
+          <div class="map-footer">
+            <span class="map-footer-status"><i></i> <span id="mapStatus">白天图层已载入</span></span>
+            <span>建筑表面温度 · 内置数据</span>
+            <span>框选统计按屋顶面积加权</span>
+          </div>
+        </section>
+
+        <aside class="inspector" aria-label="热环境分析">
+          <section class="period-card panel">
+            <div class="period-heading">
+              <div>
+                <span class="eyebrow">ACTIVE PERIOD</span>
+                <h2 id="periodName">白天 · 14:00</h2>
+              </div>
+              <span class="period-chip" id="periodChip">日间高温</span>
+            </div>
+            <div class="hero-reading">
+              <span class="hero-value" id="heroTemp">35.0</span><span class="hero-unit">°C</span>
+              <span class="hero-label">街区平均表面温度</span>
+            </div>
+            <div class="temperature-range">
+              <span><b id="rangeMin">30.7</b><small>最低</small></span>
+              <span class="range-track"><i id="rangeFill"></i></span>
+              <span><b id="rangeMax">38.9</b><small>最高</small></span>
+            </div>
+            <div class="delta-note" id="deltaNote">
+              <span class="delta-badge neutral">基准</span>
+              <span>与白天基准时段相比</span>
+            </div>
+            <div class="period-comparison" aria-label="三时段温度对照">
+              <div class="comparison-head">
+                <span>三时段对照</span>
+                <small>平均地温</small>
+              </div>
+              <button type="button" class="comparison-row is-active" data-layer="day">
+                <span class="compare-name"><i class="day-dot"></i>白天</span>
+                <span class="compare-bar"><i style="--size: 57%"></i></span>
+                <strong>35.0°</strong>
+              </button>
+              <button type="button" class="comparison-row" data-layer="night">
+                <span class="compare-name"><i class="night-dot"></i>夜间</span>
+                <span class="compare-bar"><i style="--size: 35%"></i></span>
+                <strong>28.2°</strong>
+              </button>
+              <button type="button" class="comparison-row" data-layer="heatwave">
+                <span class="compare-name"><i class="heatwave-dot"></i>热浪</span>
+                <span class="compare-bar"><i style="--size: 86%"></i></span>
+                <strong>40.5°</strong>
+              </button>
+            </div>
+          </section>
+
+          <section class="selection-card panel">
+            <div class="card-heading">
+              <div>
+                <span class="eyebrow">AREA ANALYSIS</span>
+                <h2>框选分析</h2>
+              </div>
+              <button class="text-button" id="clearSelectionButton" type="button" hidden>清除</button>
+            </div>
+            <div class="selection-empty" id="selectionEmpty">
+              <span class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 28 28">
+                  <path d="M4 9V4h5M19 4h5v5M24 19v5h-5M9 24H4v-5" />
+                  <circle cx="14" cy="14" r="3.5" />
+                </svg>
+              </span>
+              <p>在地图上拖动框选建筑</p>
+              <small>高亮范围将与统计结果保持一致</small>
+            </div>
+            <div class="selection-result" id="selectionResult" hidden>
+              <div class="selection-primary">
+                <div>
+                  <span>选中区域平均温度</span>
+                  <strong id="selectionAverage">--</strong><sup>°C</sup>
+                </div>
+                <span class="selection-swatch" id="selectionSwatch"></span>
+              </div>
+              <div class="selection-grid">
+                <span><small>建筑数量</small><b id="selectionCount">0</b></span>
+                <span><small>屋顶面积</small><b id="selectionArea">0</b><i>m²</i></span>
+                <span><small>最低温度</small><b id="selectionMin">--</b></span>
+                <span><small>最高温度</small><b id="selectionMax">--</b></span>
+              </div>
+              <div class="selection-spread">
+                <span>与街区平均相比</span>
+                <b id="selectionDelta">--</b>
+                <div class="spread-track"><i id="spreadFill"></i><em id="spreadMean"></em></div>
+              </div>
+              <p class="selection-caption" id="selectionCaption">框选范围内共 0 栋建筑。</p>
+            </div>
+          </section>
+
+          <section class="filter-card panel">
+            <div class="card-heading">
+              <div>
+                <span class="eyebrow">THERMAL FILTER</span>
+                <h2>温度筛选</h2>
+              </div>
+              <label class="switch-control">
+                <input id="filterToggle" type="checkbox" />
+                <span class="switch-track" aria-hidden="true"><i></i></span>
+                <span>仅看热点</span>
+              </label>
+            </div>
+            <div class="threshold-row">
+              <span>显示阈值</span>
+              <strong><span id="thresholdValue">35.0</span>°C</strong>
+            </div>
+            <input class="threshold-slider" id="thresholdSlider" type="range" min="30.7" max="38.9" step="0.1" value="35.0" aria-label="建筑温度显示阈值" />
+            <div class="threshold-scale">
+              <span id="thresholdMin">30.7°</span>
+              <span class="threshold-hit"><i></i><b id="filterCount">49</b> 栋超过阈值</span>
+              <span id="thresholdMax">38.9°</span>
+            </div>
+            <div class="filter-summary" id="filterSummary">
+              <span class="filter-color-key"><i></i>图例同步</span>
+              <span>橙色标记为当前筛选范围</span>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="page-footer">
+        <span>梧桐街区城市热环境观测计划</span>
+        <span class="footer-rule"></span>
+        <span>内置样本：94 栋建筑 · 24 个街区</span>
+        <span class="footer-spacer"></span>
+        <span><i class="footer-dot"></i>热红外反演 · 30m 格网</span>
+      </footer>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
