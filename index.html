@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>低频轰鸣修复台 · Web Audio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>低频轰鸣修复台</h1>
+    <p>10 秒合成录音 · 两组「高通 + 陷波 + 动态门限」· 实时频谱 / 波形 / 节点链</p>
+  </header>
+
+  <main>
+    <section class="panel transport">
+      <h2>素材与监听</h2>
+      <div class="row">
+        <button id="btnPlayRaw">▶ 播放污染原音</button>
+        <button id="btnPlayFixed">▶ 播放修复后</button>
+        <button id="btnStop">■ 停止</button>
+        <button id="btnExport" class="primary">⬇ 导出修复 WAV</button>
+      </div>
+      <div class="row status">
+        <span id="srcInfo">素材生成中…</span>
+        <span id="playState">空闲</span>
+      </div>
+    </section>
+
+    <section class="panel" id="groupsPanel">
+      <h2>修复节点组（可旁路对比）</h2>
+      <div class="groups">
+        <fieldset class="group" data-group="A">
+          <legend>组 A · 主轰鸣抑制</legend>
+          <label><input type="checkbox" id="bypassA"> 旁路本组</label>
+          <label>高通频率 <span class="val" id="hpAVal"></span>
+            <input type="range" id="hpA" min="20" max="500" step="1" value="120">
+          </label>
+          <label>陷波频率 <span class="val" id="notchAFVal"></span>
+            <input type="range" id="notchAF" min="30" max="300" step="1" value="50">
+          </label>
+          <label>陷波 Q <span class="val" id="notchAQVal"></span>
+            <input type="range" id="notchAQ" min="0.5" max="20" step="0.1" value="8">
+          </label>
+          <label>门限阈值 <span class="val" id="gateAVal"></span>
+            <input type="range" id="gateA" min="-60" max="0" step="1" value="-45">
+          </label>
+        </fieldset>
+
+        <fieldset class="group" data-group="B">
+          <legend>组 B · 残余泛音精修</legend>
+          <label><input type="checkbox" id="bypassB"> 旁路本组</label>
+          <label>高通频率 <span class="val" id="hpBVal"></span>
+            <input type="range" id="hpB" min="20" max="500" step="1" value="80">
+          </label>
+          <label>陷波频率 <span class="val" id="notchBFVal"></span>
+            <input type="range" id="notchBF" min="30" max="300" step="1" value="100">
+          </label>
+          <label>陷波 Q <span class="val" id="notchBQVal"></span>
+            <input type="range" id="notchBQ" min="0.5" max="20" step="0.1" value="6">
+          </label>
+          <label>门限阈值 <span class="val" id="gateBVal"></span>
+            <input type="range" id="gateB" min="-60" max="0" step="1" value="-50">
+          </label>
+        </fieldset>
+      </div>
+      <p class="hint">
+        提示：门限过高会切断主旋律尾音；高通/陷波过猛会让声音变“空”。勾选旁路可 A/B 对比。
+      </p>
+    </section>
+
+    <section class="panel viz">
+      <h2>实时监视</h2>
+      <div class="meters">
+        <div>低频能量 (20–150 Hz)<div class="meter"><div id="lowMeter"></div></div><span id="lowDb">-- dB</span></div>
+      </div>
+      <canvas id="spectrum" width="640" height="180"></canvas>
+      <canvas id="waveform" width="640" height="140"></canvas>
+      <canvas id="chain" width="640" height="150"></canvas>
+    </section>
+
+    <section class="panel report">
+      <h2>导出报告</h2>
+      <pre id="report">尚未导出</pre>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

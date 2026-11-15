@@ -1,0 +1,94 @@
+:root {
+  --bg: #101418;
+  --panel: #1a2129;
+  --edge: #2c3742;
+  --fg: #d7e0e8;
+  --dim: #8a97a5;
+  --accent: #4fc08d;
+  --warn: #e0a44a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+header { padding: 16px 24px 4px; }
+header h1 { margin: 0; font-size: 22px; }
+header p { margin: 4px 0 0; color: var(--dim); font-size: 13px; }
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 14px 24px 24px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.panel h2 { margin: 0 0 10px; font-size: 15px; color: var(--accent); }
+
+.transport { grid-column: 1 / -1; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.row.status { margin-top: 8px; font-size: 12px; color: var(--dim); }
+
+button {
+  background: #243040;
+  color: var(--fg);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 13px;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: #0c1210; font-weight: 600; }
+
+.groups { display: flex; gap: 14px; flex-wrap: wrap; }
+.group {
+  flex: 1 1 260px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.group legend { color: var(--warn); font-size: 13px; padding: 0 6px; }
+.group label { display: block; font-size: 12px; margin: 8px 0; color: var(--dim); }
+.group input[type="range"] { width: 100%; }
+.group .val { color: var(--fg); float: right; }
+.group.bypassed { opacity: 0.55; }
+.hint { font-size: 12px; color: var(--dim); margin: 10px 0 0; }
+
+.viz { grid-column: 1 / -1; }
+.viz canvas {
+  display: block;
+  width: 100%;
+  background: #0b0f13;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+.meters { font-size: 12px; color: var(--dim); }
+.meter {
+  height: 10px;
+  background: #0b0f13;
+  border: 1px solid var(--edge);
+  border-radius: 5px;
+  margin: 4px 0;
+  overflow: hidden;
+}
+#lowMeter { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--warn)); }
+
+.report pre {
+  margin: 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+  color: var(--fg);
+}
