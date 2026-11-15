@@ -1,0 +1,29 @@
+{
+  "name": "uid299",
+  "version": "1.0.0",
+  "description": "低多边形可剖切城区（Three.js）",
+  "type": "module",
+  "scripts": {
+    "serve": "python3 -m http.server 8317",
+    "test": "node test/run.mjs",
+    "test:e2e": "node test/e2e.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}
