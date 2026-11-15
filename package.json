@@ -1,0 +1,10 @@
+{
+  "name": "echo-chamber",
+  "version": "1.0.0",
+  "description": "纯听觉导航游戏：无地图房间中靠声音寻路",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/game.test.js",
+    "serve": "python3 -m http.server 8000"
+  }
+}

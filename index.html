@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回声密室 · 纯听觉导航</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #050608; overflow: hidden; }
+    canvas { display: block; }
+    #hud {
+      position: fixed; top: 10px; left: 12px;
+      color: #9fb4c2; font: 14px/1.6 sans-serif;
+      user-select: none; pointer-events: none;
+    }
+    #help {
+      position: fixed; bottom: 10px; left: 12px;
+      color: #5a6b78; font: 12px/1.6 sans-serif;
+      user-select: none; pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="view"></canvas>
+  <div id="hud"></div>
+  <div id="help">
+    ↑/W 前进　↓/S 后退　←→/AD 转向　P/Esc 暂停　R 重开（结束后）<br>
+    听：脚步回声判断空间材质，滴水/机械声是地标，芯片信标越近越急，出口有低沉气流声。撞墙声会偏向墙所在的一侧。
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
