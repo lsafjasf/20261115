@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071118" />
+    <title>TETHER / 双车缆绳协作</title>
+    <link rel="stylesheet" href="./assets/fonts/index.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">CO-OP PHYSICS LAB / 07</p>
+            <h1>TETHER <span>双车缆绳协作</span></h1>
+          </div>
+        </div>
+        <div class="run-status" id="runStatus" data-state="live">
+          <span class="status-light"></span>
+          <span id="statusText">等待操作</span>
+          <b id="runClock">00:00.000</b>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <div class="stage-column">
+          <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="1000" height="650" aria-label="双车缆绳游戏区域"></canvas>
+            <div class="canvas-scanline" aria-hidden="true"></div>
+            <div class="stage-hud">
+              <span id="gateSummary">闸门 0 / 4</span>
+              <span id="cableState">缆绳松弛</span>
+              <span id="recordState">● REC</span>
+            </div>
+            <div class="result-card" id="resultCard" hidden>
+              <p class="eyebrow" id="resultKicker">RUN COMPLETE</p>
+              <h2 id="resultTitle">双车抵达</h2>
+              <p id="resultBody">闸门全部通过，缆绳协作完成。</p>
+              <div class="result-actions">
+                <button id="resultReplay" class="button primary">回放并校验</button>
+                <button id="resultReset" class="button ghost">再来一局</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-panel">
+            <div class="timeline-head">
+              <span>整局记录</span>
+              <span id="timelineMeta">0 帧 / 120 Hz</span>
+            </div>
+            <div class="timeline-track" id="timelineTrack">
+              <div class="timeline-fill" id="timelineFill"></div>
+              <div class="timeline-thumb" id="timelineThumb"></div>
+              <i class="timeline-gate" style="left: 34.6%"></i>
+              <i class="timeline-gate" style="left: 60.8%"></i>
+            </div>
+            <div class="transport">
+              <button id="pauseBtn" class="button compact" title="暂停 / 继续 (P)">暂停</button>
+              <button id="stepBtn" class="button compact" title="单步前进 1/120 秒" disabled>单步</button>
+              <button id="replayBtn" class="button compact accent" title="整局回放并校验">回放并校验</button>
+              <button id="demoBtn" class="button compact">双人演示</button>
+              <button id="resetBtn" class="button compact ghost">重置</button>
+              <span class="shortcut-note">P 暂停 · . 单步</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side-column">
+          <section class="panel telemetry-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">TETHER TELEMETRY</p>
+                <h2>缆绳状态</h2>
+              </div>
+              <button id="muteBtn" class="icon-button" aria-label="切换声音">声</button>
+            </div>
+            <div class="tension-readout">
+              <div>
+                <strong id="tensionValue">0</strong>
+                <span>N</span>
+              </div>
+              <p id="tensionLabel">松弛</p>
+            </div>
+            <div class="tension-scale" aria-hidden="true">
+              <div class="tension-scale-fill" id="tensionFill"></div>
+              <i class="scale-ok"></i>
+              <i class="scale-danger"></i>
+            </div>
+            <div class="scale-labels"><span>0</span><span>传力区间</span><span>损伤</span></div>
+            <div class="meter-grid">
+              <div class="mini-meter">
+                <span>缆绳长度</span>
+                <b id="cableLengthValue">160</b>
+                <small>px</small>
+                <div><i id="lengthFill"></i></div>
+              </div>
+              <div class="mini-meter damage">
+                <span>车体损伤</span>
+                <b id="damageValue">0</b>
+                <small>%</small>
+                <div><i id="damageFill"></i></div>
+              </div>
+            </div>
+            <div class="audio-note">
+              <span class="audio-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              <div><b id="pitchValue">-- Hz</b><small>张力音高</small></div>
+            </div>
+          </section>
+
+          <section class="panel controls-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">SHARED KEYBOARD</p>
+                <h2>双人控制</h2>
+              </div>
+              <span class="live-badge">LIVE</span>
+            </div>
+            <div class="player-card p1">
+              <div class="player-title"><span>P1</span><div><b>动力 · 转向</b><small>驱动车 A</small></div></div>
+              <div class="key-row">
+                <kbd data-key="KeyW">W</kbd><kbd data-key="KeyA">A</kbd><kbd data-key="KeyS">S</kbd><kbd data-key="KeyD">D</kbd>
+              </div>
+              <p>W / S 推进与倒车 · A / D 转向</p>
+            </div>
+            <div class="player-card p2">
+              <div class="player-title"><span>P2</span><div><b>锚定 · 收放</b><small>锚定车 B</small></div></div>
+              <div class="key-row">
+                <kbd data-key="Space">SPACE</kbd><kbd data-key="ArrowDown">↓</kbd><kbd data-key="ArrowUp">↑</kbd>
+              </div>
+              <p>SPACE 锚定 · ↓ 收紧 · ↑ 放缆</p>
+            </div>
+          </section>
+
+          <section class="panel mission-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">FLIGHT PLAN</p>
+                <h2>通行清单</h2>
+              </div>
+              <span id="missionCount">0 / 5</span>
+            </div>
+            <ul class="mission-list" id="missionList">
+              <li data-gate="0-0"><i></i><span>车 A · 通过闸门 01</span><b>待通过</b></li>
+              <li data-gate="1-0"><i></i><span>车 B · 通过闸门 01</span><b>待通过</b></li>
+              <li data-gate="0-1"><i></i><span>车 A · 通过闸门 02</span><b>待通过</b></li>
+              <li data-gate="1-1"><i></i><span>车 B · 通过闸门 02</span><b>待通过</b></li>
+              <li data-finish="true"><i></i><span>双车抵达终点</span><b>待抵达</b></li>
+            </ul>
+            <div class="verify-card" id="verifyCard" data-state="idle">
+              <span id="verifyIcon">◇</span>
+              <div><b id="verifyTitle">尚未校验</b><small id="verifyBody">完成一局后可重演全部输入与轨迹</small></div>
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <footer class="footer">
+        <span>固定步长 1/120 s · 确定性物理</span>
+        <span id="inputLog">输入记录：—</span>
+        <span>TETHER LAB / 2026</span>
+      </footer>
+    </main>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
