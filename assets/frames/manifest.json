@@ -1,0 +1,116 @@
+{
+  "frames": [
+    {
+      "id": "builtin-01",
+      "name": "ember-gem.png",
+      "file": "ember-gem.png",
+      "width": 47,
+      "height": 44
+    },
+    {
+      "id": "builtin-02",
+      "name": "cryo-crystal.png",
+      "file": "cryo-crystal.png",
+      "width": 40,
+      "height": 37
+    },
+    {
+      "id": "builtin-03",
+      "name": "verdant-core.png",
+      "file": "verdant-core.png",
+      "width": 31,
+      "height": 29
+    },
+    {
+      "id": "builtin-04",
+      "name": "sun-token.png",
+      "file": "sun-token.png",
+      "width": 43,
+      "height": 42
+    },
+    {
+      "id": "builtin-05",
+      "name": "void-sigil.png",
+      "file": "void-sigil.png",
+      "width": 49,
+      "height": 47
+    },
+    {
+      "id": "builtin-06",
+      "name": "rose-shard.png",
+      "file": "rose-shard.png",
+      "width": 54,
+      "height": 33
+    },
+    {
+      "id": "builtin-07",
+      "name": "bone-rune.png",
+      "file": "bone-rune.png",
+      "width": 52,
+      "height": 31
+    },
+    {
+      "id": "builtin-08",
+      "name": "tide-pearl.png",
+      "file": "tide-pearl.png",
+      "width": 41,
+      "height": 31
+    },
+    {
+      "id": "builtin-09",
+      "name": "ember-diamond.png",
+      "file": "ember-diamond.png",
+      "width": 38,
+      "height": 32
+    },
+    {
+      "id": "builtin-10",
+      "name": "cryo-square.png",
+      "file": "cryo-square.png",
+      "width": 35,
+      "height": 38
+    },
+    {
+      "id": "builtin-11",
+      "name": "verdant-ring.png",
+      "file": "verdant-ring.png",
+      "width": 29,
+      "height": 44
+    },
+    {
+      "id": "builtin-12",
+      "name": "sun-cross.png",
+      "file": "sun-cross.png",
+      "width": 55,
+      "height": 37
+    },
+    {
+      "id": "builtin-13",
+      "name": "void-vial.png",
+      "file": "void-vial.png",
+      "width": 44,
+      "height": 40
+    },
+    {
+      "id": "builtin-14",
+      "name": "rose-orbit.png",
+      "file": "rose-orbit.png",
+      "width": 40,
+      "height": 34
+    },
+    {
+      "id": "builtin-15",
+      "name": "bone-star.png",
+      "file": "bone-star.png",
+      "width": 25,
+      "height": 40
+    },
+    {
+      "id": "builtin-16",
+      "name": "tide-diamond.png",
+      "file": "tide-diamond.png",
+      "width": 34,
+      "height": 25
+    }
+  ]
+}

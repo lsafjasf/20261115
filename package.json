@@ -1,0 +1,12 @@
+{
+  "name": "incremental-sprite-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify:60": "node scripts/verify-60.mjs",
+    "generate:assets": "node scripts/generate-builtin.mjs"
+  }
+}

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>增量精灵图集</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">A<span>/</span>I</div>
+        <div>
+          <h1>增量精灵图集</h1>
+          <p>INCREMENTAL ATLAS LAB · MAXRECTS</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="action ghost" id="load-builtins">
+          载入内置 PNG
+        </button>
+        <button class="action ghost" id="load-test60">生成 60 帧</button>
+        <label class="action ghost file-action">
+          导入 PNG
+          <input id="png-input" type="file" accept="image/png" multiple />
+        </label>
+        <button class="action primary" id="export-png">导出图集 PNG</button>
+        <button class="action primary" id="export-json">导出 JSON</button>
+        <label class="action verify-action">
+          导入并验证
+          <input
+            id="validate-input"
+            type="file"
+            accept=".json,.png,application/json,image/png"
+            multiple
+          />
+        </label>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="stats" aria-label="图集状态">
+        <article class="stat-card accent">
+          <span class="stat-label">利用率</span>
+          <strong id="stat-utilization">0.00%</strong>
+          <small id="stat-area-detail">0 / 0 px²</small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">图集尺寸</span>
+          <strong id="stat-size">256 × 256</strong>
+          <small id="stat-growth">扩容 0 次</small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">增量重排</span>
+          <strong id="stat-repack">0</strong>
+          <small>全量重排 <span id="stat-full">0</span> 次</small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">本次耗时</span>
+          <strong id="stat-last-ms">0.00 ms</strong>
+          <small>累计 <span id="stat-total-ms">0.00 ms</span></small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">帧 / 碎片</span>
+          <strong id="stat-frames">0</strong>
+          <small>空闲矩形 <span id="stat-free">1</span> 个</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel frames-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">FRAME QUEUE</span>
+              <h2>帧队列 <span class="count-pill" id="frame-count">0</span></h2>
+            </div>
+            <button class="icon-button" id="run-selftest" title="运行 60 帧自检">
+              TEST
+            </button>
+          </div>
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="frame-search" type="search" placeholder="筛选帧名称…" />
+          </label>
+          <div class="frame-list" id="frame-list"></div>
+          <div class="frame-controls">
+            <button class="mini-action add" id="add-frame">＋ 新增</button>
+            <button class="mini-action" id="recolor-frame">仅换色</button>
+            <button class="mini-action" id="modify-frame">改尺寸</button>
+            <button class="mini-action danger" id="delete-frame">删除</button>
+          </div>
+        </aside>
+
+        <section class="panel stage-panel">
+          <div class="panel-heading stage-heading">
+            <div>
+              <span class="eyebrow">LIVE PACK</span>
+              <h2>图集预览</h2>
+            </div>
+            <div class="stage-tools">
+              <button class="toggle active" id="toggle-trims">
+                切边框
+              </button>
+              <button class="toggle" id="toggle-grid">网格</button>
+              <button class="toggle" id="toggle-highlight">高亮变更区</button>
+            </div>
+          </div>
+          <div class="stage-wrap" id="stage-wrap">
+            <div class="stage-ruler horizontal"></div>
+            <div class="stage-ruler vertical"></div>
+            <div class="stage-checker">
+              <canvas id="atlas-canvas"></canvas>
+              <canvas id="overlay-canvas"></canvas>
+            </div>
+            <div class="empty-state" id="empty-state">
+              <span>EMPTY ATLAS</span>
+              <p>载入内置 PNG 或生成 60 帧开始。</p>
+            </div>
+          </div>
+          <footer class="stage-footer">
+            <span id="stage-size-label">ATLAS 256 × 256</span>
+            <span id="stage-selection-label">未选择帧</span>
+            <span class="pixel-note">RGBA · 1 px = 1 px</span>
+          </footer>
+        </section>
+
+        <aside class="panel inspector-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">INSPECTOR</span>
+              <h2>切片与校验</h2>
+            </div>
+            <span class="status-dot" id="health-dot"></span>
+          </div>
+          <div class="inspector-scroll">
+            <section class="selection-card" id="selection-card">
+              <div class="empty-selection">
+                <span class="selection-glyph">＋</span>
+                <p>选择一帧查看切边、旋转与坐标。</p>
+              </div>
+            </section>
+
+            <section class="verify-panel">
+              <div class="section-title">
+                <h3>重载校验</h3>
+                <span id="verify-state">WAITING</span>
+              </div>
+              <div class="verify-empty" id="verify-empty">
+                同时选择导出的 JSON 与 PNG，校验尺寸、重叠、切边、旋转及
+                像素内容哈希。
+              </div>
+              <div class="verify-report hidden" id="verify-report"></div>
+            </section>
+
+            <section class="activity-panel">
+              <div class="section-title">
+                <h3>操作记录</h3>
+                <button class="text-button" id="clear-log">清空</button>
+              </div>
+              <div class="activity-list" id="activity-list"></div>
+            </section>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div class="busy hidden" id="busy">
+      <span class="spinner"></span>
+      <span id="busy-label">正在处理…</span>
+    </div>
+    <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
