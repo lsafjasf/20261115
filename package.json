@@ -1,0 +1,10 @@
+{
+  "name": "ridgeline-glider-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sim": "node tests/simulate.mjs",
+    "serve": "node tools/serve.mjs"
+  }
+}
