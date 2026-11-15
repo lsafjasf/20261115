@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>六边形地毯扬声器声场模拟器</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>六边形地毯 · 四组扬声器声场</h1>
+    <p id="audioState">音频未启动（点击“启动音频”后由 Web Audio 实时合成）</p>
+  </header>
+
+  <main class="layout">
+    <section class="stage">
+      <canvas id="field" aria-label="六边形声场俯视图"></canvas>
+      <p class="hint">在六边形内点击或拖动红色听者标记；蓝色为当前启用扬声器，热图为 SPL 覆盖。</p>
+      <div class="controls">
+        <button id="startAudio" type="button">启动音频</button>
+        <fieldset class="modes">
+          <legend>重放模式</legend>
+          <label><input type="radio" name="mode" id="mode-stereo" checked> 立体声 (2 声道)</label>
+          <label><input type="radio" name="mode" id="mode-binaural"> 双耳 HRTF (2 声道)</label>
+          <label><input type="radio" name="mode" id="mode-quad"> 四点环绕 (4 声道)</label>
+        </fieldset>
+      </div>
+      <p id="status" class="status">就绪</p>
+    </section>
+
+    <aside class="side">
+      <section class="panel">
+        <h2>实时参数</h2>
+        <p id="listenerPos">x = 0.00 m, y = 0.00 m</p>
+        <p id="channelBadge" class="badge">2 声道输出 · 2 个启用扬声器</p>
+        <p>合成总声压 <b id="combinedSpl">0.0 dB SPL</b></p>
+        <table>
+          <thead><tr><th>扬声器</th><th>距离</th><th>延迟</th><th>增益</th><th>SPL</th><th>状态</th></tr></thead>
+          <tbody id="speakerRows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>三种模式实测对比（同一位置）</h2>
+        <div id="modeCompare" class="mode-grid"></div>
+        <button id="runSelfTest" type="button">运行声道自检</button>
+        <div id="selfTestResults" class="selftest"></div>
+      </section>
+
+      <section class="panel">
+        <h2>听者路径</h2>
+        <div class="row">
+          <button id="recordPath" type="button">● 开始录制路径</button>
+          <input id="pathName" placeholder="路径名称" maxlength="40">
+          <button id="savePath" type="button">保存</button>
+        </div>
+        <div class="row">
+          <select id="savedList"></select>
+          <button id="playPath" type="button">回放</button>
+          <button id="stopPlay" type="button">停止</button>
+        </div>
+        <progress id="playProgress" max="100" value="0"></progress>
+        <div class="row">
+          <button id="exportPath" type="button">导出 JSON</button>
+          <label class="file-btn">导入 JSON
+            <input type="file" id="importPath" accept="application/json" hidden>
+          </label>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
