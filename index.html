@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d1b2a">
+  <title>青川站 · 单线会让运行图</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d1b2a'/%3E%3Cpath d='M14 21h36M14 43h36M27 18v28M37 18v28' stroke='%2363d9c5' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="青川站运行图首页">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span class="brand-copy">
+          <span class="eyebrow">RAIL OPS / 单线会让</span>
+          <strong>青川站运行图</strong>
+        </span>
+      </a>
+
+      <div class="topbar-center">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>实时校验</span>
+        <span class="divider"></span>
+        <span class="muted">方案 QY-06</span>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="btn btn-quiet" id="resetBtn" type="button">
+          <span aria-hidden="true">↺</span> 恢复示例
+        </button>
+        <button class="btn btn-outline" id="exportCsvBtn" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v10m0 0 4-4m-4 4L6 8M4 14v3h12v-3"/></svg>
+          导出时刻表
+        </button>
+        <button class="btn btn-primary" id="exportPngBtn" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12v14H4zM7 13l2-2 2 2 2-3 2 3M7 7h.01"/></svg>
+          导出 PNG
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-heading">
+        <div>
+          <p class="section-kicker">今日运行计划 / 06:00 接班</p>
+          <h1>六列车，两次会让，一张图。</h1>
+          <p class="page-subtitle">编辑任意时刻，单线占用、道岔锁闭与折返余量会立即重算。</p>
+        </div>
+        <div class="global-state" id="globalState">
+          <span class="state-icon" id="globalStateIcon" aria-hidden="true">✓</span>
+          <span>
+            <small id="globalStateLabel">运行图可放行</small>
+            <strong id="globalStateDetail">0 严重冲突 · 6 列车已排定</strong>
+          </span>
+        </div>
+      </section>
+
+      <section class="station-strip" aria-label="固定站场参数">
+        <div class="strip-identity">
+          <span class="line-badge">QY</span>
+          <span><strong>青川站</strong><small>单线会让站</small></span>
+        </div>
+        <div class="field-chip"><span>到发线</span><strong>2 条</strong><small>1道 / 2道</small></div>
+        <div class="field-chip"><span>单线区段</span><strong>青川—岭口</strong><small>4 min 运行</small></div>
+        <div class="field-chip"><span>追踪间隔</span><strong>≥ 3 min</strong><small>同区间占用</small></div>
+        <div class="field-chip"><span>咽喉锁闭</span><strong>2 min</strong><small>接发车互斥</small></div>
+        <div class="field-chip"><span>最小折返</span><strong>12 min</strong><small>到发线停留</small></div>
+      </section>
+
+      <section class="metrics" aria-label="运行图摘要">
+        <article class="metric-card">
+          <span class="metric-label">图定列车</span>
+          <strong class="metric-value"><span id="metricTrains">6</span><small>列</small></strong>
+          <span class="metric-meta" id="metricDensity">3.3 列 / 小时</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">严重冲突</span>
+          <strong class="metric-value danger"><span id="metricSevere">0</span><small>项</small></strong>
+          <span class="metric-meta" id="metricWarnings">0 项提示</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">单线利用率</span>
+          <strong class="metric-value"><span id="metricSection">43.6</span><small>%</small></strong>
+          <span class="metric-meta" id="metricSectionMinutes">48 min 占用</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">到发线利用率</span>
+          <strong class="metric-value"><span id="metricTracks">43.6</span><small>%</small></strong>
+          <span class="metric-meta" id="metricTrackMinutes">96 min 占用</span>
+        </article>
+      </section>
+
+      <div class="workspace">
+        <section class="card schedule-card" aria-labelledby="scheduleTitle">
+          <div class="card-heading">
+            <div>
+              <p class="section-kicker">TIMETABLE</p>
+              <h2 id="scheduleTitle">列车时刻</h2>
+            </div>
+            <div class="heading-actions">
+              <span class="recalc-note"><span class="pulse-dot"></span> 改动即重算</span>
+              <button class="btn btn-small btn-outline" id="addTrainBtn" type="button">+ 添加列车</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="train-table">
+              <thead>
+                <tr>
+                  <th>车次</th>
+                  <th>股道</th>
+                  <th>到达</th>
+                  <th>发车</th>
+                  <th>折返</th>
+                  <th>校验</th>
+                  <th><span class="sr-only">操作</span></th>
+                </tr>
+              </thead>
+              <tbody id="trainRows"></tbody>
+            </table>
+          </div>
+
+          <div class="table-foot">
+            <span id="scheduleFootNote">6 列车 · 计划窗口 07:50—09:40</span>
+            <span class="auto-save"><span class="save-check">✓</span> 已自动保存</span>
+          </div>
+        </section>
+
+        <aside class="side-stack">
+          <section class="card validation-card" aria-labelledby="validationTitle">
+            <div class="card-heading">
+              <div>
+                <p class="section-kicker">DISPATCH CHECK</p>
+                <h2 id="validationTitle">冲突检查</h2>
+              </div>
+              <span class="check-count" id="checkCount">0</span>
+            </div>
+            <div class="conflict-list" id="conflictList"></div>
+          </section>
+
+          <section class="card capacity-card" aria-labelledby="capacityTitle">
+            <div class="card-heading">
+              <div>
+                <p class="section-kicker">CAPACITY</p>
+                <h2 id="capacityTitle">容量快照</h2>
+              </div>
+              <span class="capacity-tag" id="capacityTag">余量充足</span>
+            </div>
+            <div class="capacity-bars">
+              <div class="capacity-row">
+                <span>单线区段</span>
+                <div class="capacity-track"><i id="barSection"></i></div>
+                <strong id="capacitySection">43.6%</strong>
+              </div>
+              <div class="capacity-row">
+                <span>到发线</span>
+                <div class="capacity-track"><i id="barTracks"></i></div>
+                <strong id="capacityTracks">43.6%</strong>
+              </div>
+              <div class="capacity-row">
+                <span>咽喉道岔</span>
+                <div class="capacity-track"><i id="barSwitch"></i></div>
+                <strong id="capacitySwitch">21.8%</strong>
+              </div>
+            </div>
+            <div class="capacity-details">
+              <span><small>平均折返</small><strong id="capacityTurnaround">16.0 min</strong></span>
+              <span><small>最大同停</small><strong id="capacityPeak">2 列</strong></span>
+              <span><small>区间余量</small><strong id="capacityHeadroom">62 min</strong></span>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="card chart-card" aria-labelledby="chartTitle">
+        <div class="card-heading chart-heading">
+          <div>
+            <p class="section-kicker">OCCUPANCY GANTT</p>
+            <h2 id="chartTitle">占用甘特图</h2>
+          </div>
+          <div class="chart-tools">
+            <div class="legend" aria-label="图例">
+              <span><i class="legend-swatch section"></i>单线占用</span>
+              <span><i class="legend-swatch switch"></i>道岔锁闭</span>
+              <span><i class="legend-swatch track"></i>到发线停留</span>
+              <span><i class="legend-swatch conflict"></i>冲突位置</span>
+            </div>
+            <span class="chart-hint">点击色块可定位列车</span>
+          </div>
+        </div>
+        <div class="chart-wrap" id="chartWrap">
+          <canvas id="ganttCanvas" aria-label="列车占用甘特图"></canvas>
+          <div class="chart-tooltip" id="chartTooltip" role="status"></div>
+          <div class="chart-empty" id="chartEmpty" hidden>
+            <strong>暂无列车</strong>
+            <span>添加列车后会立即生成占用图</span>
+          </div>
+        </div>
+        <div class="chart-footer">
+          <div class="axis-note"><span class="now-line-sample"></span>红色虚线标出冲突发生的时刻</div>
+          <div class="chart-stats" id="chartStats">12 次区间占用 · 96 min 到发线占用</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>青川站调度台 · 固定站场 v1.0</span>
+      <span>所有计算均在本地完成，不会上传运行数据</span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="engine.js"></script>
+  <script src="chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "qingchuan-dispatch-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "青川站单线会让运行图编辑器",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "test": "node --test tests/engine.test.js",
+    "test:e2e": "node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}
