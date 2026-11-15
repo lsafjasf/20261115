@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b10" />
+    <title>LIVE AXIS · 舞台镜头规划</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="LIVE AXIS 首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>
+            <strong>LIVE AXIS</strong>
+            <small>STAGE CAMERA PLANNER</small>
+          </span>
+        </a>
+        <div class="take-meta">
+          <span class="live-dot"></span>
+          <span>STAGE 04</span>
+          <span class="meta-divider">/</span>
+          <span>TAKE 07</span>
+          <span class="meta-divider">/</span>
+          <span>10 SEC</span>
+        </div>
+        <div class="top-actions">
+          <button class="button button-ghost" id="exportButton" type="button">
+            <span class="button-icon" aria-hidden="true">↓</span>
+            <span class="button-label" id="exportLabel">导出预览</span>
+          </button>
+          <button class="button button-primary" id="previewButton" type="button">
+            <span class="play-icon" aria-hidden="true"></span>
+            <span id="previewLabel">播放 10 秒</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="control-panel panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">SHOT SETUP</p>
+              <h1>镜头参数</h1>
+            </div>
+            <span class="shot-number">A-07</span>
+          </div>
+
+          <section class="control-section">
+            <div class="section-title">
+              <h2>镜头朝向</h2>
+              <output id="headingValue" for="heading">跟随路径</output>
+            </div>
+            <input id="heading" class="range" type="range" min="-90" max="90" step="1" value="8" />
+            <div class="range-labels"><span>−90° 左</span><span>0°</span><span>+90° 右</span></div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <h2>焦距</h2>
+              <output id="focalValue" for="focal">28 mm</output>
+            </div>
+            <input id="focal" class="range" type="range" min="18" max="85" step="1" value="28" />
+            <div class="range-labels"><span>18 广角</span><span>视角 <b id="fovValue">65.5°</b></span><span>85 长焦</span></div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <h2>最小安全距离</h2>
+              <output id="safetyValue" for="safety">0.80 m</output>
+            </div>
+            <input id="safety" class="range range-danger" type="range" min="0.3" max="1.5" step="0.05" value="0.8" />
+            <div class="range-labels"><span>贴边 0.3m</span><span>碰撞阈值</span><span>保守 1.5m</span></div>
+          </section>
+
+          <section class="control-section path-section">
+            <div class="section-title">
+              <h2>路径点</h2>
+              <span class="section-hint">拖动画布节点</span>
+            </div>
+            <div class="waypoint-list" id="waypointList"></div>
+          </section>
+
+          <section class="control-section preset-section">
+            <div class="section-title">
+              <h2>测试镜头</h2>
+              <span class="section-hint">一键载入</span>
+            </div>
+            <button class="preset-button preset-safe is-active" id="safePreset" type="button">
+              <span class="preset-swatch"></span>
+              <span><b>安全环绕</b><small>已校验 · 无碰撞</small></span>
+              <span class="preset-check">✓</span>
+            </button>
+            <button class="preset-button preset-danger" id="collisionPreset" type="button">
+              <span class="preset-swatch"></span>
+              <span><b>强制穿过立柱</b><small>用于验证冲突提示</small></span>
+              <span class="preset-arrow">↗</span>
+            </button>
+          </section>
+        </aside>
+
+        <section class="stage-column">
+          <div class="stage-card">
+            <div class="stage-header">
+              <div class="stage-title">
+                <span class="stage-index">01</span>
+                <div>
+                  <p class="eyebrow">TOP VIEW / COLLISION MAP</p>
+                  <h2>主舞台 · 俯视调度</h2>
+                </div>
+              </div>
+              <div class="stage-legend" aria-label="图例">
+                <span><i class="legend-line legend-safe"></i>可用路径</span>
+                <span><i class="legend-line legend-blocked"></i>不可用区间</span>
+                <span><i class="legend-ring"></i>安全边界</span>
+              </div>
+            </div>
+
+            <div class="canvas-wrap" id="canvasWrap">
+              <canvas id="stageCanvas" role="img" aria-label="舞台俯视图，可拖动四个相机路径点"></canvas>
+              <div class="canvas-tooltip" id="canvasTooltip" hidden></div>
+              <div class="canvas-badge canvas-badge-left">
+                <span class="badge-pulse"></span>
+                <span>实时解算</span>
+              </div>
+              <div class="canvas-badge canvas-badge-right" id="canvasStatus">路径可用</div>
+              <div class="canvas-scale">
+                <span></span>
+                <label>2 m</label>
+              </div>
+            </div>
+
+            <div class="timeline-shell">
+              <div class="timeline-head">
+                <div class="timeline-time">
+                  <strong id="currentTime">00:00.0</strong>
+                  <span>/ 00:10.0</span>
+                </div>
+                <div class="timeline-meta" id="timelineMeta">拖动路径点实时检测</div>
+              </div>
+              <div class="timeline" id="timeline" aria-label="十秒镜头时间轴">
+                <div class="timeline-track">
+                  <div class="timeline-progress" id="timelineProgress"></div>
+                  <div class="timeline-intervals" id="timelineIntervals"></div>
+                  <div class="timeline-ticks" aria-hidden="true"></div>
+                </div>
+                <div class="playhead" id="playhead"><span></span></div>
+              </div>
+              <div class="timeline-labels"><span>0s</span><span>2s</span><span>4s</span><span>6s</span><span>8s</span><span>10s</span></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="analysis-panel panel">
+          <div class="panel-heading analysis-heading">
+            <div>
+              <p class="eyebrow">LIVE ANALYSIS</p>
+              <h2>碰撞解算</h2>
+            </div>
+            <span class="analysis-led" id="analysisLed"></span>
+          </div>
+
+          <section class="status-card is-valid" id="statusCard">
+            <div class="status-icon" id="statusIcon">✓</div>
+            <div>
+              <p class="status-label" id="statusLabel">镜头可用</p>
+              <h3 id="statusTitle">安全距离内无遮挡</h3>
+              <p id="statusDescription">四个路径点均避开演员与立柱。</p>
+            </div>
+          </section>
+
+          <div class="metric-grid">
+            <div class="metric">
+              <span>最小净距</span>
+              <strong id="minClearance">—</strong>
+            </div>
+            <div class="metric">
+              <span>路径长度</span>
+              <strong id="pathLength">—</strong>
+            </div>
+            <div class="metric">
+              <span>水平视角</span>
+              <strong id="metricFov">—</strong>
+            </div>
+            <div class="metric">
+              <span>冲突区间</span>
+              <strong id="conflictCount">0</strong>
+            </div>
+          </div>
+
+          <section class="analysis-section conflicts-section">
+            <div class="section-title">
+              <h2>冲突对象</h2>
+              <span class="count-badge" id="objectCount">0</span>
+            </div>
+            <div class="conflict-list" id="conflictList"></div>
+          </section>
+
+          <section class="analysis-section intervals-section">
+            <div class="section-title">
+              <h2>不可用区间</h2>
+              <span class="section-hint">按时间排序</span>
+            </div>
+            <div class="interval-list" id="intervalList"></div>
+          </section>
+
+          <footer class="analysis-footer">
+            <span class="audio-indicator"><i></i> Web Audio 节拍</span>
+            <span id="exportStatus">1080p · 30 FPS</span>
+          </footer>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
