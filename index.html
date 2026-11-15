@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b12" />
+    <title>八闪 · 音画对齐台</title>
+    <link rel="stylesheet" href="./assets/fonts/noto-sans-sc.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="八闪音画对齐台首页">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span>
+            <strong>八闪</strong>
+            <small>FRAME / SYNC</small>
+          </span>
+        </a>
+        <div class="project-meta">
+          <span class="eyebrow">ACTIVE PROJECT</span>
+          <span>EIGHT / FLASH</span>
+        </div>
+        <div class="save-status" id="saveStatus" data-state="saved">
+          <span class="status-dot"></span>
+          <span id="saveStatusText">工程已自动保存</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <p class="eyebrow accent">30.000 SEC · 30 FPS · 900 FRAMES</p>
+            <h1>让每一次闪烁<br /><em>刚好落在重拍上。</em></h1>
+          </div>
+          <div class="hero-note">
+            <span class="note-index">01</span>
+            <p>整段视频统一偏移。八次闪烁共享同一个时间参数，不会互相覆盖。</p>
+            <span class="scope-pill"><i></i> GLOBAL OFFSET ONLY</span>
+          </div>
+        </section>
+
+        <section class="workspace">
+          <div class="stage-column">
+            <div class="stage-card">
+              <div class="stage-head">
+                <div class="live-label"><span></span> PREVIEW MONITOR</div>
+                <div class="stage-meta">960 × 540 <b>/</b> 30 FPS</div>
+              </div>
+              <div class="canvas-shell" id="canvasShell">
+                <canvas id="preview" width="960" height="540" aria-label="八次闪烁合成动画预览"></canvas>
+                <div class="scanlines"></div>
+                <div class="canvas-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                <div class="frame-badge">
+                  <span>VIDEO FRAME</span>
+                  <strong id="frameNumber">0000</strong>
+                  <small>/ 0899</small>
+                </div>
+                <div class="offset-badge" id="canvasOffset">
+                  <span>GLOBAL SHIFT</span>
+                  <strong id="canvasOffsetValue">+0 ms</strong>
+                  <small id="canvasOffsetDirection">同步</small>
+                </div>
+                <div class="export-overlay" id="exportOverlay" hidden>
+                  <div class="export-orbit"></div>
+                  <span>RENDERING MASTER</span>
+                  <strong id="exportPercent">0%</strong>
+                  <small>离线合成 900 帧与 Opus 音轨</small>
+                </div>
+              </div>
+              <div class="transport">
+                <div class="transport-left">
+                  <button class="icon-button" id="toStartButton" title="回到开头" aria-label="回到开头">
+                    <span>|◀</span>
+                  </button>
+                  <button class="play-button" id="playButton" aria-label="播放">
+                    <span class="play-icon" id="playIcon"></span>
+                    <span id="playLabel">播放</span>
+                  </button>
+                  <button class="icon-button" id="toEndButton" title="跳到结尾" aria-label="跳到结尾">
+                    <span>▶|</span>
+                  </button>
+                </div>
+                <div class="timecode">
+                  <span id="currentTimecode">00:00.000</span>
+                  <i>/</i>
+                  <span>00:30.000</span>
+                </div>
+                <div class="transport-right">
+                  <button class="subtle-button" id="jsonButton">导出偏移 JSON</button>
+                  <button class="primary-button" id="exportButton">
+                    <span class="record-dot"></span>
+                    导出 WebM
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="inspector">
+            <div class="inspector-head">
+              <div>
+                <span class="eyebrow">ALIGNMENT CONTROL</span>
+                <h2>全局偏移</h2>
+              </div>
+              <span class="lock-chip" title="八次闪烁共享一个全局参数">↔ 单轨</span>
+            </div>
+
+            <div class="offset-readout">
+              <span class="signed" id="offsetSign">+</span>
+              <strong id="offsetMs">0</strong>
+              <span class="unit">ms</span>
+              <small id="offsetFramesLabel">0 帧</small>
+            </div>
+
+            <div class="offset-direction">
+              <span id="offsetDirection">音画同步</span>
+              <span class="limit-label">范围 ±300 ms</span>
+            </div>
+
+            <div class="nudge-grid">
+              <button class="nudge-button" id="nudgeBack" aria-label="视频提前一帧">
+                <span>−1</span><small>帧 / 视频提前</small>
+              </button>
+              <button class="nudge-button" id="nudgeForward" aria-label="视频延后一帧">
+                <span>+1</span><small>帧 / 视频延后</small>
+              </button>
+            </div>
+
+            <div class="offset-track">
+              <div class="track-labels"><span>−300</span><span>0</span><span>+300</span></div>
+              <div class="track-rail">
+                <span class="track-center"></span>
+                <span class="track-fill" id="offsetFill"></span>
+                <span class="track-handle" id="offsetHandle"></span>
+              </div>
+              <div class="frame-ticks" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </div>
+
+            <div class="offset-actions">
+              <button class="text-button" id="resetOffsetButton">偏移归零</button>
+              <span>1 帧 = 33.333 ms</span>
+            </div>
+
+            <div class="sync-glance">
+              <div class="glance-head">
+                <span>下一次音频重拍</span>
+                <span id="nextAccentCountdown">01.200 s</span>
+              </div>
+              <div class="glance-event">
+                <div class="event-number" id="nextEventNumber">01</div>
+                <div>
+                  <strong id="nextEventName">FLARE / ACCENT</strong>
+                  <small id="nextEventTime">音频事件 00:01.200</small>
+                </div>
+                <div class="pulse-ring"><i></i></div>
+              </div>
+            </div>
+
+            <div class="scope-note">
+              <span class="scope-icon">◎</span>
+              <p><strong>只修改一个值。</strong>当前偏移作用于整条视频轨，闪烁标记与导出帧同时移动。</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="timeline-card">
+          <div class="timeline-head">
+            <div>
+              <span class="eyebrow">30 SECOND TIMELINE</span>
+              <h2>节拍与闪烁</h2>
+            </div>
+            <div class="legend">
+              <span><i class="legend-audio"></i>音频事件</span>
+              <span><i class="legend-visual"></i>视频闪烁</span>
+              <span><i class="legend-playhead"></i>播放头</span>
+            </div>
+          </div>
+          <div class="timeline" id="timeline" role="slider" tabindex="0" aria-label="播放头时间线" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0">
+            <div class="ruler" id="ruler"></div>
+            <div class="lane beat-lane" id="beatLane">
+              <span class="lane-name">BEAT GRID</span>
+            </div>
+            <div class="lane audio-lane" id="audioLane">
+              <span class="lane-name">AUDIO EVENTS</span>
+            </div>
+            <div class="lane visual-lane" id="visualLane">
+              <span class="lane-name">VIDEO FLASHES</span>
+            </div>
+            <div class="playhead" id="playhead"><span></span></div>
+          </div>
+          <div class="timeline-footer">
+            <div class="now-event">
+              <span class="now-dot"></span>
+              <span>播放头所在事件</span>
+              <strong id="nowEvent">BEAT 001 · 00:00.000</strong>
+            </div>
+            <div class="timeline-hint">点击或拖动时间线定位 · 空格播放/暂停</div>
+          </div>
+        </section>
+
+        <section class="data-grid">
+          <div class="panel event-panel">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">AUDIO CUES</span>
+                <h2>八次重拍</h2>
+              </div>
+              <span class="panel-count">08 EVENTS</span>
+            </div>
+            <div class="event-list" id="eventList"></div>
+          </div>
+
+          <div class="panel manifest-panel">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">EXPORT MANIFEST</span>
+                <h2>工程快照</h2>
+              </div>
+              <span class="live-saved"><i></i> LIVE</span>
+            </div>
+            <dl class="manifest">
+              <div><dt>时间线</dt><dd>30.000 s / 900 帧</dd></div>
+              <div><dt>帧率</dt><dd>30 fps</dd></div>
+              <div><dt>偏移模式</dt><dd>GLOBAL / 单一数值</dd></div>
+              <div><dt>偏移帧</dt><dd id="manifestFrames">0 帧</dd></div>
+              <div><dt>偏移时间</dt><dd id="manifestMs">0.000 ms</dd></div>
+              <div><dt>可复现键</dt><dd id="manifestHash">—</dd></div>
+            </dl>
+            <button class="wide-button" id="reloadProjectButton">
+              <span>↺</span> 重新载入已保存工程
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>EIGHT / FLASH — SYNTHETIC AV ALIGNMENT STUDY</span>
+        <span>所有画面与节拍均由浏览器实时合成</span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <input type="file" id="projectFileInput" accept="application/json,.json" hidden />
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
