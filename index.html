@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07090c" />
+    <title>夜光快门 · 夜景曝光实验</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-glow" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="夜光快门首页">
+        <svg class="brand-mark" viewBox="0 0 42 42" aria-hidden="true">
+          <circle cx="21" cy="21" r="16.5" />
+          <path d="M21 4.5l5.4 11.2L39 21l-11.8 3.4L21 37.5l-5.5-14.8L4 21l11.5-5.3z" />
+          <circle cx="21" cy="21" r="4.5" />
+        </svg>
+        <span class="brand-copy">
+          <span class="eyebrow">NIGHT EXPOSURE LAB</span>
+          <span class="brand-title">夜光快门</span>
+        </span>
+      </a>
+
+      <div class="live-state" aria-label="实时取景">
+        <span class="live-dot"></span>
+        <span>LIVE VIEW</span>
+        <span class="live-time" id="clock">23:48:16</span>
+      </div>
+
+      <div class="top-actions">
+        <div class="mission-progress" aria-label="拍摄进度">
+          <span class="progress-label">曝光任务</span>
+          <div class="progress-pips" id="progressPips">
+            <i></i><i></i><i></i>
+          </div>
+          <strong id="progressText">0 / 3</strong>
+        </div>
+        <button class="icon-button" id="audioToggle" type="button" aria-pressed="true" title="声音开关">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h4l5 4V5L8 9H4z" />
+            <path class="sound-wave" d="M16 8.5c1.7 1.8 1.7 5.2 0 7M18.7 6c3 3 3 9 0 12" />
+          </svg>
+          <span>声音</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="studio" aria-label="夜景取景器">
+        <div class="viewfinder-shell">
+          <canvas id="viewfinder" width="1280" height="720" aria-label="夜景实时预览"></canvas>
+          <div class="viewfinder-vignette" aria-hidden="true"></div>
+          <div class="corner corner-tl" aria-hidden="true"></div>
+          <div class="corner corner-tr" aria-hidden="true"></div>
+          <div class="corner corner-bl" aria-hidden="true"></div>
+          <div class="corner corner-br" aria-hidden="true"></div>
+
+          <div class="view-top">
+            <div class="view-chip">
+              <span class="chip-dot"></span>
+              <span>预览</span>
+              <span class="chip-divider"></span>
+              <span id="viewMode">实时噪声</span>
+            </div>
+            <div class="target-chip" id="targetChip">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="10" cy="10" r="5.5" />
+                <path d="M10 1v4M10 15v4M1 10h4M15 10h4" />
+              </svg>
+              <span>目标 0.0 EV</span>
+              <strong>±0.35</strong>
+            </div>
+          </div>
+
+          <div class="focus-reticle" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <i></i>
+          </div>
+
+          <div class="view-bottom">
+            <div class="hud-settings">
+              <span id="hudAperture">f/1.4</span>
+              <span id="hudShutter">1/2 s</span>
+              <span id="hudIso">ISO 200</span>
+            </div>
+            <div class="hud-meter">
+              <span>EV</span>
+              <strong id="hudEv">+0.0</strong>
+              <span id="hudNoise">噪点 1/5</span>
+            </div>
+          </div>
+
+          <div class="timer-layer" id="timerLayer" aria-live="polite">
+            <div class="timer-ring">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="timer-track" cx="60" cy="60" r="52" />
+                <circle class="timer-progress" id="timerProgress" cx="60" cy="60" r="52" />
+              </svg>
+              <span id="timerValue">0.5</span>
+              <small>SEC</small>
+            </div>
+            <p>正在记录光轨与噪点</p>
+          </div>
+          <div class="shutter-curtain" id="shutterCurtain" aria-hidden="true"></div>
+          <div class="toast" id="toast" role="status"></div>
+        </div>
+
+        <div class="filmstrip">
+          <div class="filmstrip-head">
+            <div>
+              <span class="eyebrow">CONTACT SHEET</span>
+              <strong>本次底片</strong>
+            </div>
+            <p id="filmHint">三张不同参数、全部落在目标曝光内即可完成</p>
+          </div>
+          <div class="frames" id="frames">
+            <button class="frame is-empty" type="button" data-slot="0" aria-label="底片位 1">
+              <span class="frame-number">01</span><i>+</i><small>待拍摄</small>
+            </button>
+            <button class="frame is-empty" type="button" data-slot="1" aria-label="底片位 2">
+              <span class="frame-number">02</span><i>+</i><small>待拍摄</small>
+            </button>
+            <button class="frame is-empty" type="button" data-slot="2" aria-label="底片位 3">
+              <span class="frame-number">03</span><i>+</i><small>待拍摄</small>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls" aria-label="曝光控制">
+        <div class="controls-head">
+          <div>
+            <span class="eyebrow">MANUAL MODE</span>
+            <h2>曝光控制</h2>
+          </div>
+          <span class="mode-badge">M</span>
+        </div>
+
+        <section class="meter-card" id="meterCard">
+          <div class="meter-copy">
+            <span>测光偏移</span>
+            <div><strong id="evValue">+0.0</strong><span>EV</span></div>
+            <small id="exposureState">曝光合适</small>
+          </div>
+          <div class="meter" aria-label="曝光测光表">
+            <div class="meter-target"></div>
+            <div class="meter-needle" id="meterNeedle"></div>
+            <div class="meter-ticks">
+              <i>-3</i><i>-2</i><i>-1</i><i class="zero">0</i><i>+1</i><i>+2</i><i>+3</i>
+            </div>
+          </div>
+          <p class="meter-help" id="meterHelp">调节三组参数，使指针进入绿色目标区。</p>
+        </section>
+
+        <section class="dial-group">
+          <div class="control-row">
+            <label for="shutterSlider">
+              <span class="control-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 7v5l3 2M9 2h6" /></svg>
+              </span>
+              <span><small>EXPOSURE TIME</small><b>曝光时间</b></span>
+            </label>
+            <strong class="control-value" id="shutterValue">1/2 s</strong>
+          </div>
+          <input id="shutterSlider" class="range" type="range" min="0" max="11" step="1" value="7" aria-label="曝光时间" />
+          <div class="range-scale"><span>1/250</span><span>1/15</span><span>1/2</span><span>2 s</span><span>8 s</span></div>
+        </section>
+
+        <section class="dial-group">
+          <div class="control-row">
+            <label for="isoSlider">
+              <span class="control-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17V9M8 17V5M12 17v-6M16 17V7M20 17v-3" /></svg>
+              </span>
+              <span><small>SENSITIVITY</small><b>感光度</b></span>
+            </label>
+            <strong class="control-value" id="isoValue">ISO 200</strong>
+          </div>
+          <input id="isoSlider" class="range" type="range" min="0" max="7" step="1" value="1" aria-label="感光度" />
+          <div class="range-scale"><span>100</span><span>800</span><span>3200</span><span>12800</span></div>
+        </section>
+
+        <section class="dial-group">
+          <div class="control-row">
+            <label for="apertureSlider">
+              <span class="control-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4l4 8-4 8-4-8zM4.5 8h12M7.5 16h12" /></svg>
+              </span>
+              <span><small>APERTURE</small><b>光圈</b></span>
+            </label>
+            <strong class="control-value" id="apertureValue">f/1.4</strong>
+          </div>
+          <input id="apertureSlider" class="range" type="range" min="0" max="7" step="1" value="0" aria-label="光圈" />
+          <div class="range-scale"><span>f/1.4</span><span>f/2.8</span><span>f/5.6</span><span>f/11</span></div>
+        </section>
+
+        <section class="preview-stats">
+          <div>
+            <span>预估噪点</span>
+            <strong id="noiseStat">很低</strong>
+            <div class="noise-dots" id="noiseDots"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div>
+            <span>光轨长度</span>
+            <strong id="trailStat">短</strong>
+            <div class="mini-bar"><i id="trailBar"></i></div>
+          </div>
+          <div>
+            <span>高光状态</span>
+            <strong id="highlightStat">安全</strong>
+            <div class="status-line" id="highlightLine"></div>
+          </div>
+        </section>
+
+        <button class="shutter-button" id="shutterBtn" type="button">
+          <span class="shutter-ring"></span>
+          <span class="shutter-core">
+            <svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="8.5" /></svg>
+          </span>
+          <span class="shutter-label">按下快门 <kbd>SPACE</kbd></span>
+        </button>
+        <p class="shutter-note" id="shutterNote">每张照片必须使用不同参数</p>
+      </aside>
+    </main>
+
+    <div class="modal-backdrop" id="compareModal" hidden>
+      <section class="compare-sheet" role="dialog" aria-modal="true" aria-labelledby="compareTitle">
+        <button class="modal-close" id="closeCompare" type="button" aria-label="关闭对比">×</button>
+        <div class="compare-head">
+          <span class="eyebrow">EXPOSURE SERIES COMPLETE</span>
+          <h2 id="compareTitle">三张完成。现在看噪点。</h2>
+          <p>同样的目标亮度，不等于同样的画质。长曝光换来光轨，高感光度换来阴影里的彩噪。</p>
+        </div>
+        <div class="compare-grid" id="compareGrid"></div>
+        <div class="compare-summary" id="compareSummary"></div>
+        <div class="compare-actions">
+          <button class="secondary-button" id="keepShooting" type="button">保留成片，继续观察</button>
+          <button class="primary-button" id="restartSession" type="button">重新实验</button>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

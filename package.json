@@ -1,0 +1,19 @@
+{
+  "name": "night-exposure-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check src/app.js && node --check src/scene.js && node --check src/audio.js",
+    "verify": "node scripts/verify.mjs",
+    "verify:interaction": "node scripts/interaction-check.mjs",
+    "verify:layout": "node scripts/layout-check.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  },
+  "dependencies": {
+    "@fontsource-variable/noto-sans-sc": "^5.3.1"
+  }
+}
