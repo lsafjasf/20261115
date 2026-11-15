@@ -1,0 +1,14 @@
+{
+  "name": "room-acoustics-simulator",
+  "version": "1.0.0",
+  "description": "三维房间声学模拟器：双耳 HRTF 与普通立体声对比（纯 Web Audio）",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/acoustics.test.mjs && node test/browser-e2e.mjs",
+    "serve": "node test/serve.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

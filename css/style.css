@@ -1,0 +1,168 @@
+:root {
+  --bg: #0f1623;
+  --panel: #172233;
+  --card: #1d2b40;
+  --line: #2b3d57;
+  --text: #e6edf6;
+  --muted: #93a4bc;
+  --accent: #5ea4e9;
+  --green: #46d39a;
+  --red: #ff5d5d;
+  --amber: #f0b45a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 14px;
+  padding: 14px;
+  height: 100vh;
+}
+
+.viewport {
+  position: relative;
+  background: linear-gradient(160deg, #111c2e, #0c1320);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+#scene { width: 100%; height: 100%; display: block; cursor: grab; }
+#scene:active { cursor: grabbing; }
+
+.hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 6px 18px;
+  padding: 10px 14px;
+  background: rgba(13, 20, 33, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-label { color: var(--muted); margin-right: 8px; font-size: 12px; }
+
+.meters {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(13, 20, 33, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.meter { display: flex; align-items: center; gap: 8px; }
+.meter span { color: var(--muted); font-weight: 700; }
+.meter b { width: 44px; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.hint {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.panel {
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+h1 { font-size: 18px; margin: 2px 0 12px; }
+h2 { font-size: 13px; margin: 0 0 10px; color: var(--accent); letter-spacing: 0.5px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+label.check { display: flex; align-items: center; gap: 8px; color: var(--text); }
+
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+input[type="number"], select, textarea, input[type="text"] {
+  width: 100%;
+  margin-top: 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 7px 9px;
+  font: inherit;
+}
+
+textarea { font-family: ui-monospace, Menlo, monospace; font-size: 12px; resize: vertical; }
+
+.val { color: var(--text); float: right; font-variant-numeric: tabular-nums; }
+.formula { font-size: 11px; color: var(--muted); margin: 6px 0 0; }
+.formula b { color: var(--amber); }
+
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grid3 input { margin-top: 4px; }
+
+.btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.btn-row > * { flex: 1; }
+
+button {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--text);
+  padding: 8px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: #1f4f86; border-color: #2c6cb0; }
+button.full { width: 100%; }
+
+.mode-toggle {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.mode-toggle input { accent-color: var(--accent); margin-right: 4px; }
+
+.test-result { list-style: none; margin: 8px 0 0; padding: 0; font-size: 12px; }
+.test-result li { padding: 4px 0; border-bottom: 1px dashed var(--line); display: flex; gap: 8px; }
+.test-result .pass { color: var(--green); }
+.test-result .fail { color: var(--red); }
+
+#testChart {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; height: auto; }
+  .viewport { height: 55vh; }
+}

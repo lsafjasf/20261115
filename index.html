@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>三维房间声学模拟器 · 双耳 vs 立体声</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="layout">
+    <section class="viewport">
+      <canvas id="scene"></canvas>
+      <div class="hud" id="hud">
+        <div><span class="hud-label">声源位置</span><span id="hudPos">—</span></div>
+        <div><span class="hud-label">距离</span><span id="hudDist">—</span></div>
+        <div><span class="hud-label">距离增益</span><span id="hudGain">—</span></div>
+        <div><span class="hud-label">声像 pan</span><span id="hudPan">—</span></div>
+        <div><span class="hud-label">RT60</span><span id="hudRt">—</span></div>
+        <div><span class="hud-label">边界状态</span><span id="hudInside">—</span></div>
+      </div>
+      <div class="meters">
+        <div class="meter"><span>L</span><canvas id="meterL" width="120" height="14"></canvas><b id="meterLVal">−∞</b></div>
+        <div class="meter"><span>R</span><canvas id="meterR" width="120" height="14"></canvas><b id="meterRVal">−∞</b></div>
+      </div>
+      <p class="hint">拖拽旋转视角 · 滚轮缩放 · 橙色声源表示已在房间边界外</p>
+    </section>
+
+    <aside class="panel">
+      <h1>房间声学模拟器</h1>
+
+      <section class="card">
+        <h2>回放</h2>
+        <div class="btn-row">
+          <button id="btnPlay" class="primary">▶ 播放</button>
+          <button id="btnPause">⏸ 暂停</button>
+        </div>
+        <label class="mode-toggle">
+          <input type="radio" name="mode" value="binaural" checked /> 双耳 HRTF
+          <input type="radio" name="mode" value="stereo" /> 普通立体声
+        </label>
+        <label>声源类型
+          <select id="sourceType">
+            <option value="sine">颤音正弦波</option>
+            <option value="chord">三音和弦</option>
+            <option value="noise">滤波噪声</option>
+          </select>
+        </label>
+        <label>移动速度 <span class="val" id="speedVal">1.20 m/s</span>
+          <input type="range" id="speed" min="0.1" max="4" step="0.05" value="1.2" />
+        </label>
+        <label class="check"><input type="checkbox" id="pingpong" checked /> 终点往返（关闭则循环回起点）</label>
+        <label>混响干湿比 <span class="val" id="wetVal">35%</span>
+          <input type="range" id="wet" min="0" max="0.9" step="0.01" value="0.35" />
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>房间参数</h2>
+        <label>宽度 X <span class="val" id="wVal">6.0 m</span>
+          <input type="range" id="roomW" min="2" max="12" step="0.1" value="6" />
+        </label>
+        <label>高度 Y <span class="val" id="hVal">3.0 m</span>
+          <input type="range" id="roomH" min="2" max="6" step="0.1" value="3" />
+        </label>
+        <label>深度 Z <span class="val" id="dVal">5.0 m</span>
+          <input type="range" id="roomD" min="2" max="12" step="0.1" value="5" />
+        </label>
+        <label>墙面吸声系数 α <span class="val" id="aVal">0.35</span>
+          <input type="range" id="absorption" min="0.05" max="0.95" step="0.01" value="0.35" />
+        </label>
+        <p class="formula">Sabine：RT60 = 0.161·V / (S·α)，当前 <b id="rtInline">0.33 s</b></p>
+      </section>
+
+      <section class="card">
+        <h2>监听点</h2>
+        <div class="grid3">
+          <label>X<input type="number" id="lisX" step="0.1" value="0" /></label>
+          <label>Y<input type="number" id="lisY" step="0.1" value="1.5" /></label>
+          <label>Z<input type="number" id="lisZ" step="0.1" value="0" /></label>
+        </div>
+        <label>朝向（水平角，0° = −Z 方向）
+          <input type="range" id="lisYaw" min="-180" max="180" step="1" value="0" />
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>声源路径</h2>
+        <label>路径预设
+          <select id="pathPreset">
+            <option value="crossing">穿越边界大对角</option>
+            <option value="sweep">横向扫过监听点</option>
+            <option value="loop">室内高度起伏环</option>
+          </select>
+        </label>
+        <textarea id="pathText" rows="4" spellcheck="false"></textarea>
+        <div class="btn-row">
+          <button id="applyPath">应用路径</button>
+          <button id="resetPath">恢复预设</button>
+        </div>
+        <p class="formula" id="pathInfo"></p>
+      </section>
+
+      <section class="card">
+        <h2>保存与导出</h2>
+        <div class="btn-row">
+          <input type="text" id="sceneName" placeholder="场景名称" value="我的场景" />
+          <button id="btnSave">保存</button>
+        </div>
+        <select id="savedList"></select>
+        <div class="btn-row">
+          <button id="btnLoad">加载</button>
+          <button id="btnDelete">删除</button>
+        </div>
+        <div class="btn-row">
+          <button id="btnExport" class="primary">导出 JSON</button>
+          <button id="btnImport">导入 JSON</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json,.json" hidden />
+      </section>
+
+      <section class="card">
+        <h2>一致性自检</h2>
+        <button id="btnSelfTest" class="primary full">运行边界/衰减/左右声道自检</button>
+        <canvas id="testChart" width="320" height="140"></canvas>
+        <ul id="testResult" class="test-result"></ul>
+      </section>
+    </aside>
+  </main>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
