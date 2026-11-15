@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>区域雷达回放 · AERIS</title>
+  <link rel="preload" href="assets/NotoSansSC-subset.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.8v12.4c0 .8.9 1.3 1.6.9l9.7-6.2c.7-.4.7-1.4 0-1.8L9.6 4.9C8.9 4.5 8 5 8 5.8Z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.2v14H7zM13.8 5H17v14h-3.2z"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 5h2v14H6zM18 5.7v12.6c0 .8-.9 1.2-1.5.7l-8.2-6.3a.9.9 0 0 1 0-1.4l8.2-6.3c.6-.5 1.5-.1 1.5.7Z"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM6 5.7v12.6c0 .8.9 1.2 1.5.7l8.2-6.3a.9.9 0 0 0 0-1.4L7.5 5c-.6-.5-1.5-.1-1.5.7Z"/></symbol>
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M12 3a6.5 6.5 0 0 0-6.5 6.5c0 4.8 6.5 11.5 6.5 11.5s6.5-6.7 6.5-11.5A6.5 6.5 0 0 0 12 3Zm0 9.1A2.6 2.6 0 1 1 12 6.9a2.6 2.6 0 0 1 0 5.2Z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M11 3h2v9l3.2-3.2 1.4 1.4L12 16l-5.6-5.8 1.4-1.4L11 12V3Zm-6 15h14v3H5v-3Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M8 5V3h8v2h4v2h-2v15H6V7H4V5h4Zm2 4v9h2V9H10Zm4 0v9h2V9h-2Z"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="M7 7h9.2l-2-2 1.4-1.4L21 8l-5.4 5.4-1.4-1.4 2-2H7a3 3 0 0 0-3 3v2H2v-2a5 5 0 0 1 5-5Zm10 8H7.8l2 2-1.4 1.4L3 13l5.4-5.4 1.4 1.4-2 2H17a3 3 0 0 0 3-3v-2h2v2a5 5 0 0 1-5 5Z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><path d="M11 2h2v4.1a6 6 0 0 1 4.9 4.9H22v2h-4.1a6 6 0 0 1-4.9 4.9V22h-2v-4.1A6 6 0 0 1 6.1 13H2v-2h4.1A6 6 0 0 1 11 6.1V2Zm1 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">
+        <span class="brand-ring ring-one"></span>
+        <span class="brand-ring ring-two"></span>
+        <span class="brand-sweep"></span>
+        <span class="brand-core"></span>
+      </div>
+      <div class="brand-copy">
+        <span class="brand-eyebrow">AERIS / METEOROLOGY</span>
+        <h1>区域雷达回放</h1>
+      </div>
+      <span class="header-rule"></span>
+      <div class="station-chip">
+        <i class="status-dot"></i>
+        <div><strong>长三角拼图</strong><span>SIM-03 · 合成反射率</span></div>
+      </div>
+      <div class="header-spacer"></div>
+      <div class="clock-block">
+        <span>本地时间 · UTC+08</span>
+        <strong id="header-clock">2026-11-15 08:00:00</strong>
+      </div>
+      <span class="simulation-pill">模拟数据</span>
+      <button class="icon-button" type="button" aria-label="快捷键说明" id="help-button">
+        <span>?</span>
+      </button>
+    </header>
+
+    <main class="workspace">
+      <section class="panel map-panel">
+        <div class="map-topbar">
+          <div class="time-block">
+            <span class="section-kicker">当前时次 / OBSERVATION</span>
+            <div class="time-line">
+              <strong id="current-time">08:00</strong>
+              <span id="current-date">2026.11.15 CST</span>
+            </div>
+          </div>
+          <div class="map-meta">
+            <div class="frame-counter"><span>FRAME</span><strong id="frame-index">01</strong><span>/ 12</span></div>
+            <div class="product-chip"><i></i>合成反射率</div>
+          </div>
+        </div>
+
+        <div class="map-wrap" id="map-wrap">
+          <canvas id="radar-canvas" aria-label="雨云雷达地图画布，显示反射率、经纬度、城市与色标" tabindex="0"></canvas>
+          <div class="map-tooltip" id="map-tooltip" hidden>
+            <span class="tooltip-kicker">CELL SAMPLE</span>
+            <div class="tooltip-main"><strong id="tooltip-dbz">--.-</strong><span>dBZ</span><i id="tooltip-dot"></i></div>
+            <div class="tooltip-coord"><span id="tooltip-lon">--</span><b>/</b><span id="tooltip-lat">--</span></div>
+          </div>
+          <div class="mode-banner" id="mode-banner" hidden>
+            <svg><use href="#i-target"></use></svg>
+            <span>标记模式：点击地图上的回波单元</span>
+            <kbd>ESC</kbd>
+          </div>
+          <div class="map-footer-chip">
+            <i></i>
+            <span id="map-footnote">移动指针查看该帧反射率</span>
+          </div>
+        </div>
+
+        <div class="playback">
+          <div class="timeline-head">
+            <span class="section-kicker">回放时间轴</span>
+            <div class="time-range">
+              <span>08:00</span>
+              <i></i>
+              <span>09:50</span>
+            </div>
+          </div>
+          <div class="timeline" id="timeline">
+            <div class="timeline-fill" id="timeline-fill"></div>
+            <input id="frame-slider" type="range" min="0" max="11" step="1" value="0" aria-label="选择雷达帧">
+            <div class="timeline-ticks" id="timeline-ticks" aria-hidden="true"></div>
+          </div>
+          <div class="transport">
+            <div class="transport-buttons">
+              <button class="step-button" type="button" id="prev-button" aria-label="上一帧">
+                <svg><use href="#i-prev"></use></svg>
+              </button>
+              <button class="play-button" type="button" id="play-button" aria-label="播放">
+                <svg class="play-icon"><use href="#i-play"></use></svg>
+                <svg class="pause-icon"><use href="#i-pause"></use></svg>
+              </button>
+              <button class="step-button" type="button" id="next-button" aria-label="下一帧">
+                <svg><use href="#i-next"></use></svg>
+              </button>
+              <button class="loop-button is-active" type="button" id="loop-button" aria-pressed="true">
+                <svg><use href="#i-loop"></use></svg><span>循环</span>
+              </button>
+            </div>
+            <div class="frame-note">
+              <strong id="play-status">已暂停</strong>
+              <span id="frame-note">第 01 / 12 帧 · 10 分钟间隔</span>
+            </div>
+            <div class="speed-control" role="group" aria-label="回放速度">
+              <span>速度</span>
+              <button type="button" data-speed="0.5">0.5×</button>
+              <button type="button" data-speed="1" class="is-active">1×</button>
+              <button type="button" data-speed="2">2×</button>
+              <button type="button" data-speed="4">4×</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="inspector">
+        <section class="panel readout-card">
+          <header class="card-header">
+            <div>
+              <span class="section-kicker">POINTER SAMPLE</span>
+              <h2>光标读数</h2>
+            </div>
+            <span class="sync-pill"><i></i>帧同步</span>
+          </header>
+          <div class="readout-hero">
+            <div class="dbz-display">
+              <strong id="dbz-value">--.-</strong>
+              <span>dBZ</span>
+            </div>
+            <span class="echo-state waiting" id="echo-state">等待采样</span>
+          </div>
+          <div class="readout-scale">
+            <div class="scale-track"></div>
+            <span class="scale-marker" id="scale-marker"></span>
+          </div>
+          <div class="readout-grid">
+            <div><label>经度 / LON</label><strong id="lon-value">--.---°</strong></div>
+            <div><label>纬度 / LAT</label><strong id="lat-value">--.---°</strong></div>
+            <div><label>采样网格</label><strong id="grid-value">-- · --</strong></div>
+            <div><label>回波分类</label><strong id="class-value">--</strong></div>
+          </div>
+        </section>
+
+        <section class="panel anomaly-card">
+          <header class="card-header">
+            <div>
+              <span class="section-kicker">ANOMALY REVIEW</span>
+              <h2>异常单元</h2>
+            </div>
+            <span class="count-pill"><b id="anomaly-count">0</b> 条记录</span>
+          </header>
+          <button class="mark-button" type="button" id="mark-button">
+            <svg><use href="#i-mark"></use></svg>
+            <span><strong>标记当前单元</strong><small>进入地图选点模式</small></span>
+            <i class="button-arrow">↗</i>
+          </button>
+          <div class="anomaly-empty" id="anomaly-empty">
+            <span class="empty-radar" aria-hidden="true"></span>
+            <p>暂无异常标记</p>
+            <small>选择强回波单元后，记录会保存在当前帧。</small>
+          </div>
+          <div class="anomaly-list" id="anomaly-list"></div>
+        </section>
+
+        <section class="panel export-card">
+          <div class="export-copy">
+            <span class="section-kicker">EXPORT FRAME</span>
+            <h2>导出当前帧</h2>
+            <p>生成带时间戳、色标与异常标记的 PNG 快照。</p>
+          </div>
+          <button class="export-button" type="button" id="export-button">
+            <svg><use href="#i-download"></use></svg>
+            <span>导出 PNG</span>
+          </button>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>ECHOMARK RADAR CONSOLE / 2026</span>
+      <span>程序化模拟回波 · 非业务观测产品</span>
+      <div class="footer-shortcuts"><kbd>SPACE</kbd> 播放 / 暂停 <kbd>←</kbd><kbd>→</kbd> 逐帧</div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="help-popover" id="help-popover" hidden>
+    <span class="section-kicker">KEYBOARD</span>
+    <h3>快捷操作</h3>
+    <p><kbd>Space</kbd> 播放 / 暂停</p>
+    <p><kbd>←</kbd> <kbd>→</kbd> 上一帧 / 下一帧</p>
+    <p><kbd>M</kbd> 进入异常标记模式</p>
+    <p><kbd>Esc</kbd> 取消标记模式</p>
+  </div>
+
+  <script src="js/radar-data.js"></script>
+  <script src="js/radar-map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
