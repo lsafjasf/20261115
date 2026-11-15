@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071315" />
+    <title>Seedscape · 城市轮廓实验场</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="city-canvas" aria-label="可旋转的三维城市模型"></canvas>
+
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Seedscape 首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>
+            <b>SEEDSCAPE</b>
+            <small>城市轮廓实验场</small>
+          </span>
+        </a>
+        <div class="topbar-meta">
+          <span class="live-dot"></span>
+          <span id="render-status">WebGL · 实时场景</span>
+          <span class="divider"></span>
+          <span id="fps-meter">-- FPS</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-button" id="help-button" title="操作帮助" aria-label="操作帮助">?</button>
+          <button class="button button-quiet" id="save-btn" title="保存参数 JSON">
+            <span class="button-icon">↓</span> 保存参数
+          </button>
+          <button class="button button-accent" id="shot-btn" title="保存当前视图截图">
+            <span class="button-icon">◉</span> 截图
+          </button>
+        </div>
+      </header>
+
+      <aside class="control-panel">
+        <div class="panel-scroll">
+          <section class="panel-intro">
+            <div class="eyebrow"><span>01</span> CITY SEED</div>
+            <div class="seed-row">
+              <label class="seed-field">
+                <span>种子</span>
+                <input id="seed-input" type="text" inputmode="numeric" value="20261115" maxlength="12" aria-label="城市种子" />
+              </label>
+              <button class="square-button" id="random-seed" title="随机种子" aria-label="随机种子">↻</button>
+            </div>
+            <p class="seed-caption" id="seed-caption">同一串数字，总会长出同一座城。</p>
+          </section>
+
+          <section class="control-section">
+            <div class="section-heading">
+              <span>城市肌理</span>
+              <span class="section-index">02</span>
+            </div>
+            <label class="range-field" for="density-range">
+              <span class="range-label"><span>街区密度</span><output id="density-output">11 × 11</output></span>
+              <input id="density-range" type="range" min="6" max="16" value="11" step="1" />
+              <span class="range-scale"><span>疏朗</span><span>密集</span></span>
+            </label>
+            <label class="range-field" for="variation-range">
+              <span class="range-label"><span>层高变化</span><output id="variation-output">72%</output></span>
+              <input id="variation-range" type="range" min="0" max="100" value="72" step="1" />
+              <span class="range-scale"><span>均质</span><span>戏剧化</span></span>
+            </label>
+          </section>
+
+          <section class="control-section">
+            <div class="section-heading">
+              <span>屋顶组件</span>
+              <span class="section-index">03</span>
+            </div>
+            <div class="roof-grid" id="roof-options">
+              <button class="roof-chip is-on" data-roof="antenna" aria-pressed="true"><span>╹</span>天线</button>
+              <button class="roof-chip is-on" data-roof="tank" aria-pressed="true"><span>▣</span>水箱</button>
+              <button class="roof-chip is-on" data-roof="spire" aria-pressed="true"><span>△</span>尖顶</button>
+              <button class="roof-chip is-on" data-roof="helipad" aria-pressed="true"><span>◎</span>停机坪</button>
+              <button class="roof-chip is-on" data-roof="solar" aria-pressed="true"><span>▦</span>太阳能</button>
+              <button class="roof-chip is-on" data-roof="hvac" aria-pressed="true"><span>⊞</span>机房</button>
+            </div>
+            <label class="range-field range-compact" for="roof-range">
+              <span class="range-label"><span>设施密度</span><output id="roof-output">58%</output></span>
+              <input id="roof-range" type="range" min="0" max="100" value="58" step="1" />
+            </label>
+          </section>
+
+          <section class="control-section display-section">
+            <div class="section-heading">
+              <span>显示方式</span>
+              <span class="section-index">04</span>
+            </div>
+            <div class="segmented" role="group" aria-label="显示方式">
+              <button class="segment is-active" data-mode="solid">实体城市</button>
+              <button class="segment" data-mode="layers">逐层显影</button>
+            </div>
+            <div class="layer-control is-muted" id="layer-control">
+              <div class="layer-readout">
+                <span>高度层级</span>
+                <output id="layer-output">48 F</output>
+              </div>
+              <input id="layer-range" type="range" min="0" max="64" value="64" step="1" />
+              <div class="layer-stats">
+                <span id="layer-visible">全部建筑可见</span>
+                <span class="pulse-dot">AUTO</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="control-section selected-section" id="selected-section">
+            <div class="section-heading">
+              <span>选中建筑</span>
+              <span class="section-index">05</span>
+            </div>
+            <div id="selected-empty" class="selected-empty">
+              <span class="crosshair" aria-hidden="true"></span>
+              <p>点击任意楼体<br />单栋调整，不重建城市</p>
+            </div>
+            <div id="selected-card" class="selected-card" hidden>
+              <div class="building-heading">
+                <span class="building-swatch" id="building-swatch"></span>
+                <span>
+                  <b id="building-name">T-042</b>
+                  <small id="building-meta">中高层 · 玻璃幕墙</small>
+                </span>
+                <span class="incremental-badge">增量</span>
+              </div>
+              <div class="building-metrics">
+                <span><small>层数</small><b id="building-floors">28</b></span>
+                <span><small>高度</small><b id="building-height">96m</b></span>
+                <span><small>屋顶</small><b id="building-roof">天线</b></span>
+              </div>
+              <div class="building-actions">
+                <button id="floor-minus" class="small-button" aria-label="减少楼层">− 楼层</button>
+                <button id="floor-plus" class="small-button" aria-label="增加楼层">+ 楼层</button>
+                <button id="roof-cycle" class="small-button" aria-label="切换屋顶组件">换屋顶</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="panel-footer">
+          <button id="reset-btn" class="text-button">恢复默认</button>
+          <span id="edit-stat">0 次单栋更新</span>
+        </div>
+      </aside>
+
+      <aside class="compare-panel" id="compare-panel">
+        <div class="compare-header">
+          <div>
+            <div class="eyebrow"><span>A/B</span> SILHOUETTE STUDY</div>
+            <h2>双种子轮廓</h2>
+          </div>
+          <button class="collapse-button" id="compare-toggle" aria-label="收起对比面板" aria-expanded="true">−</button>
+        </div>
+        <p class="compare-copy">保持同一套参数，仅替换 seed。点击卡片切换主视图。</p>
+        <div class="seed-cards">
+          <button class="seed-card is-active" data-seed-card="a" id="seed-card-a">
+            <div class="seed-card-top">
+              <span class="seed-card-label"><i></i> SEED A</span>
+              <span class="seed-card-number" id="seed-a-number">20261115</span>
+            </div>
+            <canvas id="silhouette-a" width="400" height="164" aria-label="种子 A 城市轮廓"></canvas>
+            <div class="seed-card-stats">
+              <span><b id="seed-a-count">92</b> 栋</span>
+              <span><b id="seed-a-peak">48</b> 层峰值</span>
+              <span><b id="seed-a-density">11</b> 格网</span>
+            </div>
+          </button>
+          <button class="seed-card" data-seed-card="b" id="seed-card-b">
+            <div class="seed-card-top">
+              <span class="seed-card-label"><i></i> SEED B</span>
+              <span class="seed-card-number" id="seed-b-number">117340</span>
+            </div>
+            <canvas id="silhouette-b" width="400" height="164" aria-label="种子 B 城市轮廓"></canvas>
+            <div class="seed-card-stats">
+              <span><b id="seed-b-count">88</b> 栋</span>
+              <span><b id="seed-b-peak">41</b> 层峰值</span>
+              <span><b id="seed-b-density">11</b> 格网</span>
+            </div>
+          </button>
+        </div>
+        <div class="compare-footer">
+          <span class="compare-note" id="compare-note">轮廓差异：–</span>
+          <button class="text-button" id="compare-refresh">用当前参数重算</button>
+        </div>
+      </aside>
+
+      <div class="view-tools">
+        <button class="view-tool" id="reset-camera" title="重置视角">
+          <span>⌂</span><small>复位</small>
+        </button>
+        <button class="view-tool is-active" id="auto-rotate" title="自动旋转" aria-pressed="false">
+          <span>↻</span><small>环绕</small>
+        </button>
+        <button class="view-tool" id="top-view" title="俯视" aria-pressed="false">
+          <span>⌖</span><small>俯视</small>
+        </button>
+      </div>
+
+      <div class="view-caption">
+        <span class="view-caption-line"></span>
+        <div>
+          <span id="view-seed">SEED 20261115</span>
+          <small>拖拽旋转 · 滚轮缩放 · 点击选楼</small>
+        </div>
+      </div>
+
+      <div class="layer-legend" id="layer-legend" hidden>
+        <span class="layer-scan"></span>
+        <div><b>逐层显影</b><small>低层先出现，塔楼随层级升高</small></div>
+      </div>
+
+      <div class="toast" id="toast" role="status"></div>
+
+      <div class="help-modal" id="help-modal" hidden>
+        <div class="help-backdrop" data-close-help></div>
+        <div class="help-dialog" role="dialog" aria-modal="true" aria-labelledby="help-title">
+          <div class="help-topline">FIELD NOTES / 01</div>
+          <button class="help-close" data-close-help aria-label="关闭帮助">×</button>
+          <h2 id="help-title">一座城，<br />由一串数字决定。</h2>
+          <p>Seedscape 用确定性随机数把种子翻译成街区、楼体与屋顶。相同参数与种子永远得到同一座城。</p>
+          <div class="help-grid">
+            <span><b>拖拽</b>旋转观察，近处楼体自然遮挡远处。</span>
+            <span><b>点击楼体</b>进入单栋编辑，只替换该楼网格。</span>
+            <span><b>逐层显影</b>按楼体总层数从低到高出现。</span>
+            <span><b>保存参数</b>导出 JSON，截图导出透明背景 PNG。</span>
+          </div>
+          <button class="button button-accent help-done" data-close-help>开始探索</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
