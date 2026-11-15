@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>二维接触物理小场景</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --line: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #4f9cf9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 17px; margin: 0; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+    button {
+      background: var(--accent);
+      color: #08111f;
+      border: none;
+      border-radius: 7px;
+      padding: 7px 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary { background: #334155; color: var(--text); }
+    #status {
+      margin-left: auto;
+      font-family: monospace;
+      color: var(--muted);
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 16px;
+      padding: 16px 20px;
+      flex: 1;
+    }
+    .stage-wrap {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      overflow: auto;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      background: #0b1220;
+      touch-action: none;
+      cursor: grab;
+    }
+    aside {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+    }
+    aside h2 { font-size: 14px; margin: 0 0 10px; }
+    #contact-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    #contact-list li {
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      line-height: 1.55;
+    }
+    #contact-list li.empty { color: var(--muted); }
+    .legend {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>二维接触物理小场景</h1>
+    <div class="toolbar">
+      <button id="btn-pause">⏸ 暂停</button>
+      <button id="btn-step" class="secondary">⏭ 单步</button>
+      <button id="btn-launch" class="secondary">🚀 高速撞击薄墙</button>
+      <button id="btn-reset" class="secondary">↺ 重置</button>
+    </div>
+    <span id="status">运行中</span>
+  </header>
+  <main>
+    <div class="stage-wrap">
+      <canvas id="stage"></canvas>
+    </div>
+    <aside>
+      <h2>当前接触（<span id="contact-count">0</span>）</h2>
+      <ul id="contact-list"></ul>
+      <div class="legend">
+        <p><span class="dot" style="background:#ff4d4f"></span>红点：最近接触点</p>
+        <p><span class="dot" style="background:#22c55e"></span>绿箭头：接触法线</p>
+        <p>标签 d：穿透深度（px）</p>
+        <p>拖拽任意动态物体可触发碰撞；空格键暂停，S 键单步。</p>
+        <p>固定场景覆盖：圆-圆、圆-旋转矩形、矩形-斜面、高速-薄墙。</p>
+      </div>
+    </aside>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

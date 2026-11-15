@@ -1,0 +1,11 @@
+{
+  "name": "contact-physics-demo",
+  "version": "1.0.0",
+  "description": "2D contact physics mini scene: circle, rotating box, static incline, thin-wall CCD",
+  "type": "module",
+  "scripts": {
+    "test": "node test/run-tests.js",
+    "serve": "node server.js"
+  },
+  "license": "MIT"
+}
