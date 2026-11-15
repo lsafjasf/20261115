@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071116">
+  <title>PHASE / 302 — Spectral Repair Station</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div>
+          <div class="brand-name">PHASE <b>/</b> 302</div>
+          <div class="brand-sub">SPECTRAL REPAIR STATION</div>
+        </div>
+      </div>
+      <div class="session-meta">
+        <span><i class="status-dot"></i> DSP ONLINE</span>
+        <span class="meta-divider"></span>
+        <span>48 kHz</span>
+        <span>STEREO</span>
+        <span>08.000 s</span>
+      </div>
+      <div class="top-actions">
+        <div class="ab-switch" role="group" aria-label="A/B monitor">
+          <button class="ab-button" data-monitor="A" aria-pressed="false">A <small>DRY</small></button>
+          <button class="ab-button is-active" data-monitor="B" aria-pressed="true">B <small>FIXED</small></button>
+        </div>
+        <button class="icon-button" id="bypassButton" aria-pressed="false" title="Bypass processing">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h8M17 7h2M5 17h2M11 17h8M13 4v6M11 14v6"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+          <span>BYPASS</span>
+        </button>
+        <button class="icon-button" id="resetButton" title="Reset chain">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M5 15a8 8 0 1 0 2-8l-3 3"/></svg>
+          <span>RESET</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel chain-panel">
+        <div class="panel-heading">
+          <div>
+            <div class="eyebrow">ROUTING</div>
+            <h1>Processing chain</h1>
+          </div>
+          <span class="count-badge" id="chainCount">07</span>
+        </div>
+        <div class="chain-source">
+          <span class="source-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-4M8 18V6M12 16V8M16 20V4M20 13v-2"/></svg>
+          </span>
+          <div class="source-copy">
+            <b>field-voice_bed.wav</b>
+            <span>SYNTH CAPTURE · 2 CH</span>
+          </div>
+          <span class="source-ready">READY</span>
+        </div>
+        <div class="chain-label-row">
+          <span class="eyebrow">SIGNAL PATH</span>
+          <span class="chain-hint">TOP → BOTTOM</span>
+        </div>
+        <div class="chain-list" id="chainList" aria-label="Processing modules"></div>
+        <div class="chain-footer">
+          <div class="add-wrap">
+            <button class="add-button" id="addModuleButton" aria-expanded="false">
+              <span>+</span> ADD MODULE
+            </button>
+            <div class="add-menu" id="addMenu" hidden>
+              <button data-add="highpass">High-pass filter</button>
+              <button data-add="notch">Narrow notch</button>
+              <button data-add="lowpass">Low-pass filter</button>
+              <button data-add="peaking">Peaking EQ</button>
+              <button data-add="gate">Downward gate</button>
+              <button data-add="gain">Output trim</button>
+            </div>
+          </div>
+          <button class="save-button" id="saveButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12l2 2v14H5zM8 4v6h8V4M8 20v-6h8v6"/></svg>
+            SAVE
+          </button>
+        </div>
+        <div class="preset-row">
+          <label for="presetSelect">SAVED CHAINS</label>
+          <select id="presetSelect" aria-label="Saved processing chains">
+            <option value="">No saved chain</option>
+          </select>
+        </div>
+      </aside>
+
+      <section class="center-column">
+        <div class="panel spectrum-panel">
+          <div class="panel-heading spectrum-heading">
+            <div>
+              <div class="eyebrow">ANALYZER / LOG F</div>
+              <h2>Spectrum</h2>
+            </div>
+            <div class="spectrum-legend">
+              <span><i class="legend-line original"></i>ORIGINAL</span>
+              <span><i class="legend-line processed"></i>PROCESSED</span>
+              <span><i class="legend-line floor"></i>NOISE FLOOR</span>
+            </div>
+          </div>
+          <div class="spectrum-stage">
+            <canvas id="spectrumCanvas" aria-label="Original and processed frequency spectrum"></canvas>
+            <div class="spectrum-badge"><i class="status-dot"></i> LIVE FFT <span>2K</span></div>
+            <div class="hover-readout" id="hoverReadout" hidden>
+              <b id="hoverFreq">1.00 kHz</b>
+              <span id="hoverDb">−00.0 dB</span>
+            </div>
+          </div>
+          <div class="marker-row" id="markerRow"></div>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <div class="metric-label">OUTPUT PEAK <span>dBFS</span></div>
+            <strong id="metricPeak">−8.2</strong>
+            <div class="metric-foot"><i class="mini-bar" id="peakBar"></i><span id="metricPeakNote">HEADROOM OK</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label">NOISE FLOOR <span>dBFS</span></div>
+            <strong id="metricFloor">−72.4</strong>
+            <div class="metric-foot"><i class="mini-bar floor" id="floorBar"></i><span id="metricFloorNote">−9.6 dB LIFT</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label">SIGNAL / NOISE <span>dB</span></div>
+            <strong id="metricSnr">18.1</strong>
+            <div class="metric-foot"><i class="mini-bar snr" id="snrBar"></i><span>EST. POST-FILTER</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label">CLIP GUARD <span>24-BIT</span></div>
+            <strong class="guard-value" id="metricGuard">ARMED</strong>
+            <div class="metric-foot"><i class="mini-bar guard" id="guardBar"></i><span id="metricGuardNote">0 SAMPLES AT 0 dBFS</span></div>
+          </article>
+        </div>
+
+        <div class="panel scope-panel">
+          <div class="panel-heading scope-heading">
+            <div>
+              <div class="eyebrow">TIME DOMAIN / A—B</div>
+              <h2>Waveform</h2>
+            </div>
+            <div class="scope-legend">
+              <span><i class="legend-line original"></i>SOURCE</span>
+              <span><i class="legend-line processed"></i>MONITOR</span>
+            </div>
+          </div>
+          <div class="scope-stage">
+            <canvas id="waveformCanvas" aria-label="Original and processed waveform"></canvas>
+          </div>
+          <div class="transport">
+            <button class="play-button" id="playButton" aria-label="Play">
+              <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>
+            </button>
+            <div class="time-readout"><b id="currentTime">00:00.000</b><span>/</span><span id="totalTime">00:08.000</span></div>
+            <div class="transport-line"><i id="transportProgress"></i></div>
+            <button class="loop-button is-active" id="loopButton" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h12l2 2-2 2H5M19 17H7l-2-2 2-2h12"/></svg>
+              LOOP
+            </button>
+            <div class="sample-format">PCM / 24 <span>·</span> 2 CH <span>·</span> 48K</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-column">
+        <div class="panel inspector-panel">
+          <div class="panel-heading inspector-heading">
+            <div>
+              <div class="eyebrow">MODULE PARAMETERS</div>
+              <h2 id="inspectorTitle">Narrow notch</h2>
+            </div>
+            <span class="module-type-chip" id="inspectorType">NOTCH</span>
+          </div>
+          <div class="module-meta">
+            <span>SLOT <b id="inspectorSlot">03</b></span>
+            <span id="inspectorState"><i class="status-dot"></i> ACTIVE</span>
+          </div>
+          <div id="inspectorControls" class="inspector-controls"></div>
+          <div class="inspector-actions">
+            <button id="moveUpButton" title="Move module up">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 14l6-6 6 6"/></svg> UP
+            </button>
+            <button id="moveDownButton" title="Move module down">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10l6 6 6-6"/></svg> DOWN
+            </button>
+            <button class="danger" id="removeButton" title="Remove module">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>
+              REMOVE
+            </button>
+          </div>
+        </div>
+
+        <div class="panel output-panel">
+          <div class="panel-heading compact-heading">
+            <div>
+              <div class="eyebrow">MASTER OUT</div>
+              <h2>Output</h2>
+            </div>
+            <span class="output-db" id="outputDb">−8.2 dB</span>
+          </div>
+          <div class="meter-block">
+            <div class="meter-scale"><span>−48</span><span>−24</span><span>−12</span><span>−6</span><span>0</span></div>
+            <div class="stereo-meter">
+              <div class="meter-track"><i id="meterL"></i></div>
+              <div class="meter-track"><i id="meterR"></i></div>
+            </div>
+            <div class="meter-channel-labels"><span>L</span><span>R</span></div>
+          </div>
+          <div class="export-format">
+            <span><b>WAV</b> / PCM</span>
+            <span>24-BIT</span>
+            <span>48 kHz</span>
+            <span>STEREO</span>
+          </div>
+          <button class="export-button" id="exportButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>EXPORT WAV</span>
+            <small id="exportButtonMeta">MATCHES PREVIEW</small>
+          </button>
+          <div class="export-status" id="exportStatus" role="status">
+            <i class="status-dot"></i>
+            <span>Clipping guard armed · export is blocked at 0 dBFS</span>
+          </div>
+        </div>
+
+        <div class="panel qa-panel">
+          <div class="panel-heading compact-heading">
+            <div>
+              <div class="eyebrow">ACCEPTANCE</div>
+              <h2>Lab check</h2>
+            </div>
+            <button class="text-button" id="runQaButton">RUN</button>
+          </div>
+          <div class="qa-summary" id="qaSummary">
+            <span class="qa-spinner"></span>
+            <div><b>Preparing diagnostics</b><span>Same renderer as export</span></div>
+          </div>
+          <div class="qa-log" id="qaLog">
+            <div><span>DENOISE</span><b class="pending">PENDING</b></div>
+            <div><span>CLIP BLOCK</span><b class="pending">PENDING</b></div>
+            <div><span>WAV CHECK</span><b class="pending">PENDING</b></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <div><i class="status-dot"></i><span id="footerStatus">Engine ready · preview and export share one 48 kHz render path</span></div>
+      <div><span>CHAIN FINGERPRINT</span><b id="chainFingerprint">—</b><span class="key-hint">A / B TO COMPARE</span></div>
+    </footer>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
