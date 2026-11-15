@@ -1,0 +1,30 @@
+{
+  "name": "uid262",
+  "version": "1.0.0",
+  "description": "Counter-aware stroke lab: procedural path font tool with adaptive weight and SVG export",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node --test test/verify.js",
+    "test:browser": "playwright test",
+    "serve": "node tools/static-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "playwright": "^1.65.1"
+  }
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>字腔自适应笔画实验台 Counter-Aware Stroke Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>字腔自适应笔画实验台</h1>
+    <p class="sub">程序化路径 · 按字腔面积调粗 · 无字体文件加载</p>
+  </header>
+
+  <main class="layout">
+    <section class="panel controls">
+      <label class="block">
+        <span>排版文字（中英数字混排）</span>
+        <textarea id="textInput" rows="4"></textarea>
+      </label>
+
+      <div class="slider-row">
+        <label>全局粗细 <output id="weightVal">1.00×</output>
+          <input type="range" id="weight" min="0.45" max="2.4" step="0.01" value="1" />
+        </label>
+        <label>拐角圆度 <output id="roundVal">0.20</output>
+          <input type="range" id="roundness" min="0" max="1" step="0.01" value="0.2" />
+        </label>
+        <label>字距 tracking <output id="trackVal">+40</output>
+          <input type="range" id="tracking" min="-120" max="320" step="5" value="40" />
+        </label>
+        <label>行高 line-height <output id="lineVal">1.35</output>
+          <input type="range" id="lineHeight" min="0.9" max="2.2" step="0.05" value="1.35" />
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <label><input type="checkbox" id="adapt" checked /> 字腔面积自适应（防止吞腔/粘连）</label>
+      </div>
+
+      <div class="button-row">
+        <button id="exportBtn" type="button">导出 SVG</button>
+        <button id="importBtn" type="button">导入 SVG 恢复参数</button>
+        <input type="file" id="importFile" accept=".svg,image/svg+xml" hidden />
+        <button id="testBtn" type="button">运行混排验证</button>
+        <button id="resetBtn" type="button" class="ghost">重置</button>
+      </div>
+
+      <div id="testReport" class="report" hidden></div>
+    </section>
+
+    <section class="panel stage">
+      <canvas id="stage"></canvas>
+      <p class="hint">所有字形均由内存中的笔画路径实时生成，布局使用栅格测量结果（墨象包围盒、字腔面积），不加载任何字体文件。</p>
+    </section>
+  </main>
+
+  <script src="src/geometry.js"></script>
+  <script src="src/raster.js"></script>
+  <script src="src/measure.js"></script>
+  <script src="src/glyphs.js"></script>
+  <script src="src/hanzi.js"></script>
+  <script src="src/engine.js"></script>
+  <script src="src/render.js"></script>
+  <script src="src/app.js"></script>
+ </body>
+</html>
