@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>双11 折扣海报编辑器</title>
+  <meta name="description" content="纯矢量折扣海报编辑器：拖拽、旋转、层级、阴影与描边，支持 PNG 和可编辑 SVG 同步导出。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23e3373b'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' font-weight='700' fill='%23fff4d5'%3E%E6%8A%98%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true">
+        <span>折</span>
+      </div>
+      <div>
+        <p class="eyebrow">VECTOR POSTER STUDIO</p>
+        <h1>双11 折扣海报编辑器</h1>
+      </div>
+    </div>
+    <div class="header-meta" aria-label="画布信息">
+      <span class="meta-chip"><i class="dot"></i> 纯矢量素材</span>
+      <span class="meta-chip">画布 <strong>900 × 1200</strong></span>
+    </div>
+    <div class="export-actions">
+      <button class="button button-ghost" id="exportPng" type="button">导出 PNG</button>
+      <button class="button button-ghost" id="exportSvg" type="button">导出 SVG</button>
+      <button class="button button-primary" id="exportBoth" type="button">
+        <span class="button-icon" aria-hidden="true">↓</span>
+        同时导出 PNG + SVG
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel library-panel" aria-label="贴纸库与图层">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">STICKER LIBRARY</p>
+          <h2>贴纸库</h2>
+        </div>
+        <span class="count-badge" id="stickerCount">10</span>
+      </div>
+      <p class="panel-note">点击添加。全部为内联 SVG 矢量图形，不读取图片文件。</p>
+      <div class="sticker-grid" id="stickerGrid"></div>
+
+      <div class="panel-divider"></div>
+      <div class="panel-heading compact">
+        <div>
+          <p class="eyebrow">LAYER STACK</p>
+          <h2>图层顺序</h2>
+        </div>
+        <span class="layer-hint">上层 ↑</span>
+      </div>
+      <div class="layer-list" id="layerList" aria-label="图层列表"></div>
+    </aside>
+
+    <section class="stage-panel" aria-label="海报画布">
+      <div class="stage-toolbar">
+        <div class="preview-label">
+          <span class="live-dot"></span>
+          <span>实时预览</span>
+          <span class="toolbar-separator"></span>
+          <span id="selectionLabel">未选择元素</span>
+        </div>
+        <div class="stage-actions">
+          <button class="text-button" id="toggleSafeZone" type="button" aria-pressed="true">显示关键中心</button>
+          <span class="size-note">1:1 逻辑尺寸 · 导出同尺寸</span>
+        </div>
+      </div>
+
+      <div class="canvas-scroll">
+        <div class="canvas-wrap">
+          <div class="canvas-frame">
+            <svg id="posterSvg" xmlns="http://www.w3.org/2000/svg" width="900" height="1200"
+                 viewBox="0 0 900 1200" role="img"
+                 aria-label="双11 折扣海报，900 乘 1200 像素">
+              <defs id="posterDefs"></defs>
+              <g id="backgroundLayer" pointer-events="none"></g>
+              <g id="elementLayer"></g>
+              <g id="editorLayer" data-editor-ui="true"></g>
+            </svg>
+          </div>
+          <div class="canvas-caption">
+            <span><i class="vector-mark"></i> 文字保留为原生 text 元素</span>
+            <span>预览与导出均为 900 × 1200</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel inspector-panel" aria-label="元素属性">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">PROPERTIES</p>
+          <h2>属性</h2>
+        </div>
+        <span class="type-badge" id="typeBadge">未选择</span>
+      </div>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon" aria-hidden="true">✦</div>
+        <h3>选择一个元素</h3>
+        <p>拖动画布中的贴纸、标题或价格标签，即可在此调整位置、旋转、层级、阴影与描边。</p>
+      </div>
+
+      <div class="inspector-content" id="inspectorContent" hidden>
+        <section class="control-section">
+          <label class="field-label" for="textContent" id="textContentLabel">文字内容</label>
+          <div class="text-field-wrap" id="textFieldWrap">
+            <textarea id="textContent" rows="2" maxlength="40"></textarea>
+            <span class="char-count" id="charCount">0 / 40</span>
+          </div>
+          <div class="field-row two">
+            <div>
+              <label class="field-label" for="posX">X</label>
+              <input class="number-input" id="posX" type="number" min="-100" max="1000" step="1">
+            </div>
+            <div>
+              <label class="field-label" for="posY">Y</label>
+              <input class="number-input" id="posY" type="number" min="-100" max="1300" step="1">
+            </div>
+          </div>
+        </section>
+
+        <section class="control-section" id="textSection">
+          <div class="section-title">文字样式</div>
+          <div class="field-row two">
+            <div>
+              <label class="field-label" for="fontSize">字号 <output id="fontSizeOut">48</output></label>
+              <input class="range" id="fontSize" type="range" min="20" max="96" step="1">
+            </div>
+            <div>
+              <label class="field-label" for="textFill">文字颜色</label>
+              <input class="color-input" id="textFill" type="color">
+            </div>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-head">
+            <div class="section-title">旋转</div>
+            <output class="value-pill" id="rotationOut">0°</output>
+          </div>
+          <input class="range" id="rotation" type="range" min="-180" max="180" step="1">
+        </section>
+
+        <section class="control-section">
+          <div class="section-head">
+            <div class="section-title">层级</div>
+            <span class="section-note" id="layerPosition">第 1 层</span>
+          </div>
+          <div class="layer-buttons">
+            <button class="mini-button" data-layer-action="front" type="button">置顶</button>
+            <button class="mini-button" data-layer-action="forward" type="button">上移一层</button>
+            <button class="mini-button" data-layer-action="backward" type="button">下移一层</button>
+            <button class="mini-button" data-layer-action="back" type="button">置底</button>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-head">
+            <div class="section-title">阴影</div>
+            <label class="switch" for="shadowEnabled">
+              <input id="shadowEnabled" type="checkbox">
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </label>
+          </div>
+          <div class="shadow-fields" id="shadowFields">
+            <div class="field-row two">
+              <div>
+                <label class="field-label" for="shadowBlur">模糊 <output id="shadowBlurOut">10</output></label>
+                <input class="range" id="shadowBlur" type="range" min="0" max="40" step="1">
+              </div>
+              <div>
+                <label class="field-label" for="shadowOpacity">透明度 <output id="shadowOpacityOut">0.35</output></label>
+                <input class="range" id="shadowOpacity" type="range" min="0" max="1" step="0.05">
+              </div>
+            </div>
+            <div class="field-row three">
+              <div>
+                <label class="field-label" for="shadowX">X 偏移</label>
+                <input class="number-input" id="shadowX" type="number" min="-30" max="30" step="1">
+              </div>
+              <div>
+                <label class="field-label" for="shadowY">Y 偏移</label>
+                <input class="number-input" id="shadowY" type="number" min="-30" max="30" step="1">
+              </div>
+              <div>
+                <label class="field-label" for="shadowColor">颜色</label>
+                <input class="color-input" id="shadowColor" type="color">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="field-row two">
+            <div>
+              <label class="field-label" for="strokeWidth">描边宽度 <output id="strokeWidthOut">0</output></label>
+              <input class="range" id="strokeWidth" type="range" min="0" max="14" step="0.5">
+            </div>
+            <div>
+              <label class="field-label" for="strokeColor">描边颜色</label>
+              <input class="color-input" id="strokeColor" type="color">
+            </div>
+          </div>
+        </section>
+
+        <section class="safety-card">
+          <div class="safety-card-icon" aria-hidden="true">◎</div>
+          <div>
+            <strong>文字安全区已开启</strong>
+            <p>标题和价格标签拖动时会自动避开画布中央的关键视觉区，防止遮挡主视觉。</p>
+          </div>
+        </section>
+
+        <button class="danger-button" id="deleteElement" type="button">删除当前元素</button>
+      </div>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="src/poster.js"></script>
+</body>
+</html>

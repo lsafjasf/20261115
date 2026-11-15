@@ -1,0 +1,14 @@
+{
+  "name": "discount-poster-editor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "纯矢量双11折扣海报编辑器，支持 PNG 与可编辑 SVG 同步导出。",
+  "scripts": {
+    "serve": "python3 -m http.server 4173 --bind 127.0.0.1",
+    "verify": "node tests/verify.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
+}
