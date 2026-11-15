@@ -1,0 +1,23 @@
+{
+  "name": "uid336-cut-editor",
+  "version": "1.0.0",
+  "description": "Three-shot action cut editor with timeline, Web Audio and WebM export",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "test": "node --test test/core.test.mjs",
+    "test:browser": "node test/browser.test.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "fontmin": "^1.1.1",
+    "playwright": "^1.65.1"
+  }
+}

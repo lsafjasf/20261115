@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>三景别动作切点剪辑器</title>
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>三景别动作切点剪辑器</h1>
+    <div class="hint">拖动菱形切点对齐峰值（容差 2 帧）· 双击切点切换硬切/交叉淡化</div>
+  </header>
+
+  <main>
+    <section class="monitor-row">
+      <div class="monitor" data-shot="0">
+        <canvas id="shot0"></canvas>
+      </div>
+      <div class="monitor" data-shot="1">
+        <canvas id="shot1"></canvas>
+      </div>
+      <div class="monitor" data-shot="2">
+        <canvas id="shot2"></canvas>
+      </div>
+    </section>
+
+    <section class="preview-row">
+      <div class="preview-wrap">
+        <canvas id="preview"></canvas>
+        <div id="previewBadge" class="preview-badge">已暂停</div>
+      </div>
+      <aside class="side-panel">
+        <h2>切点检查</h2>
+        <ul id="cutReport" class="cut-report"></ul>
+        <h2>音频连续性</h2>
+        <div id="audioReport" class="audio-report">点击“检查音频”运行离线渲染分析。</div>
+        <div class="button-stack">
+          <button id="snapBtn" type="button">一键吸附到最近峰值</button>
+          <button id="audioBtn" type="button">检查音频（离线渲染）</button>
+          <button id="exportBtn" type="button">导出 12 秒 WebM</button>
+        </div>
+        <div id="exportStatus" class="export-status"></div>
+      </aside>
+    </section>
+
+    <section class="timeline-wrap">
+      <canvas id="timeline"></canvas>
+    </section>
+
+    <section class="transport">
+      <button id="playBtn" type="button">播放</button>
+      <button id="pauseBtn" type="button">暂停</button>
+      <button id="restartBtn" type="button">回到开头</button>
+      <label>当前帧
+        <input id="frameInput" type="number" min="0" max="359" value="0" />
+      </label>
+      <span id="timeReadout">0.00s / 12.00s</span>
+    </section>
+  </main>
+
+  <script type="module" src="./src/app.mjs?v=3"></script>
+</body>
+</html>
