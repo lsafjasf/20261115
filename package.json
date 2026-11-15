@@ -1,0 +1,25 @@
+{
+  "name": "uid278",
+  "version": "1.0.0",
+  "description": "AV 同步校正台：单时钟驱动 20 秒动画、8 个闪光与 Web Audio 节拍，支持延迟调节、时差显示、校正保存与刷新恢复",
+  "main": "app.js",
+  "scripts": {
+    "test": "node tests/verify.mjs",
+    "test:full": "node tests/full-run.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "playwright": "^1.65.1"
+  }
+}

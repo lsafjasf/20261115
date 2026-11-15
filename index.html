@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AV 同步校正台</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="panel">
+    <h1>AV 同步校正台 <span class="sub">20 秒 · 8 闪光 / 8 节拍 · 单时钟</span></h1>
+
+    <section class="stage" aria-label="动画舞台">
+      <div id="flashLamp" class="lamp" aria-hidden="true"></div>
+      <div class="readout">
+        <div class="clock-line">传输时钟 <code id="clockPos">0.000 s</code> / 20.000 s</div>
+        <div class="event-line">
+          最近事件：闪光 <strong id="lastFlash">—</strong>
+          节拍 <strong id="lastBeat">—</strong>
+        </div>
+      </div>
+      <ol id="flashDots" class="dots" aria-label="八个闪光节拍点"></ol>
+    </section>
+
+    <section class="controls">
+      <div class="btn-row">
+        <button id="playBtn" type="button">播放</button>
+        <button id="pauseBtn" type="button">暂停</button>
+        <button id="stepBackBtn" type="button">◀ 逐帧</button>
+        <button id="stepFwdBtn" type="button">逐帧 ▶</button>
+        <button id="restartBtn" type="button">回到开头</button>
+      </div>
+
+      <label class="seek-row">
+        拖动定位（同一时钟）
+        <input id="seekSlider" type="range" min="0" max="20" step="0.001" value="0" />
+        <code id="seekLabel">0.000 s</code>
+      </label>
+
+      <label class="delay-row">
+        音频附加延迟
+        <input id="delaySlider" type="range" min="0" max="300" step="1" value="0" />
+        <code id="delayLabel">0 ms</code>
+      </label>
+
+      <div class="metric-row">
+        <div class="metric">
+          <span class="metric-name">最近一次 闪光→节拍 时间差</span>
+          <strong id="deltaValue">—</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-name">已保存校正偏移</span>
+          <strong id="calibValue">0 ms</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-name">当前生效音频延迟</span>
+          <strong id="effectiveValue">0 ms</strong>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="calibrateBtn" type="button">保存校正（以最近时间差归零）</button>
+        <button id="clearCalibBtn" type="button">清除校正</button>
+      </div>
+      <p id="statusLine" class="status" role="status"></p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
