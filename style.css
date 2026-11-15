@@ -1,0 +1,90 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", sans-serif;
+  background: #10131a;
+  color: #dfe6f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+header { text-align: center; max-width: 760px; }
+h1 { margin: 8px 0 4px; font-size: 24px; letter-spacing: 2px; }
+.hint { color: #8b96a8; font-size: 13px; line-height: 1.6; margin: 4px 0 12px; }
+
+#statusbar {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  background: #1a1f2b;
+  border: 1px solid #2a3242;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+#statusbar button {
+  background: #2b6cb0;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+#statusbar button:hover { background: #3182ce; }
+#errors.bad { color: #fc8181; font-weight: bold; }
+
+#board-wrap { position: relative; }
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 220px);
+  gap: 18px;
+}
+#lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.card {
+  background: #1a1f2b;
+  border: 2px solid #2a3242;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+.card:hover { border-color: #4a5568; }
+.card.selected { border-color: #f6ad55; transform: scale(1.03); }
+.card.locked { cursor: default; opacity: .85; }
+.card.locked.ok { border-color: #48bb78; }
+.card.locked.fail { border-color: #f56565; }
+.card .name { font-size: 15px; font-weight: 600; margin-bottom: 6px; text-align: center; }
+.card canvas { display: block; width: 100%; height: 90px; background: #0b0e14; border-radius: 6px; }
+.card .tag {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 11px;
+  color: #718096;
+}
+
+#result { margin-top: 22px; max-width: 900px; }
+#result.hidden { display: none; }
+#result h2 { text-align: center; }
+#result-table { border-collapse: collapse; font-size: 13px; }
+#result-table th, #result-table td {
+  border: 1px solid #2a3242;
+  padding: 6px 10px;
+  text-align: center;
+}
+#result-table th { background: #1a1f2b; }
+td.ok { color: #48bb78; }
+td.fail { color: #f56565; }

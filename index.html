@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>声纹配对 · Audio Match</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>声纹配对</h1>
+    <p class="hint">6 段音频来自 3 个模板，每个模板有 2 个经过不同滤波 / 延迟处理的变体。
+      通过频谱与听感找出 3 对。点选两段即配对并立即锁定，错误 2 次则失败。</p>
+  </header>
+
+  <div id="statusbar">
+    <span id="seed-label"></span>
+    <span id="score">已配对 0 / 3</span>
+    <span id="errors">错误 0 / 2</span>
+    <button id="restart">同 seed 重开</button>
+    <button id="new-seed">随机新 seed</button>
+  </div>
+
+  <div id="board-wrap">
+    <div id="board"></div>
+    <canvas id="lines"></canvas>
+  </div>
+
+  <div id="result" class="hidden">
+    <h2 id="result-title"></h2>
+    <table id="result-table">
+      <thead>
+        <tr><th>配对</th><th>音频</th><th>模板</th><th>滤波截止 (Hz)</th><th>Q</th>
+            <th>延迟 (ms)</th><th>反馈</th><th>频谱相似度</th><th>判定</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
