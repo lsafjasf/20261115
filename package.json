@@ -1,0 +1,13 @@
+{
+  "name": "bus-arrival-delay-map",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "verify": "node scripts/browser-verify.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

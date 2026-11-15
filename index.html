@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08111f" />
+    <title>到站观测台 · 公交延误热区</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <div class="eyebrow">TRANSITLAB / 观测终端 01</div>
+          <h1>城市公交 · 到站观测台</h1>
+        </div>
+      </div>
+      <div class="header-center">
+        <span class="live-dot"></span>
+        <span>运营监测中</span>
+        <span class="header-divider"></span>
+        <span class="header-date">2026.11.12 · 周五</span>
+      </div>
+      <div class="sample-stamp">
+        <span class="stamp-label">DATA</span>
+        <div>
+          <strong>内置样例</strong>
+          <small>06:00—22:30 / 30 min</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-grid">
+      <aside class="rail rail-left" aria-label="线路筛选">
+        <section class="panel route-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">ROUTE FILTER</span>
+              <h2>线路筛选</h2>
+            </div>
+            <span class="count-badge" id="routeCount">6 / 6</span>
+          </div>
+          <button class="all-routes is-active" id="allRoutes" type="button">
+            <span class="all-routes-icon" aria-hidden="true"></span>
+            <span>
+              <strong>全部线路</strong>
+              <small>查看全网到站表现</small>
+            </span>
+            <span class="route-arrow">↗</span>
+          </button>
+          <div class="route-list" id="routeList"></div>
+          <p class="panel-hint">
+            点击线路仅看单线，或点击地图站点筛选经过线路。
+          </p>
+        </section>
+
+        <section class="panel interval-panel">
+          <div class="panel-heading compact">
+            <div>
+              <span class="eyebrow">HEADWAY</span>
+              <h2>到站间隔</h2>
+            </div>
+            <strong class="inline-value" id="intervalValue">11<small>min</small></strong>
+          </div>
+          <div class="interval-track" id="intervalTrack"></div>
+          <div class="interval-scale"><span>0</span><span>10</span><span>20<small>min</small></span></div>
+          <div class="interval-note">
+            <span class="legend-line"></span>
+            <span id="intervalNote">全网中位到站间隔</span>
+          </div>
+        </section>
+
+        <div class="rail-footnote">
+          <span>06</span>
+          <p>数据经过去重与空值补全后参与计算。热度越高，代表该站点在当前时间窗的平均延误越长。</p>
+        </div>
+      </aside>
+
+      <section class="map-card" aria-label="公交延误地图">
+        <div class="map-heading">
+          <div>
+            <span class="eyebrow">ARRIVAL HEATMAP</span>
+            <h2>到站间隔 / 延误热区</h2>
+          </div>
+          <div class="map-heading-right">
+            <span class="slice-pill" id="sliceBadge">08:30—09:00 · 早高峰</span>
+            <button class="icon-button" id="resetView" type="button" aria-label="重置视图" title="重置视图">↺</button>
+          </div>
+        </div>
+
+        <div class="metrics-strip" aria-label="当前切片指标">
+          <div class="metric">
+            <span class="metric-label">平均延误</span>
+            <strong id="metricDelay">7.4<small>min</small></strong>
+            <span class="metric-trend is-hot" id="metricDelayNote">晚高峰更低</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">平均间隔</span>
+            <strong id="metricHeadway">11<small>min</small></strong>
+            <span class="metric-trend" id="metricHeadwayNote">6 条线路</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">高延误站点</span>
+            <strong id="metricHotspots">6<small>处</small></strong>
+            <span class="metric-trend">延误 ≥ 8 min</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">切片样本</span>
+            <strong id="metricSamples">115<small>条</small></strong>
+            <span class="metric-trend">已清洗记录</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="mapCanvas" role="img" tabindex="0" aria-label="六条公交线路、站点与延误热区地图。点击站点可筛选经过线路。"></canvas>
+          <div class="map-filter-pill" id="mapFilterPill">
+            <span class="filter-symbol" aria-hidden="true"></span>
+            <span id="mapFilterText">全网视图</span>
+          </div>
+          <div class="heat-legend" aria-label="热区图例">
+            <span>低延误</span>
+            <i class="heat-ramp"></i>
+            <span>高延误</span>
+          </div>
+          <div class="map-tooltip" id="mapTooltip" role="status"></div>
+          <div class="map-coordinate">31°14′N / 121°28′E</div>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-head">
+            <div class="timeline-title">
+              <span class="eyebrow">TIME SLICE</span>
+              <strong id="timelineTime">08:30</strong>
+              <span class="timeline-window" id="timelineWindow">08:30—09:00</span>
+            </div>
+            <div class="timeline-actions">
+              <span class="period-tag" id="periodTag">早高峰</span>
+              <button class="play-button" id="playButton" type="button" aria-label="播放时间切片" title="播放时间切片">
+                <span class="play-icon" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <div class="timeline-control">
+            <span class="time-edge">06:00</span>
+            <div class="range-wrap">
+              <div class="timeline-bars" id="timelineBars" aria-hidden="true"></div>
+              <input id="timeSlider" type="range" min="0" max="32" step="1" value="5" aria-label="选择时间切片" />
+            </div>
+            <span class="time-edge">22:30</span>
+          </div>
+          <div class="timeline-labels" aria-hidden="true">
+            <span>06</span><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="rail rail-right" aria-label="站点详情和数据清洗">
+        <section class="panel inspector-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">STATION INSPECTOR</span>
+              <h2>站点洞察</h2>
+            </div>
+            <span class="station-code" id="stationCode">NET</span>
+          </div>
+          <div class="station-overview" id="stationOverview">
+            <div class="station-orbit" aria-hidden="true"><span></span><i></i></div>
+            <h3>全网概览</h3>
+            <p>点击地图中的任意站点，查看经过线路、到站间隔与该站延误。</p>
+          </div>
+          <div class="station-detail is-hidden" id="stationDetail">
+            <div class="station-titleline">
+              <div>
+                <span class="station-district" id="stationDistrict">中心 / C01</span>
+                <h3 id="stationName">市民广场</h3>
+              </div>
+              <button class="clear-station" id="clearStation" type="button">清除</button>
+            </div>
+            <div class="station-kpis">
+              <div><span>本窗延误</span><strong id="stationDelay">8.2<small>min</small></strong></div>
+              <div><span>通过线路</span><strong id="stationRoutes">3<small>条</small></strong></div>
+            </div>
+            <div class="station-route-list" id="stationRouteList"></div>
+            <div class="station-delay-bar">
+              <div class="delay-bar-head"><span>准点阈值</span><span>3 min</span></div>
+              <div class="delay-track"><span id="stationDelayFill"></span><i></i></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel report-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">DATA HYGIENE</span>
+              <h2>清洗报告</h2>
+            </div>
+            <span class="report-status"><i></i>已完成</span>
+          </div>
+          <div class="report-flow">
+            <div>
+              <span>原始记录</span>
+              <strong id="rawTotal">3,859</strong>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="clean-total">
+              <span>有效记录</span>
+              <strong id="validTotal">3,641</strong>
+            </div>
+          </div>
+          <div class="quality-line">
+            <div class="quality-labels"><span>数据完整度</span><strong id="qualityRate">94.4%</strong></div>
+            <div class="quality-track"><span id="qualityFill"></span></div>
+          </div>
+          <div class="report-rows">
+            <div class="report-row">
+              <span class="report-icon removed">−</span>
+              <div><strong>删去重复记录</strong><small>相同线路 / 班次 / 站点</small></div>
+              <span class="report-count" id="duplicateCount">218<small>条</small></span>
+            </div>
+            <div class="report-row">
+              <span class="report-icon filled">+</span>
+              <div><strong>补全空值记录</strong><small>到站时间或延误字段</small></div>
+              <span class="report-count" id="filledCount">393<small>条</small></span>
+            </div>
+            <div class="report-row">
+              <span class="report-icon fields">ƒ</span>
+              <div><strong>补全空值字段</strong><small>按线路 / 站点中位数填充</small></div>
+              <span class="report-count" id="fieldCount">403<small>个</small></span>
+            </div>
+          </div>
+          <div class="report-foot">
+            <span>校验状态</span>
+            <strong>无缺失主键 · 无重复记录</strong>
+          </div>
+        </section>
+
+        <div class="rail-footnote right-note">
+          <span>↳</span>
+          <p>延误 = 实际到站时间 − 计划到站时间。热区按当前 30 分钟切片汇总，线路筛选会同步影响全部指标。</p>
+        </div>
+      </aside>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
