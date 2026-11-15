@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08090a">
+  <title>Signal / Form — 12s 音画映射</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%2308090a'/%3E%3Crect x='8' y='13' width='3' height='9' rx='1.5' fill='%23ff725d'/%3E%3Crect x='14' y='8' width='3' height='19' rx='1.5' fill='%23d9ff48'/%3E%3Crect x='20' y='16' width='3' height='7' rx='1.5' fill='%2376d8ff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Signal Form 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i>
+        </span>
+        <span class="brand-copy">
+          <strong>SIGNAL / FORM</strong>
+          <small>GENERATIVE AUDIO MAPPING</small>
+        </span>
+      </a>
+      <div class="topbar-center">
+        <span class="status-dot" id="engineDot"></span>
+        <span id="engineStatus">ENGINE IDLE</span>
+        <span class="topbar-sep">/</span>
+        <span>WEB AUDIO</span>
+        <span class="topbar-sep">/</span>
+        <span>12.0 SEC LOOP</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="text-button" id="saveButton" type="button">保存映射</button>
+        <button class="text-button" id="reloadButton" type="button">重载</button>
+        <button class="text-button muted" id="exportButton" type="button">导出</button>
+        <label class="text-button muted import-label" for="importInput">导入</label>
+        <input id="importInput" type="file" accept="application/json" hidden>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <article class="stage-card">
+        <canvas id="stageCanvas" aria-label="实时音画可视化舞台"></canvas>
+        <div class="stage-hud top-left">
+          <span class="eyebrow">LIVE CANVAS / 60 FPS</span>
+          <span class="stage-title">RESONANCE<br>FIELD</span>
+        </div>
+        <div class="stage-hud top-right">
+          <span class="micro-label">TAKE</span>
+          <span class="take-number">01</span>
+          <span class="micro-label">LOOP</span>
+          <span class="take-meta">12.000 s</span>
+        </div>
+        <div class="stage-caption">
+          <span><b class="kick-color">01</b> KICK → SCALE</span>
+          <span><b class="bass-color">02</b> BASS → SHAKE</span>
+          <span><b class="noise-color">03</b> NOISE → FOG</span>
+        </div>
+        <div class="freeze-badge" id="freezeBadge">
+          <span class="freeze-icon"></span>
+          <span>FRAME HOLD / 音频已冻结</span>
+        </div>
+      </article>
+
+      <aside class="control-rack">
+        <section class="rack-section routing-section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">SIGNAL ROUTING</span>
+              <h2>控制矩阵</h2>
+            </div>
+            <span class="routing-state" id="routingState">3 LAYERS</span>
+          </div>
+          <div class="channel-list" id="channelList"></div>
+          <button class="audit-button" id="auditButton" type="button">
+            <span class="audit-icon">↯</span>
+            <span>
+              <strong>运行隔离检测</strong>
+              <small>3×3 CROSSTALK MATRIX</small>
+            </span>
+            <span class="audit-result" id="auditResult">READY</span>
+          </button>
+          <div class="audit-matrix" id="auditMatrix" aria-label="信号串线矩阵"></div>
+        </section>
+
+        <section class="rack-section editor-section">
+          <div class="section-heading editor-heading">
+            <div>
+              <span class="eyebrow">MAPPING EDITOR</span>
+              <h2 id="editorTitle">01 / 鼓点</h2>
+            </div>
+            <span class="layer-badge" id="editorBadge">SCALE</span>
+          </div>
+          <div class="curve-grid">
+            <div class="curve-panel">
+              <div class="curve-head">
+                <span>INPUT ENVELOPE</span>
+                <span class="curve-value" id="envelopeValue">0.72</span>
+              </div>
+              <canvas class="curve-canvas" id="envelopeCanvas" aria-label="输入包络编辑器"></canvas>
+              <div class="curve-hint">拖动节点 · 双击添加</div>
+            </div>
+            <div class="curve-panel">
+              <div class="curve-head">
+                <span>OUTPUT KEYS</span>
+                <span class="curve-value" id="keyframeValue">1.00×</span>
+              </div>
+              <canvas class="curve-canvas" id="keyframeCanvas" aria-label="输出关键帧编辑器"></canvas>
+              <div class="curve-hint">时间关键帧 · 0–150%</div>
+            </div>
+          </div>
+          <div class="editor-actions">
+            <button class="small-button" id="resetLayerButton" type="button">恢复本层</button>
+            <button class="small-button" id="verifyButton" type="button">校验恢复</button>
+            <span class="save-stamp" id="saveStamp">尚未保存</span>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="timeline-card">
+      <div class="timeline-head">
+        <div class="transport">
+          <button class="play-button" id="playButton" type="button" aria-label="播放">
+            <span class="play-glyph" id="playGlyph"></span>
+          </button>
+          <button class="pause-button" id="pauseButton" type="button" aria-label="暂停">Ⅱ</button>
+          <div class="timecode">
+            <span id="currentTime">00:00.000</span>
+            <small>/ 00:12.000</small>
+          </div>
+        </div>
+        <div class="timeline-labels">
+          <span class="eyebrow">ARRANGEMENT / ENVELOPE + KEYFRAMES</span>
+          <span class="timeline-note">拖动播放头，音画同步跳转</span>
+        </div>
+        <div class="timeline-tools">
+          <span class="loop-chip"><i></i> LOOP ON</span>
+          <span class="fps-chip">ENGINE <b id="fpsValue">—</b> FPS</span>
+        </div>
+      </div>
+      <div class="timeline-wrap">
+        <canvas id="timelineCanvas" aria-label="十二秒时间轴"></canvas>
+        <div class="timeline-tooltip" id="timelineTooltip">00.0s</div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
