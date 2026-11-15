@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>潮汐守望 · 警戒水位监测</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23087c73%22/%3E%3Cpath d=%22M4 19c4 0 4-3 8-3s4 3 8 3 4-3 8-3%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22/%3E%3Cpath d=%22M4 25c4 0 4-3 8-3s4 3 8 3 4-3 8-3%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img">
+            <path d="M3 20c4.2 0 4.2-3 8.4-3s4.2 3 8.4 3 4.2-3 8.4-3 4.2 3 8.4 3" />
+            <path d="M3 26c4.2 0 4.2-3 8.4-3s4.2 3 8.4 3 4.2-3 8.4-3 4.2 3 8.4 3" />
+            <circle cx="24" cy="8" r="3" />
+          </svg>
+        </div>
+        <div>
+          <p class="eyebrow">TIDE WATCH · 水位分析</p>
+          <h1>潮汐守望</h1>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <span class="status-dot"></span>
+        <span>样例数据已载入</span>
+        <span class="meta-divider"></span>
+        <span id="dataRange" class="meta-muted">--</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="control-panel" aria-labelledby="controlTitle">
+        <div class="control-heading">
+          <div>
+            <p class="section-kicker">监测参数</p>
+            <h2 id="controlTitle">筛选与警戒设置</h2>
+          </div>
+          <button class="ghost-button" id="resetButton" type="button">
+            恢复默认
+          </button>
+        </div>
+        <div class="control-grid">
+          <label class="field" for="stationSelect">
+            <span class="field-label">监测站点</span>
+            <span class="select-wrap">
+              <select id="stationSelect"></select>
+            </span>
+          </label>
+          <label class="field" for="thresholdInput">
+            <span class="field-label">警戒水位 <small>米</small></span>
+            <span class="number-wrap">
+              <input id="thresholdInput" type="number" min="0" max="9" step="0.01" value="2.60">
+              <span class="unit">m</span>
+            </span>
+          </label>
+          <label class="field" for="windowSelect">
+            <span class="field-label">时间窗口</span>
+            <span class="select-wrap">
+              <select id="windowSelect">
+                <option value="6">最近 6 小时</option>
+                <option value="12">最近 12 小时</option>
+                <option value="24" selected>最近 24 小时</option>
+                <option value="all">全部时段</option>
+              </select>
+            </span>
+          </label>
+          <div class="threshold-scale" aria-hidden="true">
+            <span>安全</span>
+            <div class="scale-track">
+              <i class="scale-safe"></i>
+              <i class="scale-warn"></i>
+              <b id="scaleMarker"></b>
+            </div>
+            <span>越限</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="监测摘要">
+        <article class="stat-card">
+          <span class="stat-icon tide-icon" aria-hidden="true"></span>
+          <div>
+            <p>当前水位</p>
+            <strong id="currentLevel">--</strong>
+            <small id="currentMeta">--</small>
+          </div>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon peak-icon" aria-hidden="true"></span>
+          <div>
+            <p>窗口峰值</p>
+            <strong id="peakLevel">--</strong>
+            <small id="peakMeta">--</small>
+          </div>
+        </article>
+        <article class="stat-card alert-stat">
+          <span class="stat-icon alert-icon" aria-hidden="true"></span>
+          <div>
+            <p>越限告警</p>
+            <strong id="alertCount">--</strong>
+            <small>超过 <span id="thresholdEcho">2.60</span> m</small>
+          </div>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon gap-icon" aria-hidden="true"></span>
+          <div>
+            <p>缺测点</p>
+            <strong id="gapCount">--</strong>
+            <small id="gapMeta">曲线自动断开</small>
+          </div>
+        </article>
+      </section>
+
+      <div class="content-grid">
+        <section class="chart-card" aria-labelledby="chartTitle">
+          <div class="card-heading">
+            <div>
+              <p class="section-kicker">潮位曲线</p>
+              <h2 id="chartTitle">水位随时间变化</h2>
+            </div>
+            <div class="chart-actions">
+              <div class="chart-legend" aria-label="图例">
+                <span><i class="legend-safe"></i>正常水位</span>
+                <span><i class="legend-alert"></i>超过警戒</span>
+              </div>
+              <button class="icon-button" id="exportPngButton" type="button">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 2v10m0 0 3.5-3.5M10 12 6.5 8.5M4 13.5V17h12v-3.5" />
+                </svg>
+                导出 PNG
+              </button>
+            </div>
+          </div>
+          <div class="station-legend" id="stationLegend" aria-label="站点图例"></div>
+          <div class="chart-frame" id="chartFrame">
+            <canvas id="tideChart" aria-label="按站点绘制的水位折线图"></canvas>
+            <div class="canvas-tooltip" id="chartTooltip" hidden></div>
+            <div class="chart-empty" id="chartEmpty" hidden>
+              <span>当前条件下没有可绘制数据</span>
+            </div>
+          </div>
+          <div class="chart-foot">
+            <span id="chartSummary">--</span>
+            <span class="chart-hint">悬停查看逐时水位 · 缺口不会被连线</span>
+          </div>
+        </section>
+
+        <aside class="alerts-card" aria-labelledby="alertsTitle">
+          <div class="card-heading">
+            <div>
+              <p class="section-kicker">同步筛选</p>
+              <h2 id="alertsTitle">越限告警清单</h2>
+            </div>
+            <span class="count-pill" id="alertPill">0</span>
+          </div>
+          <div class="alert-list" id="alertList"></div>
+          <div class="alerts-footer">
+            <span class="pulse-dot"></span>
+            <span>按水位从高到低排列</span>
+          </div>
+        </aside>
+      </div>
+
+      <section class="log-card" aria-labelledby="logTitle">
+        <div class="card-heading">
+          <div>
+            <p class="section-kicker">数据质量</p>
+            <h2 id="logTitle">CSV 清洗记录</h2>
+          </div>
+          <button class="secondary-button" id="exportLogButton" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 2v10m0 0 3.5-3.5M10 12 6.5 8.5M4 13.5V17h12v-3.5" />
+            </svg>
+            下载清洗日志
+          </button>
+        </div>
+        <div class="log-summary" id="logSummary"></div>
+        <div class="log-list" id="logList"></div>
+        <p class="log-note">
+          重复站点时间戳按有效水位均值合并；空值、非法值及时间断层均保留为“缺失”，不参与连线。
+        </p>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <span>潮汐守望 / 内置演示数据</span>
+      <span>数据仅用于界面演示，不作为防汛决策依据</span>
+    </footer>
+  </div>
+
+  <script src="sample-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
