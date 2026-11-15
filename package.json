@@ -1,0 +1,11 @@
+{
+  "name": "port-crane-replay-bench",
+  "version": "1.0.0",
+  "description": "可回放的港口吊装实验台：鼠标设定吊臂/钢索/刹车曲线，确定性物理、指令录制与单帧回放",
+  "type": "module",
+  "scripts": {
+    "test": "node test/run-tests.mjs && node test/dom-smoke.mjs && node test/reload-e2e.mjs && node test/main-integration.mjs",
+    "start": "node test/serve.mjs"
+  },
+  "license": "MIT"
+}

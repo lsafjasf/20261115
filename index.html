@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>可回放港口吊装实验台</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>港口吊装实验台</h1>
+      <div class="mode-badge" id="modeBadge">实时操作</div>
+    </header>
+
+    <main class="layout">
+      <section class="stage-panel">
+        <canvas id="sceneCanvas" width="720" height="480" aria-label="吊装场景"></canvas>
+        <div class="hint">
+          在场景中左右移动鼠标设定吊臂目标角速度，滚轮 / 上下移动调整放缆速度，按住
+          <kbd>Shift</kbd> 加刹车；也可使用右侧滑块。
+        </div>
+        <canvas id="chartCanvas" width="720" height="200" aria-label="速度与张力曲线"></canvas>
+      </section>
+
+      <aside class="control-panel">
+        <h2>操作输入</h2>
+        <label>
+          吊臂目标角速度 <span id="boomVal">0.00 rad/s</span>
+          <input id="boomSlider" type="range" min="-0.9" max="0.9" step="0.01" value="0" />
+        </label>
+        <label>
+          钢索目标速度 <span id="cableVal">0 px/s</span>
+          <input id="cableSlider" type="range" min="-150" max="150" step="1" value="0" />
+        </label>
+        <label>
+          手动刹车 <span id="brakeVal">0.00</span>
+          <input id="brakeSlider" type="range" min="0" max="1" step="0.01" value="0" />
+        </label>
+
+        <h2>刹车曲线</h2>
+        <canvas id="curveCanvas" width="300" height="140"></canvas>
+        <div class="curve-actions">
+          <button id="addPointBtn">增加节点</button>
+          <button id="resetCurveBtn">重置曲线</button>
+        </div>
+
+        <h2>录制与回放</h2>
+        <div class="button-grid">
+          <button id="recordBtn">开始录制</button>
+          <button id="runDemoBtn">载入成功吊装</button>
+          <button id="overloadBtn">超载演示</button>
+          <button id="collisionBtn">碰撞演示</button>
+          <button id="playBtn" disabled>播放</button>
+          <button id="pauseBtn" disabled>暂停</button>
+          <button id="stepBtn" disabled>单帧</button>
+          <button id="resetBtn">复位</button>
+          <button id="exportBtn">导出记录</button>
+          <button id="importBtn">导入记录</button>
+        </div>
+        <input id="fileInput" type="file" accept="application/json" hidden />
+
+        <h2>遥测</h2>
+        <dl class="telemetry">
+          <div><dt>状态</dt><dd id="statusValue">就绪</dd></div>
+          <div><dt>仿真时间</dt><dd id="timeValue">0.00 s</dd></div>
+          <div><dt>货箱速度</dt><dd id="speedValue">0.00 m/s</dd></div>
+          <div><dt>钢索张力</dt><dd id="tensionValue">1177 N</dd></div>
+          <div><dt>离地时间</dt><dd id="airValue">0.00 s</dd></div>
+          <div><dt>最大张力</dt><dd id="maxTensionValue">1177 N</dd></div>
+        </dl>
+        <ul class="event-log" id="eventLog"></ul>
+      </aside>
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
