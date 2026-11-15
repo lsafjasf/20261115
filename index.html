@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>三机位 2D 动画演播台</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>三机位 2D 动画演播台 · 15 秒节目</h1>
+    <div class="transport">
+      <button id="btnPlay">▶ 播放</button>
+      <button id="btnStop">⏹ 停止</button>
+      <span id="timecode">00:00.0 / 00:15.0</span>
+      <span id="liveShot">当前镜头:—</span>
+    </div>
+    <div class="exports">
+      <button id="btnExportWebm">⏺ 导出 WebM(含音频节拍)</button>
+      <button id="btnExportJson">💾 导出工程 JSON</button>
+      <label class="importLabel">导入 JSON<input type="file" id="fileJson" accept=".json" /></label>
+    </div>
+  </header>
+
+  <main>
+    <section class="preview-grid" id="previewGrid">
+      <figure><canvas id="prev-cam1" width="480" height="270"></canvas><figcaption>相机 1 预览</figcaption></figure>
+      <figure><canvas id="prev-cam2" width="480" height="270"></canvas><figcaption>相机 2 预览</figcaption></figure>
+      <figure><canvas id="prev-cam3" width="480" height="270"></canvas><figcaption>相机 3 预览</figcaption></figure>
+      <figure class="program">
+        <canvas id="program" width="960" height="540"></canvas>
+        <figcaption>最终输出(Program)</figcaption>
+      </figure>
+    </section>
+
+    <section class="timeline-panel">
+      <h2>时间线(点击镜头块选中 / 跳转;世界时间连续,切镜不重置)</h2>
+      <div id="timeline"></div>
+      <div class="live-switch">
+        直播中切镜:
+        <button data-cam="cam1">1</button>
+        <button data-cam="cam2">2</button>
+        <button data-cam="cam3">3</button>
+        <span class="hint">在当前播放头处插入切镜</span>
+      </div>
+    </section>
+
+    <section class="inspector" id="inspector">
+      <h2>镜头设置</h2>
+      <div class="row"><label>镜头</label><span id="inspShotName">—</span></div>
+      <div class="row">
+        <label>相机</label>
+        <select id="inspCamera"></select>
+      </div>
+      <div class="row">
+        <label>转场</label>
+        <select id="inspTransition">
+          <option value="cut">硬切</option>
+          <option value="crossfade">叠化</option>
+          <option value="wipe">划像</option>
+        </select>
+        <label>时长(s)</label>
+        <input id="inspTransDur" type="number" min="0" max="2" step="0.1" value="0.5" />
+      </div>
+      <div class="row">
+        <label>焦点 X</label><input id="inspFocusX" type="number" step="10" />
+        <label>焦点 Y</label><input id="inspFocusY" type="number" step="10" />
+        <label>缩放</label><input id="inspZoom" type="number" min="0.2" max="3" step="0.05" />
+      </div>
+      <div class="row">
+        <button id="btnApplyCam">应用焦点/缩放到该镜头</button>
+        <span class="hint">写入该相机在镜头起止处的关键帧</span>
+      </div>
+    </section>
+  </main>
+
+  <div id="exportStatus"></div>
+
+  <script src="scene.js"></script>
+  <script src="cameras.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

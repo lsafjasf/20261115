@@ -1,0 +1,26 @@
+{
+  "name": "three-camera-2d-studio",
+  "version": "1.0.0",
+  "description": "三机位 2D 动画演播台:15 秒节目导出与回放验证",
+  "main": "index.js",
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "export-and-verify": "node run_verify.mjs",
+    "snapshots": "node make_snapshots.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "playwright": "^1.65.1"
+  }
+}
