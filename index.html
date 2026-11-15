@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071113" />
+    <title>STORM//LINK — Linked Flood Command</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23071113'/%3E%3Cpath d='M4 20c4 0 4-4 8-4s4 4 8 4 4-4 8-4M4 26c4 0 4-4 8-4s4 4 8 4 4-4 8-4' fill='none' stroke='%238be0c3' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M7 31c5.4 0 5.4-5 10.8-5s5.4 5 10.8 5 5.4-5 10.8-5" />
+              <path d="M7 38c5.4 0 5.4-5 10.8-5s5.4 5 10.8 5 5.4-5 10.8-5" />
+              <path d="M15 20V8h18v12M11 20h26M19 8V3h10v5" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">STORM<span>//</span>LINK</div>
+            <div class="brand-sub">LINKED FLOOD COMMAND</div>
+          </div>
+        </div>
+
+        <div class="event-strip">
+          <span class="live-dot"></span>
+          <span class="event-label">STORM EVENT</span>
+          <strong id="event-name">TWIN-CORE LOW</strong>
+          <span class="event-separator"></span>
+          <span class="event-clock" id="event-clock">T+00:18</span>
+          <span class="event-progress"><i id="event-progress"></i></span>
+        </div>
+
+        <div class="header-actions">
+          <button class="icon-button" id="audio-button" type="button" aria-pressed="true" title="Toggle audio">
+            <svg class="audio-on" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9v6h4l5 4V5L8 9H4Z" />
+              <path d="M16 9c1 .8 1.5 1.8 1.5 3S17 14.2 16 15M18.5 6.8A7 7 0 0 1 21 12a7 7 0 0 1-2.5 5.2" />
+            </svg>
+            <svg class="audio-off" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9v6h4l5 4V5L8 9H4Z" />
+              <path d="m17 9 5 5m0-5-5 5" />
+            </svg>
+            <span id="audio-label">SOUND ON</span>
+          </button>
+          <button class="icon-button pause-button" id="pause-button" type="button" title="Pause / resume">
+            <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14M16 5v14" />
+            </svg>
+            <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m8 5 11 7-11 7V5Z" />
+            </svg>
+            <span id="pause-label">PAUSE</span>
+          </button>
+          <button class="icon-button restart-button" id="restart-button" type="button" title="Restart current scenario">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 8a8 8 0 1 0 1 6M20 3v5h-5" />
+            </svg>
+            <span>RESET</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="view-panel view-map" aria-label="Interactive urban hydro map">
+          <div class="view-heading">
+            <div class="heading-title">
+              <span class="view-index">01</span>
+              <div>
+                <h1>SURFACE / HYDRO MAP</h1>
+                <p>Drag sandbags to divert flow · Toggle drainage gates</p>
+              </div>
+            </div>
+            <div class="view-tools" role="group" aria-label="Map tools">
+              <button class="tool-button active" id="sandbag-tool" type="button">
+                <span class="tool-glyph bag-glyph"></span>
+                SANDBAG
+              </button>
+              <button class="tool-button" id="gate-tool" type="button">
+                <span class="tool-glyph gate-glyph"></span>
+                GATES
+              </button>
+            </div>
+          </div>
+          <div class="canvas-frame map-frame">
+            <canvas id="map-canvas" aria-label="Interactive city flood map"></canvas>
+            <div class="canvas-corner top-left">LIVE / HYDRO MAP</div>
+            <div class="canvas-corner top-right" id="map-readout">RIVER 2.84M</div>
+            <div class="map-legend">
+              <span><i class="legend-water"></i>FLOOD</span>
+              <span><i class="legend-bag"></i>SANDBAG</span>
+              <span><i class="legend-gate"></i>GATE</span>
+            </div>
+            <div class="map-tooltip" id="map-tooltip" role="status"></div>
+            <div class="drag-hint" id="drag-hint">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 11V8a2 2 0 1 1 4 0v3-5a2 2 0 1 1 4 0v6-3a2 2 0 1 1 4 0v6c0 4-2.8 7-7 7h-1.5c-2 0-3.2-.8-4.3-2.4L4 14.8a2 2 0 0 1 3.2-2.4L8 13" />
+              </svg>
+              DRAG A SANDBAG ONTO A ROAD TO DIVERT FLOW
+            </div>
+          </div>
+        </section>
+
+        <section class="view-panel view-section" aria-label="Block and basement water section">
+          <div class="view-heading">
+            <div class="heading-title">
+              <span class="view-index">02</span>
+              <div>
+                <h1>SECTION / BLOCKS & BASEMENTS</h1>
+                <p>Live levels from one shared state · A—A′ east–west cut</p>
+              </div>
+            </div>
+            <div class="section-mode">
+              <span class="sync-pulse"></span>
+              <span>LINK</span>
+              <strong id="sync-value">100%</strong>
+            </div>
+          </div>
+          <div class="canvas-frame section-frame">
+            <canvas id="section-canvas" aria-label="Live block and basement cross-section"></canvas>
+            <div class="canvas-corner top-left">SECTION A—A′</div>
+            <div class="canvas-corner top-right" id="section-readout">PEAK 0.00M</div>
+            <div class="rain-readout">
+              <span>RAIN</span>
+              <strong id="rain-value">0.0</strong>
+              <em>mm/h</em>
+            </div>
+            <div class="section-legend">
+              <span><i class="legend-street"></i>STREET WATER</span>
+              <span><i class="legend-basement"></i>BASEMENT</span>
+              <span><i class="legend-safe"></i>SAFE</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <section class="mission-dock" aria-label="Mission status">
+        <div class="dock-intro">
+          <span class="eyebrow">MISSION 07 / FLOOD WATCH</span>
+          <h2>Hold the lifelines.<br />Keep blocks under threshold.</h2>
+        </div>
+
+        <div class="objective residential-objective" id="residential-objective">
+          <div class="objective-top">
+            <span class="objective-icon residents-icon" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </span>
+            <div>
+              <span class="objective-label">RESIDENTIAL FLOOD LEVEL</span>
+              <strong><span id="safe-count">0</span><small>/10</small> <em>&lt; 0.50m</em></strong>
+            </div>
+            <span class="objective-state" id="residential-state">MONITORING</span>
+          </div>
+          <div class="meter" aria-hidden="true">
+            <div class="meter-fill" id="residential-meter"></div>
+            <span class="meter-threshold" title="70% threshold"></span>
+          </div>
+          <div class="meter-caption"><span>SAFE RATIO <b id="safe-percent">0%</b></span><span>TARGET ≥ 70%</span></div>
+        </div>
+
+        <div class="asset-pair">
+          <div class="asset-card" id="hospital-card">
+            <div class="asset-heading">
+              <span class="asset-symbol hospital-symbol">+</span>
+              <div><span>CITY HOSPITAL</span><strong>LIFELINE</strong></div>
+              <i class="asset-light"></i>
+            </div>
+            <div class="asset-reading"><b id="hospital-level">0.00</b><span>m</span><em id="hospital-state">SAFE</em></div>
+            <div class="mini-bar"><i id="hospital-bar"></i></div>
+          </div>
+          <div class="asset-card" id="substation-card">
+            <div class="asset-heading">
+              <span class="asset-symbol power-symbol">ϟ</span>
+              <div><span>EAST SUBSTATION</span><strong>POWER HUB</strong></div>
+              <i class="asset-light"></i>
+            </div>
+            <div class="asset-reading"><b id="substation-level">0.00</b><span>m</span><em id="substation-state">SAFE</em></div>
+            <div class="mini-bar"><i id="substation-bar"></i></div>
+          </div>
+        </div>
+
+        <div class="scenario-panel">
+          <div class="scenario-head">
+            <span class="eyebrow">FIXED SEED</span>
+            <span class="scenario-note">Same seed, same outcome</span>
+          </div>
+          <div class="seed-switcher" id="seed-switcher"></div>
+          <div class="integrity-row" id="integrity-row" title="Both views read the same state fingerprint">
+            <span class="integrity-light"></span>
+            <span>VIEW SYNC</span>
+            <code id="integrity-hash">0000</code>
+            <b>SYNCED</b>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <div class="result-overlay" id="result-overlay" aria-hidden="true">
+      <div class="result-card">
+        <span class="result-kicker" id="result-kicker">FLOOD EVENT COMPLETE</span>
+        <h2 id="result-title">BLOCKS HELD</h2>
+        <p id="result-copy"></p>
+        <div class="result-stats" id="result-stats"></div>
+        <div class="result-actions">
+          <button type="button" class="primary-button" id="result-restart">REPLAY SCENARIO</button>
+          <button type="button" class="secondary-button" id="result-close">INSPECT SITE</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
