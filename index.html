@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071015" />
+    <title>环形货站 · RING FREIGHT</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="环形货站首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>
+            <strong>RING FREIGHT</strong>
+            <small>环形货站 / 调度终端 07</small>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <label class="seed-field">
+            <span>SEED</span>
+            <input id="seedInput" value="RING-305" maxlength="24" spellcheck="false" />
+          </label>
+          <button id="newRunBtn" class="btn btn-primary">
+            <span class="btn-dot"></span> 新一局
+          </button>
+          <button id="pauseBtn" class="btn btn-icon" aria-label="暂停游戏" title="暂停 / 继续">
+            <span id="pauseIcon">Ⅱ</span>
+          </button>
+          <label class="speed-field">
+            <span>速度</span>
+            <select id="speedSelect">
+              <option value="1">1×</option>
+              <option value="2">2×</option>
+              <option value="4" selected>4×</option>
+              <option value="8">8×</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="stage-panel">
+          <div class="panel-heading stage-heading">
+            <div>
+              <span class="eyebrow">LIVE TOPOLOGY</span>
+              <h1>环形站场</h1>
+            </div>
+            <div class="live-pill"><span></span> 实时仿真</div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="stationCanvas" aria-label="环形货站实时线路图"></canvas>
+            <div class="clock-chip">
+              <span id="clockLabel">00:00</span>
+              <small>剩余 <b id="remainingLabel">03:00</b></small>
+            </div>
+            <div class="stage-legend">
+              <span><i class="legend-line"></i> 单向环线</span>
+              <span><i class="legend-heat"></i> 拥堵热区</span>
+              <span><i class="legend-fault"></i> 故障车辆</span>
+            </div>
+            <div id="canvasTooltip" class="canvas-tooltip"></div>
+          </div>
+          <div class="mission-strip">
+            <div class="mission-copy">
+              <span class="eyebrow">MISSION 01</span>
+              <strong>三分钟吞吐挑战</strong>
+              <p>每 60 秒入库 3 件任务。完成 80%，并至少保留 1 辆可用的空闲备用车。</p>
+            </div>
+            <div class="mission-progress">
+              <div class="progress-meta">
+                <span>交付进度</span>
+                <b id="missionProgressText">0 / 8</b>
+              </div>
+              <div class="progress-track">
+                <span id="missionProgressBar"></span>
+                <i class="progress-target" title="80% 通关线"></i>
+              </div>
+            </div>
+            <button id="autoDispatchBtn" class="btn btn-ghost">自动派单</button>
+          </div>
+        </section>
+
+        <aside class="control-panel">
+          <section class="kpi-grid" aria-label="战况摘要">
+            <article class="kpi kpi-time">
+              <span>剩余时间</span>
+              <strong id="timeValue">03:00</strong>
+              <small>下一波 <b id="nextWaveValue">01:00</b></small>
+            </article>
+            <article class="kpi">
+              <span>已交付</span>
+              <strong><b id="completedValue">0</b><em>/9</em></strong>
+              <small>目标 <b id="requiredValue">8</b> 件</small>
+            </article>
+            <article class="kpi">
+              <span>备用车</span>
+              <strong><b id="reserveValue">5</b><em>辆</em></strong>
+              <small>需保留 ≥ 1</small>
+            </article>
+            <article class="kpi">
+              <span>车队均电</span>
+              <strong><b id="energyValue">100</b><em>%</em></strong>
+              <small id="depletedValue">无车辆掉线</small>
+            </article>
+          </section>
+
+          <section class="fleet-section">
+            <div class="section-title">
+              <div>
+                <span class="eyebrow">FLEET / 05</span>
+                <h2>搬运车</h2>
+              </div>
+              <span class="hint">拖任务卡到车辆</span>
+            </div>
+            <div id="fleetList" class="fleet-list"></div>
+          </section>
+
+          <section class="tasks-section">
+            <div class="section-title">
+              <div>
+                <span class="eyebrow">INBOUND QUEUE</span>
+                <h2>待派任务</h2>
+              </div>
+              <span id="waitingCount" class="count-badge">3</span>
+            </div>
+            <div id="taskList" class="task-list"></div>
+          </section>
+
+          <section class="log-section">
+            <div class="section-title compact">
+              <h2>调度日志</h2>
+              <span id="logTime" class="hint">00:00</span>
+            </div>
+            <div id="eventLog" class="event-log"></div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="footerbar">
+        <div class="footer-note">
+          <span class="pulse"></span>
+          路径实时演算 · 拥堵 / 低电 / 故障均会改变送达时间
+        </div>
+        <div class="demo-actions">
+          <span>验收演示</span>
+          <button id="successDemoBtn" class="btn btn-mini">成功局</button>
+          <button id="failureDemoBtn" class="btn btn-mini btn-danger">电量耗尽局</button>
+        </div>
+      </footer>
+    </div>
+
+    <div id="resultOverlay" class="result-overlay" hidden>
+      <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <span id="resultKicker" class="result-kicker">SHIFT COMPLETE</span>
+        <div id="resultGlyph" class="result-glyph">✓</div>
+        <h2 id="resultTitle">任务成功</h2>
+        <p id="resultReason"></p>
+        <div class="result-stats">
+          <div><span>交付</span><b id="resultDelivered">8 / 9</b></div>
+          <div><span>备用车</span><b id="resultReserve">1 辆</b></div>
+          <div><span>耗尽</span><b id="resultDepleted">0 辆</b></div>
+        </div>
+        <div class="result-actions">
+          <button id="replayBtn" class="btn btn-primary">同 seed 再开一局</button>
+          <button id="closeResultBtn" class="btn btn-ghost">查看站场</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/game.js"></script>
+  </body>
+</html>
