@@ -1,0 +1,233 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.topbar {
+  padding: 12px 18px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+.topbar h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.hud {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.hud b {
+  color: #fde047;
+  font-size: 16px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+button,
+select {
+  background: #334155;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+button:hover,
+select:hover {
+  background: #475569;
+}
+
+button.primary {
+  background: #dc2626;
+  border-color: #ef4444;
+  font-weight: 700;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.speed-group {
+  display: inline-flex;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.speed-group button {
+  border: 0;
+  border-radius: 0;
+}
+
+.speed-group button.active {
+  background: #2563eb;
+}
+
+label {
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  padding: 16px;
+}
+
+.map-wrap {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  background: #0b1220;
+  border-radius: 8px;
+  display: block;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 4px;
+}
+
+.side section {
+  margin-bottom: 14px;
+}
+
+.side h2,
+.logs h2 {
+  font-size: 14px;
+  margin: 0 0 8px;
+  color: #93c5fd;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 11px;
+}
+
+.card.active {
+  outline: 2px solid #fde047;
+  background: #3b4a63;
+}
+
+.card span {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+meter {
+  width: 90px;
+  height: 10px;
+}
+
+.hospital-row {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 9px 11px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.logs {
+  padding: 0 16px 24px;
+}
+
+.log-box {
+  max-height: 230px;
+  overflow-y: auto;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.log-line {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px dashed #334155;
+}
+
+.log-line time {
+  color: #fde047;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #334155;
+  color: #bfdbfe;
+  white-space: nowrap;
+}
+
+.tag.deliver {
+  background: #14532d;
+}
+
+.tag.failure,
+.tag.traffic {
+  background: #7f1d1d;
+}
+
+.tag.beds {
+  background: #78350f;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

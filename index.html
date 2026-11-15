@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生命线调度 · 救护车模拟</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🚑 生命线调度</h1>
+    <div class="hud">
+      <span id="seed-label">seed</span>
+      <span>剩余 <b id="timer">10:00</b></span>
+      <span id="progress">0/5 单（目标 4 单）</span>
+      <span id="result">进行中</span>
+    </div>
+    <div class="controls">
+      <label>路径
+        <select id="priority">
+          <option value="fastest">最快避堵</option>
+          <option value="shortest">最短路径</option>
+        </select>
+      </label>
+      <label>医院
+        <select id="hospital-select">
+          <option value="">自动选择</option>
+          <option value="H1">市立医院</option>
+          <option value="H2">红十字医院</option>
+        </select>
+      </label>
+      <button id="dispatch-btn" class="primary">派遣</button>
+      <button id="return-btn">返场加油</button>
+      <div class="speed-group">
+        <button class="speed-btn active" data-speed="1">1×</button>
+        <button class="speed-btn" data-speed="2">2×</button>
+        <button class="speed-btn" data-speed="4">4×</button>
+      </div>
+      <button id="mute-btn">🔊 声音</button>
+      <button id="restart-btn">重开（同 seed）</button>
+      <button id="export-json">导出 JSON</button>
+      <button id="export-csv">导出 CSV</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="map-wrap">
+      <canvas id="map" width="900" height="560"></canvas>
+      <div class="legend">
+        <span><i style="background:#22c55e"></i>畅通</span>
+        <span><i style="background:#a3e635"></i>缓行</span>
+        <span><i style="background:#f59e0b"></i>拥堵</span>
+        <span><i style="background:#ef4444"></i>严重拥堵</span>
+        <span>● 伤员　▣ 医院　■ 车库　虚线为预选路线</span>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section>
+        <h2>救护车</h2>
+        <div id="fleet-panel" class="panel"></div>
+      </section>
+      <section>
+        <h2>伤员（五街区同时呼叫）</h2>
+        <div id="patient-panel" class="panel"></div>
+      </section>
+      <section>
+        <h2>医院床位</h2>
+        <div id="hospital-panel" class="panel"></div>
+      </section>
+    </aside>
+  </main>
+
+  <section class="logs">
+    <h2>实时调度日志</h2>
+    <div id="log-box" class="log-box"></div>
+  </section>
+
+  <script src="js/rng.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
