@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#081115" />
+    <meta
+      name="description"
+      content="实时可编辑的程序化噪声地形，支持水位、侵蚀、洞穴旗标与 PNG / JSON 导出。"
+    />
+    <title>Terrain Lab — 程序化地形工作台</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="terrain-canvas" aria-label="可交互三维噪声地形"></canvas>
+      <div class="vignette" aria-hidden="true"></div>
+
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Terrain Lab 首页">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 34 34" fill="none">
+              <path d="M4 25.5 12.2 10l5 9.5L21 13l9 12.5H4Z" />
+              <path d="M8.8 25.5 12.2 10l2.7 5.2" />
+            </svg>
+          </span>
+          <span>
+            <strong>TERRAIN / LAB</strong>
+            <small>程序化地形工作台</small>
+          </span>
+        </a>
+        <div class="topbar-meta">
+          <span class="live-pill"><i></i>实时生成</span>
+          <span id="build-time" class="build-time">— ms</span>
+        </div>
+        <div class="topbar-actions">
+          <button id="open-compare" class="button button-ghost" type="button">
+            <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <rect x="2" y="2.5" width="6" height="13" rx="1" />
+              <rect x="10" y="2.5" width="6" height="13" rx="1" />
+            </svg>
+            双 Seed 对比
+          </button>
+          <button id="reset-view" class="icon-button" type="button" title="重置视角" aria-label="重置视角">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M3.5 7.5A7 7 0 1 1 3 12" />
+              <path d="M3 3.5v4.4h4.4" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <aside class="control-panel" aria-label="地形参数">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">TERRAIN PARAMETERS</p>
+            <h1>塑造地貌</h1>
+          </div>
+          <button id="random-seed" class="icon-button" type="button" title="随机 seed" aria-label="随机 seed">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M3 5.5h3.2c3 0 4.6 9 7.6 9H17" />
+              <path d="m14.5 12 2.5 2.5-2.5 2.5" />
+              <path d="M3 14.5h3.2c1 0 1.8-1 2.5-2.2" />
+              <path d="M12.2 7.5c.6-.7 1.1-1.2 1.6-1.2H17" />
+              <path d="m14.5 3.7 2.5 2.6-2.5 2.5" />
+            </svg>
+          </button>
+        </div>
+
+        <label class="seed-field" for="seed">
+          <span>SEED / 地貌种子</span>
+          <span class="seed-input-wrap">
+            <input id="seed" type="text" value="ember-42" maxlength="32" spellcheck="false" autocomplete="off" />
+            <button id="apply-seed" class="seed-apply" type="button">应用</button>
+          </span>
+        </label>
+
+        <div class="range-group">
+          <div class="range-label">
+            <label for="frequency">噪声频率 <span class="hint">FREQUENCY</span></label>
+            <output id="frequency-value" for="frequency">2.35</output>
+          </div>
+          <input id="frequency" type="range" min="0.8" max="6" step="0.05" value="2.35" />
+        </div>
+
+        <div class="range-group">
+          <div class="range-label">
+            <label for="octaves">噪声层数 <span class="hint">OCTAVES</span></label>
+            <output id="octaves-value" for="octaves">5 层</output>
+          </div>
+          <input id="octaves" type="range" min="1" max="8" step="1" value="5" />
+        </div>
+
+        <div class="range-group">
+          <div class="range-label">
+            <label for="erosion">侵蚀强度 <span class="hint">EROSION</span></label>
+            <output id="erosion-value" for="erosion">55%</output>
+          </div>
+          <input id="erosion" type="range" min="0" max="1" step="0.01" value="0.55" />
+        </div>
+
+        <div class="range-group water-range">
+          <div class="range-label">
+            <label for="sea-level">海岸水位 <span class="hint">SEA LEVEL</span></label>
+            <output id="sea-level-value" for="sea-level">360 m</output>
+          </div>
+          <input id="sea-level" type="range" min="0.08" max="0.82" step="0.005" value="0.4" />
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <section class="flags-section" aria-labelledby="flags-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">CAVE MARKERS</p>
+              <h2 id="flags-title">洞穴旗标 <span id="flag-count">0</span></h2>
+            </div>
+            <button id="clear-flags" class="text-button" type="button" disabled>清空</button>
+          </div>
+          <p id="flags-empty" class="empty-state">在地形上右键放置旗标，标记洞穴入口。</p>
+          <ul id="flag-list" class="flag-list" aria-live="polite"></ul>
+          <div class="coordinate-note">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="10" cy="10" r="3.2" />
+              <path d="M10 2v3M10 15v3M2 10h3M15 10h3" />
+            </svg>
+            <p><strong>世界坐标锁定</strong><span>参数与水位变化只重算地貌，不移动旗标 X / Y / Z。</span></p>
+          </div>
+        </section>
+
+        <div class="export-row">
+          <button id="export-png" class="button button-primary" type="button">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8" />
+              <path d="M4 13.5V17h12v-3.5" />
+            </svg>
+            导出 PNG
+          </button>
+          <button id="export-json" class="button button-secondary" type="button">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M6.5 3.5h7l3 3v10h-10v-13Z" />
+              <path d="M8.5 9h4M8.5 12h3" />
+            </svg>
+            参数 JSON
+          </button>
+        </div>
+      </aside>
+
+      <section class="stats-panel" aria-label="地形统计">
+        <div class="stat-card stat-card-peak">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="m3 20 7-13 4 7 2-3 5 9H3Z" />
+              <path d="m8 12 2 1.5 2-3" />
+            </svg>
+          </span>
+          <span class="stat-copy">
+            <small>最高峰 / PEAK</small>
+            <strong><span id="peak-value">—</span><em>m</em></strong>
+            <span id="peak-coord" class="stat-note">—</span>
+          </span>
+        </div>
+        <div class="stat-card stat-card-land">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 17.5 8 9l4 5 3-4 6 7.5H3Z" />
+              <path d="M3 20h18" />
+            </svg>
+          </span>
+          <span class="stat-copy">
+            <small>陆地面积 / LAND</small>
+            <strong><span id="land-value">—</span><em>km²</em></strong>
+            <span id="land-percent" class="stat-note">—</span>
+          </span>
+        </div>
+        <div class="stat-card stat-card-water">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0" />
+            </svg>
+          </span>
+          <span class="stat-copy">
+            <small>水面高程 / WATER</small>
+            <strong><span id="water-value">—</span><em>m</em></strong>
+            <span class="stat-note">水平填充低洼区域</span>
+          </span>
+        </div>
+        <div class="stat-card stat-card-flag">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M7 21V4m0 0h10l-2 4 2 4H7" />
+            </svg>
+          </span>
+          <span class="stat-copy">
+            <small>洞穴入口 / CAVES</small>
+            <strong><span id="cave-stat-value">0</span><em>处</em></strong>
+            <span id="flag-water-status" class="stat-note">右键地形插旗</span>
+          </span>
+        </div>
+      </section>
+
+      <div id="map-label" class="map-label" aria-hidden="true">
+        <span>WORLD 1800 × 1800 M</span>
+        <i></i>
+        <span id="map-seed">EMBER-42</span>
+      </div>
+
+      <div class="interaction-hint">
+        <span><b>左键</b> 旋转</span>
+        <span><b>滚轮</b> 缩放</span>
+        <span><b>右键</b> 插旗标记洞穴</span>
+      </div>
+
+      <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+      <dialog id="compare-dialog" class="compare-dialog">
+        <form method="dialog" class="dialog-shell">
+          <header class="dialog-header">
+            <div>
+              <p class="eyebrow">SEED FIELD STUDY</p>
+              <h2>双 Seed 对照实验</h2>
+              <p>固定当前频率、层数、侵蚀与水位，只改变 seed。</p>
+            </div>
+            <button class="icon-button dialog-close" value="close" aria-label="关闭对比">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="m5 5 10 10M15 5 5 15" />
+              </svg>
+            </button>
+          </header>
+
+          <div class="compare-inputs">
+            <label>
+              <span>SEED A</span>
+              <input id="compare-seed-a" type="text" value="ember-42" maxlength="32" spellcheck="false" />
+            </label>
+            <span class="versus">VS</span>
+            <label>
+              <span>SEED B</span>
+              <input id="compare-seed-b" type="text" value="tidal-ridge" maxlength="32" spellcheck="false" />
+            </label>
+            <button id="run-compare" class="button button-primary" type="button">运行对比</button>
+          </div>
+
+          <div class="compare-grid">
+            <article class="compare-card" data-side="a">
+              <div class="compare-map-wrap">
+                <canvas id="compare-canvas-a" width="540" height="540"></canvas>
+                <span class="map-badge">A</span>
+              </div>
+              <div class="compare-metrics">
+                <h3 id="compare-name-a">ember-42</h3>
+                <dl>
+                  <div><dt>最高峰</dt><dd id="compare-peak-a">—</dd></div>
+                  <div><dt>陆地面积</dt><dd id="compare-land-a">—</dd></div>
+                  <div><dt>陆地占比</dt><dd id="compare-share-a">—</dd></div>
+                  <div><dt>平均海拔</dt><dd id="compare-mean-a">—</dd></div>
+                </dl>
+              </div>
+            </article>
+            <article class="compare-card" data-side="b">
+              <div class="compare-map-wrap">
+                <canvas id="compare-canvas-b" width="540" height="540"></canvas>
+                <span class="map-badge">B</span>
+              </div>
+              <div class="compare-metrics">
+                <h3 id="compare-name-b">tidal-ridge</h3>
+                <dl>
+                  <div><dt>最高峰</dt><dd id="compare-peak-b">—</dd></div>
+                  <div><dt>陆地面积</dt><dd id="compare-land-b">—</dd></div>
+                  <div><dt>陆地占比</dt><dd id="compare-share-b">—</dd></div>
+                  <div><dt>平均海拔</dt><dd id="compare-mean-b">—</dd></div>
+                </dl>
+              </div>
+            </article>
+          </div>
+
+          <footer class="compare-footer">
+            <p id="compare-summary">运行后生成地形指纹与指标差异。</p>
+            <div class="compare-footer-actions">
+              <button id="use-seed-a" class="button button-ghost" type="button">应用 Seed A</button>
+              <button id="use-seed-b" class="button button-ghost" type="button">应用 Seed B</button>
+            </div>
+          </footer>
+        </form>
+      </dialog>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
