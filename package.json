@@ -1,0 +1,26 @@
+{
+  "name": "uid292",
+  "version": "1.0.0",
+  "description": "Per-pixel canvas magnifier with nearest/bilinear sampling, pinned points and comparison export",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test tests/sampler.test.mjs",
+    "e2e": "node tests/e2e.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "devDependencies": {
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "playwright": "^1.65.1"
+  }
+}

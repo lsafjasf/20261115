@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>高密度技术图 · 局部放大镜</title>
+  <link rel="stylesheet" href="./node_modules/@fontsource/noto-sans-sc/400.css" />
+  <link rel="stylesheet" href="./node_modules/@fontsource/noto-sans-sc/600.css" />
+  <style>
+    :root {
+      --bg: #10151c;
+      --panel: #1a222d;
+      --line: #2c3a49;
+      --text: #e4ebf2;
+      --muted: #8fa0b3;
+      --accent: #4ea1ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 13px/1.5 "Noto Sans SC", ui-sans-serif, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+    header h1 { font-size: 14px; margin: 0; font-weight: 600; }
+    .group { display: flex; align-items: center; gap: 6px; }
+    .group .lbl { color: var(--muted); }
+    button, select {
+      background: #232f3d;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    button.active { background: var(--accent); border-color: var(--accent); color: #08131f; }
+    input[type="range"] { width: 150px; accent-color: var(--accent); }
+    .zoomval { width: 52px; font-variant-numeric: tabular-nums; color: var(--accent); }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 14px;
+      padding: 14px;
+      align-items: start;
+    }
+    .stage {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      min-width: 0;
+    }
+    #map {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #f6f8fb;
+      border-radius: 6px;
+      cursor: crosshair;
+    }
+    .side { display: flex; flex-direction: column; gap: 14px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .card h2 { font-size: 12px; margin: 0 0 10px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    #lensWrap { display: flex; justify-content: center; }
+    #lens {
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px #33455a, 0 8px 28px rgba(0,0,0,.45);
+      background: #0d1116;
+    }
+    .readout {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+    }
+    .readout b { color: var(--text); font-weight: 600; }
+    .pins { display: grid; gap: 8px; }
+    .pinrow {
+      display: flex; align-items: center; gap: 8px;
+      background: #141c26; border: 1px solid var(--line);
+      border-radius: 8px; padding: 8px 10px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .pinrow .meta { flex: 1; font-variant-numeric: tabular-nums; }
+    .pinrow .meta small { display: block; color: var(--muted); }
+    .pinrow button { padding: 3px 8px; font-size: 12px; }
+    .hint { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>高密度技术图 · 局部放大镜</h1>
+    <div class="group">
+      <span class="lbl">采样模式</span>
+      <button id="modeNearest" class="active" type="button">最近邻</button>
+      <button id="modeSmooth" type="button">平滑(双线性)</button>
+    </div>
+    <div class="group">
+      <span class="lbl">倍率</span>
+      <input id="zoom" type="range" min="2" max="16" step="0.5" value="6" />
+      <span class="zoomval" id="zoomVal">6.0×</span>
+    </div>
+    <div class="group">
+      <button id="pinA" type="button">固定观察点 A</button>
+      <button id="pinB" type="button">固定观察点 B</button>
+      <button id="pinClear" type="button">清除固定点</button>
+    </div>
+    <div class="group">
+      <button id="exportBtn" type="button">导出对比图 PNG</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="stage">
+      <canvas id="map" width="1600" height="1000"></canvas>
+      <p class="hint">在左图移动鼠标，右侧圆形镜片逐像素采样对应区域；滚轮也可调节倍率，中心点保持不动。</p>
+    </section>
+
+    <aside class="side">
+      <div class="card">
+        <h2>圆形放大区域</h2>
+        <div id="lensWrap"><canvas id="lens" width="320" height="320"></canvas></div>
+        <div class="readout">
+          <span>中心 X <b id="cx">—</b></span>
+          <span>中心 Y <b id="cy">—</b></span>
+          <span>倍率 <b id="rz">6.0×</b></span>
+          <span>模式 <b id="rm">最近邻</b></span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>观察点</h2>
+        <div class="pins">
+          <div class="pinrow">
+            <span class="dot" style="background:#ff5d5d"></span>
+            <span class="meta"><small>观察点 A</small><span id="pinAMeta">未固定</span></span>
+            <button data-jump="A" type="button">跳转</button>
+          </div>
+          <div class="pinrow">
+            <span class="dot" style="background:#5dffb0"></span>
+            <span class="meta"><small>观察点 B</small><span id="pinBMeta">未固定</span></span>
+            <button data-jump="B" type="button">跳转</button>
+          </div>
+        </div>
+        <p class="hint">固定两个观察点后可导出 2×2 对比图（两点 × 两种采样）。</p>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
