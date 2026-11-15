@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>小游戏地图校验器</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>地图校验器</h1>
+    <p>输入 seed → 三次生成比对哈希 → 目标可达性搜索 → 阻断定位与修复</p>
+  </header>
+
+  <section class="controls">
+    <label for="seedInput">Seed</label>
+    <input id="seedInput" type="text" value="demo-good" />
+    <button id="runBtn">校验</button>
+    <button class="preset" data-seed="demo-good">正常 seed</button>
+    <button class="preset" data-seed="348">故意失败 seed</button>
+  </section>
+
+  <section class="controls layers">
+    <span>叠加层:</span>
+    <label><input type="checkbox" id="layObstacles" checked /> 障碍</label>
+    <label><input type="checkbox" id="layGoals" checked /> 目标</label>
+    <label><input type="checkbox" id="layDecorations" checked /> 装饰</label>
+    <label><input type="checkbox" id="layNav" /> 导航节点</label>
+    <label><input type="checkbox" id="layPaths" checked /> 路径</label>
+    <label><input type="checkbox" id="layDiff" checked /> 差异</label>
+    <label><input type="checkbox" id="layBlocker" checked /> 阻断点</label>
+  </section>
+
+  <main>
+    <div class="canvas-wrap">
+      <canvas id="mapCanvas" width="768" height="512"></canvas>
+      <div id="legend" class="legend"></div>
+    </div>
+    <aside id="report" class="report"></aside>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
