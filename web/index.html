@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>字幕轨道工作台 · Subtitle Studio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>字幕轨道工作台</h1>
+    <div class="toolbar">
+      <button id="btn-play" type="button">▶ 播放/暂停</button>
+      <button id="btn-add" type="button">＋ 新增字幕</button>
+      <button id="btn-split" type="button">✂ 在播放头断句</button>
+      <span class="spacer"></span>
+      <button id="btn-vtt" type="button">导出 WebVTT</button>
+      <button id="btn-wav" type="button">导出 WAV</button>
+      <button id="btn-json" type="button">导出工程 JSON</button>
+      <button id="btn-reload" type="button">重载工程 JSON</button>
+      <input id="file-json" type="file" accept="application/json,.json" hidden />
+    </div>
+  </header>
+
+  <section class="preview-card">
+    <div id="preview-screen" class="preview-screen">
+      <span id="preview-text" class="preview-text"></span>
+    </div>
+    <div class="transport">
+      <input id="scrubber" type="range" min="0" max="20000" step="10" value="0" />
+      <span id="time-readout" class="time-readout">00:00.000 / 00:20.000</span>
+    </div>
+    <div id="timeline" class="timeline">
+      <div id="track" class="track"></div>
+      <div id="playhead" class="playhead"></div>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>入点 (ms)</th><th>出点 (ms)</th><th>文本</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="cue-rows"></tbody>
+    </table>
+  </section>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="studio_core.js"></script>
+  <script src="studio_audio.js"></script>
+  <script src="studio_export.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

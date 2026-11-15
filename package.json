@@ -1,0 +1,13 @@
+{
+  "name": "subtitle-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "可编辑字幕轨道 + 节奏提示音合成 + WebVTT/WAV/工程 JSON 导出",
+  "scripts": {
+    "build": "node scripts/build_demo.js",
+    "verify": "node scripts/verify_outputs.js",
+    "test": "node scripts/test_web_core.js && node scripts/test_app_smoke.js",
+    "serve": "node scripts/serve.js",
+    "all": "bash scripts/run_all.sh"
+  }
+}
