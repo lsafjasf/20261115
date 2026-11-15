@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f3f0e7" />
+    <title>Foldwork — 六面体纸模展开器</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Foldwork 首页">
+          <svg class="brand-mark" viewBox="0 0 42 42" aria-hidden="true">
+            <path d="M4 12.5 20.4 4 38 11.8 21 20.2Z" />
+            <path d="M4 12.5v17.1L21 38V20.2Z" />
+            <path d="m21 20.2 17-8.4v17L21 38Z" />
+            <path class="brand-fold" d="M4 12.5 21 20.2 38 11.8" />
+          </svg>
+          <span class="brand-type"><b>FOLD</b>WORK</span>
+          <span class="brand-edition">STUDIO / 01</span>
+        </a>
+
+        <div class="project-title">
+          <span class="eyebrow">PAPER MODEL</span>
+          <div class="title-line">
+            <h1>六面体纸模</h1>
+            <span class="sync-pill"><i></i> 实时同步</span>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button class="button button-quiet" id="resetButton" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4.2 7.2A6.5 6.5 0 1 1 3.5 11" />
+              <path d="M4.2 2.9v4.6h4.6" />
+            </svg>
+            恢复初始
+          </button>
+          <button class="button button-secondary" id="printButton" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M5.3 7V3.4h9.4V7M5.3 14.2H3.5v-5.4h13v5.4h-1.8" />
+              <path d="M5.3 11.3h9.4v5.3H5.3z" />
+            </svg>
+            打印
+          </button>
+          <button class="button button-primary" id="exportButton" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 2.8v9.7M6.5 9l3.5 3.5L13.5 9" />
+              <path d="M3.3 13.4v3.8h13.4v-3.8" />
+            </svg>
+            导出 SVG
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="canvas-card model-card" aria-labelledby="modelTitle">
+          <div class="card-head">
+            <div>
+              <span class="card-kicker">01 / MODEL</span>
+              <h2 id="modelTitle">三维模型</h2>
+            </div>
+            <div class="card-status"><i class="status-dot"></i><span id="modelStatus">几何有效</span></div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="modelCanvas" aria-label="可拖动顶点的六面体三维预览"></canvas>
+            <div class="canvas-chip">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="m7.7 11.8 2.1 2.1 3.9-5.8" />
+                <circle cx="10" cy="10" r="7" />
+              </svg>
+              拖动白色顶点修改形状
+            </div>
+            <div class="axis-hint">
+              <span class="axis-dot axis-x"></span>X
+              <span class="axis-dot axis-y"></span>Y
+              <span class="axis-dot axis-z"></span>Z
+            </div>
+            <div class="view-hint">拖动空白处旋转 · 滚轮缩放</div>
+          </div>
+          <div class="card-foot model-foot">
+            <div class="vertex-readout">
+              <span class="mini-label">SELECTED VERTEX</span>
+              <strong id="selectedVertex">V6</strong>
+              <span id="vertexCoords">X 1.20 · Y 0.90 · Z 0.75</span>
+            </div>
+            <div class="vertex-rail" id="vertexRail" aria-label="顶点编号列表"></div>
+          </div>
+        </section>
+
+        <section class="canvas-card net-card" aria-labelledby="netTitle">
+          <div class="card-head">
+            <div>
+              <span class="card-kicker">02 / FLAT PATTERN</span>
+              <h2 id="netTitle">纸模展开图</h2>
+            </div>
+            <div class="net-summary">
+              <span><b id="panelCount">6</b> 面板</span>
+              <span><b id="tabCount">7</b> 舌片</span>
+              <span><b>1:1</b> 打印</span>
+            </div>
+          </div>
+          <div class="canvas-wrap net-wrap">
+            <canvas id="netCanvas" aria-label="带折线和粘贴舌片的六面体纸模展开图"></canvas>
+            <div class="net-badge">
+              <span class="badge-cut"></span>裁切线
+              <span class="badge-fold"></span>折线
+              <span class="badge-tab"></span>粘贴区
+            </div>
+            <div class="validation-badge" id="validationBadge">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="m6 10.2 2.6 2.6L14.4 7" />
+              </svg>
+              无重叠 · 面积有效
+            </div>
+            <div class="net-scale">
+              <span>25 mm</span>
+              <i></i>
+            </div>
+          </div>
+          <div class="card-foot net-foot">
+            <div class="numbering-note">
+              <span class="number-badge">V0—V7</span>
+              <span>顶点编号在调整后保持锁定</span>
+            </div>
+            <button class="text-button" id="toggleLabels" type="button" aria-pressed="true">
+              <span class="eye-icon"></span>显示编号
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="statusbar">
+        <div class="status-group">
+          <span class="status-label">MESH</span>
+          <span><b>8</b> 顶点</span>
+          <span><b>6</b> 面</span>
+          <span><b>12</b> 边</span>
+        </div>
+        <div class="status-message" id="statusMessage">
+          <span class="pulse-dot"></span>
+          <span>展开图已随模型更新</span>
+        </div>
+        <div class="status-group status-right">
+          <span class="status-label">OUTPUT</span>
+          <span>A4 / SVG</span>
+          <span id="outputSummary">6 面板 · 7 舌片</span>
+        </div>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
