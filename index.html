@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0b0c" />
+    <title>Pulse — Motion Poster Studio</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">P</span>
+          <div class="brand-copy">
+            <strong>PULSE</strong>
+            <span>MOTION POSTER STUDIO</span>
+          </div>
+        </div>
+
+        <div class="project-title">
+          <span class="eyebrow">PROJECT 01</span>
+          <span class="project-name">NIGHT / SIGNAL</span>
+          <span class="save-state" id="saveState"><i></i> 已自动保存</span>
+        </div>
+
+        <div class="top-actions">
+          <button class="button button-ghost" id="importButton" title="导入 JSON 工程">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+            导入
+          </button>
+          <button class="button button-ghost" id="saveButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5V4Z"/><path d="M8 4v6h8V4M8 20v-6h8v6"/></svg>
+            保存 JSON
+          </button>
+          <button class="button button-primary" id="exportButton">
+            <span class="record-dot"></span>
+            导出 WebM
+          </button>
+          <input type="file" id="fileInput" accept="application/json,.json" hidden />
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar layers-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">01 / COMPOSITION</span>
+              <h2>图层</h2>
+            </div>
+            <div class="heading-actions">
+              <button class="icon-button" id="addLayerButton" title="添加图层">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="layer-list" id="layerList"></div>
+
+          <div class="side-bottom">
+            <div class="audio-card">
+              <div class="audio-card-head">
+                <span class="eyebrow">AUDIO / SYNTH</span>
+                <button class="mini-toggle is-on" id="audioToggle" aria-pressed="true">
+                  <i></i><span>ON</span>
+                </button>
+              </div>
+              <div class="audio-title">LOW FREQUENCY</div>
+              <div class="audio-meta"><span>120 BPM</span><span>24 BEATS</span></div>
+              <div class="waveform" id="waveform" aria-hidden="true"></div>
+            </div>
+            <div class="spec-row">
+              <span>画布</span><strong>1080 × 1350</strong>
+            </div>
+            <div class="spec-row">
+              <span>时长</span><strong>12.00 SEC</strong>
+            </div>
+            <div class="spec-row">
+              <span>色彩</span><strong>REC.709</strong>
+            </div>
+          </div>
+        </aside>
+
+        <section class="stage-panel">
+          <div class="stage-toolbar">
+            <div class="view-tabs">
+              <button class="view-tab is-active">画布</button>
+              <button class="view-tab" id="guideToggle">安全框</button>
+            </div>
+            <div class="stage-info">
+              <span class="live-indicator"><i></i> LIVE PREVIEW</span>
+              <span>42.6%</span>
+              <button class="icon-button" id="fitButton" title="适配画布">
+                <svg viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="stage" id="stage">
+            <div class="canvas-shell" id="canvasShell">
+              <canvas id="posterCanvas" width="1080" height="1350" aria-label="动态海报画布"></canvas>
+              <div class="safe-frame" id="safeFrame" aria-hidden="true"></div>
+              <div class="canvas-badge" id="canvasBadge">
+                <span class="badge-layer"></span>
+                <span id="canvasLayerName">主标题</span>
+              </div>
+            </div>
+            <div class="stage-caption">
+              <span>LOOP <b>12.00S</b></span>
+              <span class="caption-line"></span>
+              <span>FRAME <b id="frameCounter">001</b> / 360</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="sidebar inspector-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">02 / INSPECTOR</span>
+              <h2>属性</h2>
+            </div>
+            <span class="layer-type" id="selectedType">TEXT</span>
+          </div>
+
+          <div class="inspector-scroll">
+            <div class="selected-layer-card">
+              <span class="layer-swatch" id="inspectorSwatch"></span>
+              <div>
+                <span>当前图层</span>
+                <strong id="selectedLayerName">主标题</strong>
+              </div>
+              <button class="icon-button" id="visibilityToggle" title="显示 / 隐藏图层">
+                <svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+              </button>
+            </div>
+
+            <section class="inspector-section">
+              <div class="section-title">
+                <span>位移</span>
+                <button class="keyframe-button" data-keyframe-property="position" title="在播放头处添加位移关键帧">
+                  <svg viewBox="0 0 16 16"><path d="m8 1 7 7-7 7-7-7Z"/></svg>
+                </button>
+              </div>
+              <div class="field-grid">
+                <label class="field">
+                  <span>X</span>
+                  <input type="number" id="positionX" step="1" value="0" />
+                  <em>PX</em>
+                </label>
+                <label class="field">
+                  <span>Y</span>
+                  <input type="number" id="positionY" step="1" value="0" />
+                  <em>PX</em>
+                </label>
+              </div>
+            </section>
+
+            <section class="inspector-section">
+              <div class="section-title">
+                <span>不透明度</span>
+                <button class="keyframe-button" data-keyframe-property="opacity" title="在播放头处添加不透明度关键帧">
+                  <svg viewBox="0 0 16 16"><path d="m8 1 7 7-7 7-7-7Z"/></svg>
+                </button>
+              </div>
+              <div class="opacity-row">
+                <input type="range" id="opacityRange" min="0" max="100" step="1" value="100" />
+                <label class="compact-field">
+                  <input type="number" id="opacityInput" min="0" max="100" step="1" value="100" />
+                  <span>%</span>
+                </label>
+              </div>
+            </section>
+
+            <section class="inspector-section">
+              <div class="section-title">
+                <span>颜色</span>
+                <button class="keyframe-button" data-keyframe-property="color" title="在播放头处添加颜色关键帧">
+                  <svg viewBox="0 0 16 16"><path d="m8 1 7 7-7 7-7-7Z"/></svg>
+                </button>
+              </div>
+              <div class="color-row">
+                <label class="color-chip">
+                  <input type="color" id="colorInput" value="#ff5c35" />
+                  <span id="colorChip"></span>
+                </label>
+                <label class="hex-field">
+                  <span>#</span>
+                  <input type="text" id="hexInput" maxlength="6" value="FF5C35" spellcheck="false" />
+                </label>
+              </div>
+            </section>
+
+            <section class="inspector-section">
+              <div class="section-title">
+                <span>当前关键帧</span>
+                <span class="keyframe-count" id="keyframeCount">0</span>
+              </div>
+              <div class="keyframe-summary" id="keyframeSummary"></div>
+              <button class="add-keyframe-wide" id="addKeyframeButton">
+                <svg viewBox="0 0 16 16"><path d="m8 1 7 7-7 7-7-7Z"/></svg>
+                在 <b id="keyframeTime">00.00</b>s 添加全部关键帧
+              </button>
+            </section>
+
+            <div class="inspector-tip">
+              <span class="tip-mark">⌘</span>
+              拖动播放头实时预览。修改属性会自动写入当前时间的关键帧。
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <section class="timeline-panel">
+        <div class="transport">
+          <div class="transport-left">
+            <button class="play-button" id="playButton" title="播放 / 暂停">
+              <svg id="playIcon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg>
+            </button>
+            <div class="time-readout">
+              <strong id="currentTimeLabel">00:00.00</strong>
+              <span>/ 00:12.00</span>
+            </div>
+          </div>
+          <div class="transport-right">
+            <button class="loop-toggle is-on" id="loopButton" aria-pressed="true">
+              <svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4M3 11V9a2 2 0 0 1 2-2h16M7 21l-4-4 4-4M21 13v2a2 2 0 0 1-2 2H3"/></svg>
+              LOOP
+            </button>
+            <span class="bpm-badge">120 BPM</span>
+          </div>
+        </div>
+
+        <div class="timeline-grid">
+          <div class="timeline-labels">
+            <div class="timeline-ruler-spacer">
+              <span>图层 / 属性</span>
+              <span>KEY</span>
+            </div>
+            <div class="track-label-list" id="trackLabels"></div>
+          </div>
+          <div class="timeline-main" id="timelineMain">
+            <div class="ruler" id="ruler"></div>
+            <div class="beat-grid" id="beatGrid"></div>
+            <div class="track-lanes" id="trackLanes"></div>
+            <div class="playhead" id="playhead">
+              <span class="playhead-handle"></span>
+              <span class="playhead-time" id="playheadTime">00.00</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <div class="modal-backdrop" id="exportModal" aria-hidden="true">
+      <div class="export-modal">
+        <button class="modal-close" id="modalClose" title="关闭">
+          <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+        <div class="export-kicker">MASTER / WEBM</div>
+        <h2 id="modalTitle">正在渲染 12 秒循环</h2>
+        <p id="modalSubtitle">WebM · VP9 + OPUS · 1080 × 1350</p>
+
+        <div class="render-state" id="renderState">
+          <div class="render-preview">
+            <canvas id="renderCanvas" width="1080" height="1350"></canvas>
+            <span class="render-rec">REC</span>
+            <div class="render-progress"><i id="renderProgress"></i></div>
+          </div>
+          <div class="render-meta">
+            <span>已录制</span>
+            <strong id="renderTime">00.0 / 12.0s</strong>
+            <em>音频节拍已锁定</em>
+          </div>
+        </div>
+
+        <div class="replay-state is-hidden" id="replayState">
+          <div class="replay-frame" id="replayFrame">
+            <video id="replayVideo" controls loop playsinline></video>
+            <span class="replay-stamp">LOOP READY</span>
+          </div>
+          <div class="replay-actions">
+            <div>
+              <span class="export-kicker">EXPORT COMPLETE</span>
+              <strong id="fileMeta">night-signal-loop.webm</strong>
+            </div>
+            <a class="button button-primary" id="downloadLink" download="night-signal-loop.webm">
+              <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+              下载文件
+            </a>
+          </div>
+        </div>
+
+        <div class="modal-footer" id="modalFooter">
+          <span><i class="audio-pulse"></i> 正在将 Sub Bass 与画布帧同步写入</span>
+          <button class="text-button" id="cancelExport">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

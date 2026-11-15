@@ -1,0 +1,21 @@
+{
+  "name": "pulse-poster-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "verify": "node scripts/verify.mjs"
+  },
+  "devDependencies": {
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "ffmpeg-static": "^5.3.0",
+    "playwright": "^1.65.1",
+    "vite": "^7.2.2"
+  },
+  "dependencies": {
+    "@fontsource-variable/noto-sans-sc": "^5.3.1"
+  }
+}
