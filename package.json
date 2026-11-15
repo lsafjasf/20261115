@@ -1,0 +1,14 @@
+{
+  "name": "star-canvas-constellations",
+  "version": "1.0.0",
+  "description": "Zoomable star-field canvas for drawing and editing constellations, persisted as JSON",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/star-canvas.test.js",
+    "serve": "node tools/serve.js",
+    "e2e": "node tools/e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

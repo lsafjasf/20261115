@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>星空星座画布</title>
+  <link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <h1>星空星座画布</h1>
+
+      <section class="block">
+        <h2>视图</h2>
+        <label class="row">
+          星等阈值
+          <input id="magnitude" type="range" min="-1.5" max="7" step="0.1" value="6" />
+          <span id="magnitudeValue">6.0</span>
+        </label>
+        <p class="hint">阈值降低只隐藏暗星，星座标注与连线始终保留在工程中。</p>
+        <div class="btn-row">
+          <button id="zoomIn">放大</button>
+          <button id="zoomOut">缩小</button>
+          <button id="resetView">复位</button>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>工具</h2>
+        <div class="btn-row">
+          <button id="modePan" class="mode active">平移</button>
+          <button id="modeConnect" class="mode">连线</button>
+          <button id="newConstellation">新建星座</button>
+        </div>
+        <p class="hint">连线模式：点一颗星，再点同星座的另一颗星即可切换连线。</p>
+      </section>
+
+      <section class="block">
+        <h2>星座</h2>
+        <ul id="constellationList"></ul>
+      </section>
+
+      <section class="block" id="editor" hidden>
+        <h2>编辑选中星座</h2>
+        <label class="column">名称
+          <input id="editName" type="text" />
+        </label>
+        <label class="column">可见星等范围
+          <span class="range-row">
+            <input id="editMagMin" type="number" step="0.1" min="-2" max="9" />
+            至
+            <input id="editMagMax" type="number" step="0.1" min="-2" max="9" />
+          </span>
+        </label>
+        <label class="column">颜色
+          <input id="editColor" type="color" />
+        </label>
+        <div class="btn-row">
+          <button id="removeSelected">移除选中星</button>
+          <button id="deleteConstellation" class="danger">删除星座</button>
+        </div>
+        <p class="hint">移出星点会同时删除其连线；删除只影响当前工程，可重新载入恢复。</p>
+      </section>
+
+      <section class="block">
+        <h2>工程</h2>
+        <div class="btn-row">
+          <button id="saveProject">保存 JSON</button>
+          <button id="loadProject">载入 JSON</button>
+          <button id="resetDemo">重置示例</button>
+        </div>
+        <input id="fileInput" type="file" accept="application/json,.json" hidden />
+        <p id="status" class="status" role="status"></p>
+      </section>
+    </aside>
+
+    <main id="stage">
+      <canvas id="sky"></canvas>
+      <div id="tooltip" hidden></div>
+    </main>
+  </div>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
