@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c100f">
+  <title>Prism Lab · WebGL 着色器沙盒</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Prism Lab 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i>
+        </span>
+        <span class="brand-copy">
+          <strong>PRISM LAB</strong>
+          <small>Shader Sandbox</small>
+        </span>
+      </a>
+      <div class="topbar-center" aria-label="技术栈">
+        <span class="pulse-dot"></span>
+        <span>WebGL2</span>
+        <b></b>
+        <span>实时合成</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="text-button" id="resetChainButton" type="button">恢复示例</button>
+        <span class="version">v1.0</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="control-column" aria-label="效果链控制面板">
+        <section class="hero-note">
+          <span class="eyebrow">NO-BUILD PLAYGROUND</span>
+          <h1>叠一层，<br><em>看见光。</em></h1>
+          <p>组合波纹、雾与点阵，按顺序实时处理画面。所有效果均在 GPU 上逐级合成。</p>
+        </section>
+
+        <section class="card chain-card">
+          <div class="section-heading">
+            <div>
+              <span class="section-index">01</span>
+              <h2>效果链</h2>
+            </div>
+            <span class="count-pill" id="chainCount">0 PASS</span>
+          </div>
+          <p class="section-hint">点击条目调整参数，用箭头改变处理顺序。</p>
+
+          <div class="effect-library" id="effectLibrary" aria-label="添加效果">
+            <button type="button" data-add-effect="ripple">
+              <span class="library-icon ripple-icon" aria-hidden="true"></span>
+              <span>波纹<small>RIPPLE</small></span>
+              <i>+</i>
+            </button>
+            <button type="button" data-add-effect="fog">
+              <span class="library-icon fog-icon" aria-hidden="true"></span>
+              <span>雾气<small>FOG</small></span>
+              <i>+</i>
+            </button>
+            <button type="button" data-add-effect="dots">
+              <span class="library-icon dots-icon" aria-hidden="true"></span>
+              <span>点阵<small>DOT MATRIX</small></span>
+              <i>+</i>
+            </button>
+          </div>
+
+          <ol class="effect-chain" id="effectChain" aria-label="当前效果链"></ol>
+          <div class="chain-empty" id="chainEmpty" hidden>
+            <span>◇</span>
+            <p>效果链为空<br>从上方添加第一层效果</p>
+          </div>
+        </section>
+
+        <section class="card params-card">
+          <div class="section-heading">
+            <div>
+              <span class="section-index">02</span>
+              <h2>参数</h2>
+            </div>
+            <span class="active-effect-pill" id="activeEffectPill">未选择</span>
+          </div>
+          <div class="param-controls" id="paramControls"></div>
+        </section>
+
+        <section class="card save-card">
+          <div class="section-heading">
+            <div>
+              <span class="section-index">03</span>
+              <h2>存档</h2>
+            </div>
+            <span class="count-pill" id="savedCount">0 SLOT</span>
+          </div>
+          <form class="save-form" id="saveForm">
+            <label class="sr-only" for="saveName">效果链名称</label>
+            <input id="saveName" name="saveName" maxlength="32" autocomplete="off"
+              placeholder="给这条效果链命名…">
+            <button class="primary-button" type="submit">保存链条</button>
+          </form>
+          <div class="saved-list" id="savedList"></div>
+          <p class="storage-note">保存在浏览器本地 · 载入时恢复参数与原始顺序</p>
+        </section>
+      </aside>
+
+      <section class="stage-column" aria-label="实时画布">
+        <div class="stage-toolbar">
+          <div class="live-label">
+            <span class="live-dot"></span>
+            <span>LIVE COMPOSITE</span>
+            <small id="renderMode">3 PASS</small>
+          </div>
+          <div class="stage-actions">
+            <button class="icon-button" id="pauseButton" type="button" aria-pressed="false">
+              <span class="pause-glyph" aria-hidden="true"></span>
+              <span class="button-label">暂停</span>
+            </button>
+            <button class="icon-button shot-button" id="screenshotButton" type="button">
+              <span class="shot-glyph" aria-hidden="true"></span>
+              <span class="button-label">截图</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-frame" id="canvasFrame">
+          <canvas id="glCanvas" aria-label="三种着色器效果实时合成的画布"></canvas>
+          <div class="frame-corner frame-corner--tl"></div>
+          <div class="frame-corner frame-corner--br"></div>
+          <div class="fps-badge">
+            <span id="fpsValue">—</span>
+            <small>FPS</small>
+          </div>
+          <div class="resolution-badge" id="resolutionBadge">— × —</div>
+          <div class="canvas-chain" id="canvasChain" aria-label="画布上正在应用的效果"></div>
+          <div class="webgl-error" id="webglError" hidden>
+            <span>!</span>
+            <h3>无法启动 WebGL2</h3>
+            <p>请使用支持 WebGL2 的浏览器，并确认硬件加速已开启。</p>
+          </div>
+        </div>
+
+        <footer class="stage-footer">
+          <div class="legend">
+            <span><i class="legend-base"></i>BASE</span>
+            <span><i class="legend-pass"></i>GPU PASS</span>
+            <span><i class="legend-output"></i>OUTPUT</span>
+          </div>
+          <p>每一帧从基础场景重新开始，避免上一效果的遮罩残留。</p>
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
