@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071014">
+  <title>AURALAB · 虚拟四角声场</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-glow glow-a"></div>
+  <div class="page-glow glow-b"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="AURALAB 首页">
+      <span class="brand-mark" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i>
+      </span>
+      <span>
+        <strong>AURALAB</strong>
+        <small>VIRTUAL ROOM ACOUSTICS</small>
+      </span>
+    </a>
+    <div class="system-strip" aria-label="系统状态">
+      <span><i class="status-dot"></i>WEB AUDIO 在线</span>
+      <span class="strip-divider"></span>
+      <span>48 kHz / 24 bit</span>
+      <span class="strip-divider"></span>
+      <span>RT60 实时估计</span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-button" id="helpButton" type="button" aria-label="操作说明">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.8 9a2.2 2.2 0 1 1 3 2.1c-.6.3-.8.8-.8 1.4v.4"></path><path d="M12 16.7h.01"></path></svg>
+      </button>
+      <button class="export-button" id="exportButton" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"></path><path d="m7.5 10.5 4.5 4.5 4.5-4.5"></path><path d="M4 18v2h16v-2"></path></svg>
+        导出报告
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="card room-card">
+      <div class="card-head room-head">
+        <div>
+          <p class="eyebrow"><span>ROOM 01</span> / LIVE FIELD</p>
+          <h1>虚拟四角声场</h1>
+        </div>
+        <div class="segmented" id="modeControl" role="group" aria-label="播放模式">
+          <button type="button" data-mode="mono"><b>01</b>单源</button>
+          <button type="button" data-mode="stereo"><b>02</b>双源</button>
+          <button type="button" data-mode="quad" class="active"><b>04</b>四声道</button>
+        </div>
+      </div>
+
+      <div class="room-stage">
+        <div class="stage-corner readout">
+          <span class="pulse-dot"></span>
+          <span id="roomState">拖拽声源与监听器进行测量</span>
+        </div>
+        <div class="stage-actions">
+          <button class="ghost-button active" id="reflectionToggle" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18 9 6l6 12 6-10"></path></svg>
+            反射路径
+          </button>
+          <button class="ghost-button" id="resetButton" type="button" title="恢复默认位置">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 2 7"></path><path d="M4 4v6h6"></path></svg>
+          </button>
+        </div>
+        <svg id="roomView" viewBox="0 0 920 560" role="img" aria-label="虚拟房间俯视图，可拖拽声源和监听器"></svg>
+        <div class="room-legend" aria-label="图例">
+          <span><i class="legend-line direct"></i>直达声</span>
+          <span><i class="legend-line reflection"></i>一次反射</span>
+          <span><i class="legend-dot active"></i>激活声道</span>
+          <span><i class="legend-dot inactive"></i>未激活</span>
+        </div>
+        <div class="stage-axis" aria-hidden="true">
+          <span>N</span><i></i><span>10.0 m</span>
+        </div>
+      </div>
+
+      <div class="room-controls">
+        <div class="position-field">
+          <span class="field-icon source-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3"></path></svg>
+          </span>
+          <div>
+            <label>声源位置</label>
+            <output id="sourceReadout">X 5.00 &nbsp; Y 2.20</output>
+          </div>
+        </div>
+        <div class="position-field">
+          <span class="field-icon listener-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="11" r="4"></circle><path d="M12 7V4M5 19c1.5-3 4-4.5 7-4.5s5.5 1.5 7 4.5"></path></svg>
+          </span>
+          <div>
+            <label>监听位置</label>
+            <output id="listenerReadout">X 5.00 &nbsp; Y 3.50</output>
+          </div>
+        </div>
+        <label class="orientation-control">
+          <span>监听朝向</span>
+          <input id="orientationInput" type="range" min="-180" max="180" value="0" step="1">
+          <output id="orientationReadout">000°</output>
+        </label>
+        <label class="absorption-control">
+          <span>墙面吸声</span>
+          <input id="absorptionInput" type="range" min="0.08" max="0.55" value="0.22" step="0.01">
+          <output id="absorptionReadout">0.22 α</output>
+        </label>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <section class="card measurement-card">
+        <div class="card-head compact">
+          <div>
+            <p class="eyebrow">MEASUREMENT / 01</p>
+            <h2>当前位置测量</h2>
+          </div>
+          <span class="live-badge"><i></i>可测</span>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric metric-wide">
+            <header><span>通道 TDOA</span><span class="metric-tag">峰值差</span></header>
+            <div><strong id="tdoaValue">0.00</strong><em>ms</em></div>
+            <p id="tdoaNote">等待脉冲响应</p>
+            <svg class="sparkline" id="tdoaSpark" viewBox="0 0 240 38" preserveAspectRatio="none" aria-hidden="true"></svg>
+          </article>
+          <article class="metric">
+            <header><span>声压级</span><span class="metric-tag">A</span></header>
+            <div><strong id="splValue">--.-</strong><em>dB</em></div>
+            <p>1 m 校准</p>
+          </article>
+          <article class="metric">
+            <header><span>混响衰减</span><span class="metric-tag">T20</span></header>
+            <div><strong id="rtValue">-.--</strong><em>s</em></div>
+            <p id="rtNote">500 Hz 倍频带</p>
+          </article>
+        </div>
+
+        <div class="channel-header">
+          <span>声道到达延迟</span>
+          <span id="activeChannelText">04 CH ACTIVE</span>
+        </div>
+        <div class="channel-list" id="channelList"></div>
+
+        <div class="measure-actions">
+          <button class="primary-button" id="measureButton" type="button">
+            <span class="button-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span>测量当前位置</span>
+            <kbd>↵</kbd>
+          </button>
+          <button class="secondary-button" id="autoMeasureButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17V7l5 5 5-7 6 12"></path><circle cx="4" cy="17" r="1.5"></circle><circle cx="20" cy="17" r="1.5"></circle></svg>
+            三点自动测量
+          </button>
+        </div>
+        <div class="render-status" id="renderStatus">
+          <i></i><span>Impulse response engine ready</span>
+        </div>
+      </section>
+    </aside>
+
+    <section class="card analysis-card">
+      <div class="card-head compact">
+        <div>
+          <p class="eyebrow">IMPULSE RESPONSE / OFFLINE</p>
+          <h2>四声道脉冲响应</h2>
+        </div>
+        <div class="chart-tools">
+          <span class="chart-legend"><i class="ch-1"></i>P1 <i class="ch-2"></i>P2 <i class="ch-3"></i>P3 <i class="ch-4"></i>P4</span>
+          <button class="ghost-button small" id="chartToggle" type="button">包络</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="irCanvas" aria-label="脉冲响应图"></canvas>
+        <div class="chart-empty" id="chartEmpty">完成测量后显示 Web Audio 渲染的脉冲响应</div>
+      </div>
+      <div class="chart-meta">
+        <span><b id="sampleRateLabel">48,000</b> Hz 采样</span>
+        <span><b id="irDurationLabel">1.80</b> s IR</span>
+        <span><b id="pathCountLabel">12</b> 条路径</span>
+        <span class="chart-status"><i></i>全部由 Web Audio 生成</span>
+      </div>
+    </section>
+
+    <aside class="card log-card">
+      <div class="card-head compact">
+        <div>
+          <p class="eyebrow">SESSION LOG / 03</p>
+          <h2>三点校准</h2>
+        </div>
+        <button class="text-button" id="clearLogButton" type="button">清空</button>
+      </div>
+      <div class="verify-banner" id="verifyBanner">
+        <span class="verify-icon">✓</span>
+        <div>
+          <strong id="verifyTitle">等待三点测量</strong>
+          <p id="verifyCopy">实测 IR 到时将与反射路径逐项比对</p>
+        </div>
+      </div>
+      <div class="measurement-log" id="measurementLog">
+        <div class="log-placeholder">
+          <span>01</span><span>02</span><span>03</span>
+          <p>点击“三点自动测量”开始校准</p>
+        </div>
+      </div>
+      <div class="report-row">
+        <button class="secondary-button compact-button" id="jsonExportButton" type="button">JSON 报告</button>
+        <button class="secondary-button compact-button" id="csvExportButton" type="button">CSV 数据</button>
+        <span id="reportTimestamp">尚未记录</span>
+      </div>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <div class="modal-backdrop" id="helpModal" aria-hidden="true">
+    <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" id="closeHelp" type="button" aria-label="关闭">×</button>
+      <p class="eyebrow">QUICK GUIDE</p>
+      <h2 id="helpTitle">如何完成一次测量</h2>
+      <ol>
+        <li><b>拖拽</b>声源与监听器，拖动头部圆环改变监听朝向。</li>
+        <li>切换单源、双源或四声道；选择吸声系数改变衰减时间。</li>
+        <li>点击“测量当前位置”离线渲染 IR，或“三点自动测量”完成整组校准。</li>
+        <li>检查反射图、到达延迟与实测结果的误差，随后导出 JSON / CSV。</li>
+      </ol>
+      <p class="modal-note">TDOA 取激活声道首达耳的相对时间差。所有 IR 均由 Web Audio 的 OfflineAudioContext 渲染，测量值从渲染波形中检测。</p>
+    </div>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
