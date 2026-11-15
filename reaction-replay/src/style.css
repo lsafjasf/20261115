@@ -1,0 +1,90 @@
+:root {
+  --bg: #0f1420;
+  --panel: #182032;
+  --ink: #e6ebf5;
+  --muted: #8a97ad;
+  --accent: #57d0ff;
+  --good: #46d18d;
+  --bad: #ff5d6c;
+  --warn: #ffc857;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+main { max-width: 980px; margin: 0 auto; padding: 20px; }
+
+h1 { font-size: 22px; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+
+.controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+
+button {
+  background: var(--accent);
+  color: #06222f;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:disabled { background: #33405a; color: var(--muted); cursor: not-allowed; }
+
+.status-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.badge.idle { background: #2a3550; color: var(--muted); }
+.badge.good { background: rgba(70, 209, 141, 0.18); color: var(--good); }
+.badge.bad { background: rgba(255, 93, 108, 0.18); color: var(--bad); }
+
+.divergence { color: var(--warn); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.boards { display: flex; gap: 18px; flex-wrap: wrap; }
+figure { margin: 0; }
+figcaption { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+
+canvas {
+  background: #0b101c;
+  border: 1px solid #28334d;
+  border-radius: 10px;
+  touch-action: manipulation;
+}
+canvas.diverged { border-color: var(--bad); box-shadow: 0 0 0 2px rgba(255, 93, 108, 0.35); }
+
+.hud {
+  display: flex;
+  gap: 22px;
+  margin: 14px 0;
+  padding: 12px 16px;
+  background: var(--panel);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+.hud div { display: flex; flex-direction: column; }
+.hud span { color: var(--muted); font-size: 12px; }
+.hud strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+
+.log-panel h2 { font-size: 14px; color: var(--muted); margin: 8px 0; }
+pre {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 12px;
+  line-height: 1.55;
+  max-height: 260px;
+  overflow: auto;
+  margin: 0;
+  white-space: pre-wrap;
+}

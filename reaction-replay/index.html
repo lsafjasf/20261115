@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>反应游戏 · 可验证回放</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%2357d0ff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>反应游戏 · 可验证对局回放</h1>
+        <p class="sub">逐 tick 记录输入 / 随机数 / 状态摘要，结束后从初始状态重放并定位首次分叉。</p>
+      </header>
+
+      <section class="controls">
+        <button id="startBtn">开始 / 自动对局</button>
+        <button id="replayBtn" disabled>从初始状态重放</button>
+        <button id="tamperBtn" disabled>篡改一条记录</button>
+        <button id="verifyBtn" disabled>校验当前日志</button>
+      </section>
+
+      <section class="status-row">
+        <div id="verifyBadge" class="badge idle">未对局</div>
+        <div id="divergenceInfo" class="divergence">—</div>
+      </section>
+
+      <section class="boards">
+        <figure>
+          <figcaption>实时对局（点击画布可手动操作）</figcaption>
+          <canvas id="liveCanvas" width="400" height="520"></canvas>
+        </figure>
+        <figure>
+          <figcaption>重放视图（差异高亮）</figcaption>
+          <canvas id="replayCanvas" width="400" height="520"></canvas>
+        </figure>
+      </section>
+
+      <section class="hud">
+        <div><span>Tick</span><strong id="tickVal">0 / 600</strong></div>
+        <div><span>得分</span><strong id="scoreVal">0</strong></div>
+        <div><span>命中 / 失误</span><strong id="hmVal">0 / 0</strong></div>
+        <div><span>链哈希</span><strong id="hashVal">—</strong></div>
+      </section>
+
+      <section class="log-panel">
+        <h2>校验日志</h2>
+        <pre id="logOut">就绪。点击“开始 / 自动对局”。</pre>
+      </section>
+    </main>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

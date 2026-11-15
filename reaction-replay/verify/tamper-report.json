@@ -1,0 +1,43 @@
+{
+  "faithful": false,
+  "summaryMatches": false,
+  "firstDivergence": {
+    "tick": 200,
+    "field": "state",
+    "expected": {
+      "tick": 201,
+      "score": 118,
+      "hits": 9,
+      "misses": 0,
+      "cooldown": 10,
+      "status": "running",
+      "rng": 1532120943,
+      "target": null
+    },
+    "actual": {
+      "tick": 201,
+      "score": 116,
+      "hits": 9,
+      "misses": 1,
+      "cooldown": 10,
+      "status": "running",
+      "rng": 1532120943,
+      "target": null
+    }
+  },
+  "hashChain": {
+    "intact": false,
+    "firstBadIndex": 200,
+    "firstBadTick": 200
+  },
+  "replayedFinalState": {
+    "tick": 600,
+    "score": 354,
+    "hits": 27,
+    "misses": 1,
+    "cooldown": 10,
+    "status": "finished",
+    "rng": 260873303,
+    "target": null
+  }
+}

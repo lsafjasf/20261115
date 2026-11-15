@@ -1,0 +1,20 @@
+{
+  "faithful": true,
+  "summaryMatches": true,
+  "firstDivergence": null,
+  "hashChain": {
+    "intact": true,
+    "firstBadIndex": -1,
+    "firstBadTick": -1
+  },
+  "replayedFinalState": {
+    "tick": 600,
+    "score": 356,
+    "hits": 27,
+    "misses": 0,
+    "cooldown": 10,
+    "status": "finished",
+    "rng": 260873303,
+    "target": null
+  }
+}

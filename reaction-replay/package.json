@@ -1,0 +1,11 @@
+{
+  "name": "reaction-replay",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "单屏反应游戏，带可验证的逐 tick 对局回放与首次分叉检测",
+  "scripts": {
+    "demo": "node verify/demo.mjs",
+    "serve": "python3 -m http.server 8731"
+  }
+}
