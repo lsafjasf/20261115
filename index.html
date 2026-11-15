@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>种子地图 · 动态闸门可达性检查</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>种子地图生成与可达性检查</h1>
+    <p class="sub">起点 + 3 个目标 + 动态闸门 + 可破坏墙体；每次编辑后全量重新分析。</p>
+  </header>
+
+  <main>
+    <section class="toolbar">
+      <label>Seed
+        <input id="seedInput" type="number" min="0" max="4294967295" value="2024">
+      </label>
+      <button id="genBtn">生成地图</button>
+      <button id="randomBtn" class="secondary">随机 Seed</button>
+      <span class="divider"></span>
+      <label>模式
+        <select id="modeSelect">
+          <option value="inspect">查看/选择路径</option>
+          <option value="delete">删除可破坏墙</option>
+          <option value="move">移动可破坏墙</option>
+        </select>
+      </label>
+      <span class="divider"></span>
+      <label>Tick
+        <input id="tickInput" type="number" min="0" value="0" style="width:70px">
+      </label>
+      <button id="playBtn" class="secondary">自动播放</button>
+      <button id="undoBtn" class="secondary">撤销编辑</button>
+      <button id="resetBtn" class="secondary">重置地图</button>
+      <button id="exportBtn" class="secondary">导出记录 JSON</button>
+    </section>
+
+    <section class="content">
+      <div class="canvas-wrap">
+        <canvas id="mapCanvas" width="920" height="600"></canvas>
+        <div id="hint" class="hint"></div>
+      </div>
+
+      <aside class="side">
+        <div class="card">
+          <h2>编辑预算</h2>
+          <div id="budget" class="budget"></div>
+          <div id="gateInfo" class="gate-info"></div>
+        </div>
+
+        <div class="card">
+          <h2>可达性结果</h2>
+          <ul id="resultList" class="result-list"></ul>
+        </div>
+
+        <div class="card">
+          <h2>编辑记录</h2>
+          <ol id="editLog" class="edit-log"></ol>
+        </div>
+
+        <div class="card">
+          <h2>图例</h2>
+          <ul class="legend">
+            <li><span class="sw wall"></span>静态墙（不可编辑）</li>
+            <li><span class="sw break"></span>可破坏墙体</li>
+            <li><span class="sw gate"></span>动态闸门（周期开合）</li>
+            <li><span class="sw start"></span>起点</li>
+            <li><span class="sw goal"></span>目标</li>
+            <li><span class="sw path-static"></span>静止可达路径</li>
+            <li><span class="sw path-gate"></span>等待闸门路径</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="js/map-core.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
