@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "厂区供水管网 - 无负压方案",
+  "scale": 0.5,
+  "nodes": [
+    { "id": "S1", "kind": "source", "name": "1号水源", "x": 80, "y": 120, "head": 45, "elevation": 0 },
+    { "id": "S2", "kind": "source", "name": "2号水源", "x": 80, "y": 440, "head": 45, "elevation": 0 },
+    { "id": "J1", "kind": "junction", "name": "节点J1", "x": 340, "y": 180, "elevation": 0 },
+    { "id": "J2", "kind": "junction", "name": "节点J2", "x": 340, "y": 380, "elevation": 0 },
+    { "id": "J3", "kind": "junction", "name": "节点J3", "x": 600, "y": 280, "elevation": 0 },
+    { "id": "D1", "kind": "demand", "name": "冷却机组A", "x": 860, "y": 140, "demand": 0.020, "elevation": 0 },
+    { "id": "D2", "kind": "demand", "name": "锅炉给水B", "x": 900, "y": 300, "demand": 0.015, "elevation": 0 },
+    { "id": "D3", "kind": "demand", "name": "清洗车间C", "x": 860, "y": 450, "demand": 0.012, "elevation": 0 }
+  ],
+  "edges": [
+    { "id": "P1", "from": "S1", "to": "J1", "diameter": 0.25, "roughness": 0.02, "valve": null },
+    { "id": "P2", "from": "S2", "to": "J2", "diameter": 0.3, "roughness": 0.02, "valve": null },
+    { "id": "P3", "from": "J1", "to": "J2", "diameter": 0.25, "roughness": 0.02, "valve": null },
+    { "id": "P4", "from": "J1", "to": "J3", "diameter": 0.25, "roughness": 0.02, "valve": null },
+    { "id": "P5", "from": "J2", "to": "J3", "diameter": 0.25, "roughness": 0.02, "valve": null },
+    { "id": "P6", "from": "J3", "to": "D1", "diameter": 0.15, "roughness": 0.02, "valve": null },
+    { "id": "P7", "from": "J3", "to": "D2", "diameter": 0.15, "roughness": 0.02, "valve": null },
+    { "id": "P8", "from": "J3", "to": "D3", "diameter": 0.15, "roughness": 0.02, "valve": null }
+  ]
+}

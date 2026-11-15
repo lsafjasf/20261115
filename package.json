@@ -1,0 +1,17 @@
+{
+  "name": "factory-water-network-designer",
+  "version": "1.0.0",
+  "description": "二维厂区供水管网铺设与水力实时计算工具",
+  "main": "index.html",
+  "scripts": {
+    "test": "node test/engine.test.js && node test/ui-smoke.test.js",
+    "start": "node scripts/serve.js"
+  },
+  "keywords": [
+    "water-network",
+    "hydraulic",
+    "canvas",
+    "undo-redo"
+  ],
+  "license": "MIT"
+}
