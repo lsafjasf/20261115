@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#121411" />
+    <title>Seam Lab · 程序化无缝材质</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="Seam Lab 首页">
+          <span class="brand-mark">
+            <i></i><i></i><i></i><i></i>
+          </span>
+          <span class="brand-copy">
+            <strong>SEAM</strong>
+            <small>MATERIAL LAB</small>
+          </span>
+        </a>
+
+        <div class="sidebar-label">材质库 <span>03</span></div>
+        <nav class="material-list" aria-label="选择材质">
+          <button class="material-card is-active" data-material="stone">
+            <canvas width="52" height="52" aria-hidden="true"></canvas>
+            <span class="material-copy">
+              <strong>石纹</strong>
+              <small>STONE · 01</small>
+            </span>
+            <span class="material-arrow">↗</span>
+          </button>
+          <button class="material-card" data-material="wood">
+            <canvas width="52" height="52" aria-hidden="true"></canvas>
+            <span class="material-copy">
+              <strong>木纹</strong>
+              <small>WOOD · 02</small>
+            </span>
+            <span class="material-arrow">↗</span>
+          </button>
+          <button class="material-card" data-material="fabric">
+            <canvas width="52" height="52" aria-hidden="true"></canvas>
+            <span class="material-copy">
+              <strong>布纹</strong>
+              <small>FABRIC · 03</small>
+            </span>
+            <span class="material-arrow">↗</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-note">
+          <span class="note-icon">⌁</span>
+          <p>全部纹理均使用周期函数采样，四边天然闭合。</p>
+        </div>
+
+        <div class="sidebar-foot">
+          <span class="live-dot"></span>
+          <span>LOCAL ENGINE</span>
+          <span>v1.0</span>
+        </div>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <div class="topbar-title">
+            <span class="eyebrow">程序化材质 / 工作台</span>
+            <h1><span id="crumbMaterial">石纹</span><span class="title-sep">/</span><span class="title-code" id="crumbCode">STONE-01</span></h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="view-switch" aria-label="画布视图">
+              <button class="is-active" data-view="single">
+                <span class="single-icon"></span>单张
+              </button>
+              <button data-view="tile">
+                <span class="tile-icon"></span>2×2 检查
+              </button>
+            </div>
+            <button class="export-button" id="exportButton">
+              <span class="export-icon">↓</span>
+              导出 512 PNG
+            </button>
+          </div>
+        </header>
+
+        <div class="workspace">
+          <section class="stage-panel">
+            <div class="stage-heading">
+              <div>
+                <div class="stage-kicker"><span></span> LIVE CANVAS</div>
+                <h2 id="stageTitle">暖灰岩层</h2>
+              </div>
+              <div class="resolution-chip">
+                <span>512</span><i>×</i><span>512</span><em>PX</em>
+              </div>
+            </div>
+
+            <div class="canvas-area">
+              <div class="canvas-wrap" id="canvasWrap">
+                <canvas id="textureCanvas" width="512" height="512" aria-label="可编辑无缝纹理"></canvas>
+                <canvas id="overlayCanvas" width="512" height="512" aria-label="纹理修补笔刷"></canvas>
+                <span class="edge-badge edge-left" id="edgeLeft">WRAP</span>
+                <span class="edge-badge edge-right" id="edgeRight">WRAP</span>
+                <span class="edge-badge edge-top" id="edgeTop">WRAP</span>
+                <span class="edge-badge edge-bottom" id="edgeBottom">WRAP</span>
+                <div class="tile-guides" aria-hidden="true">
+                  <span></span><span></span>
+                </div>
+                <div class="generating" id="generating">
+                  <span></span><span></span><span></span>
+                  <em>生成中</em>
+                </div>
+              </div>
+            </div>
+
+            <div class="stage-footer">
+              <div class="hint">
+                <span class="mouse-glyph"></span>
+                <span id="stageHint">按住画笔可直接修补纹理</span>
+              </div>
+              <div class="canvas-meta">
+                <span id="samplingMeta">PERIODIC SAMPLING</span>
+                <span>RGB / 8 BIT</span>
+              </div>
+            </div>
+          </section>
+
+          <aside class="inspector">
+            <div class="inspector-head">
+              <div>
+                <span class="eyebrow">材质参数</span>
+                <h2>纹理调校</h2>
+              </div>
+              <button class="reset-button" id="resetButton" title="恢复默认参数">↺ 重置</button>
+            </div>
+
+            <div class="control-group">
+              <label class="range-control" for="scaleRange">
+                <span class="control-label">颗粒尺度 <em>SCALE</em></span>
+                <output id="scaleOutput">34 px</output>
+                <input id="scaleRange" type="range" min="10" max="72" step="1" value="34" />
+              </label>
+
+              <label class="range-control" for="directionRange">
+                <span class="control-label">纹理方向 <em>ANGLE</em></span>
+                <output id="directionOutput">18°</output>
+                <input id="directionRange" type="range" min="0" max="360" step="1" value="18" />
+              </label>
+
+              <label class="range-control" for="contrastRange">
+                <span class="control-label">明暗对比 <em>CONTRAST</em></span>
+                <output id="contrastOutput">56</output>
+                <input id="contrastRange" type="range" min="0" max="100" step="1" value="56" />
+              </label>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="tool-section">
+              <div class="tool-head">
+                <div>
+                  <span class="eyebrow">环绕修补</span>
+                  <h3>直接编辑纹理</h3>
+                </div>
+                <span class="wrap-pill"><i></i> WRAP ON</span>
+              </div>
+              <div class="tool-row">
+                <div class="tool-switch" aria-label="修补工具">
+                  <button class="is-active" data-tool="heal" title="融合周边纹理">愈合</button>
+                  <button data-tool="clone" title="从偏移位置克隆纹理">克隆</button>
+                </div>
+                <label class="compact-range" for="brushRange">
+                  <span>笔刷</span>
+                  <input id="brushRange" type="range" min="6" max="56" step="1" value="22" />
+                  <output id="brushOutput">22</output>
+                </label>
+              </div>
+              <p class="tool-tip">修补跨越边缘时，对边像素会同步更新；2×2 视图可实时确认。</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="tile-card">
+              <div class="tile-card-head">
+                <div>
+                  <span class="eyebrow">接缝监控</span>
+                  <h3>2×2 平铺预览</h3>
+                </div>
+                <span class="seam-state" id="seamState"><i></i> 已闭合</span>
+              </div>
+              <button class="tile-preview-button" id="tilePreviewButton" title="切换到 2×2 检查">
+                <canvas id="tilePreview" width="280" height="280"></canvas>
+                <span class="preview-cross" aria-hidden="true"></span>
+                <span class="expand-hint">展开检查 ↗</span>
+              </button>
+              <div class="tile-metrics">
+                <span><i class="metric-dot"></i>边差比 <strong id="seamRatio">1.00</strong></span>
+                <span>周期 512 px</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>
