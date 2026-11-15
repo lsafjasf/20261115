@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="T-09 四舱气密试验船调度台：安排巡检、取样与泄压，监控气闸联锁和机器人轨迹。"
+    />
+    <title>T-09 四舱气密试航</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-orbit"></span>
+          <span class="brand-core">T</span>
+        </div>
+        <div>
+          <p class="eyebrow">ORBITAL SYSTEMS / CERTIFICATION DECK 07</p>
+          <h1>四舱气密试航 <span>T-09</span></h1>
+        </div>
+      </div>
+
+      <div class="mission-meta">
+        <div class="meta-cell">
+          <span>MISSION</span>
+          <b>SRT-004</b>
+        </div>
+        <div class="meta-cell">
+          <span>MISSION TIME</span>
+          <b id="missionClock">00:00:00</b>
+        </div>
+        <div class="meta-cell live-cell">
+          <span>TELEMETRY</span>
+          <b><i class="live-dot"></i> LINKED</b>
+        </div>
+        <button class="icon-button" id="soundButton" type="button" aria-label="开启声音">
+          <span class="sound-glyph" aria-hidden="true"></span>
+          <span class="sound-label">SOUND OFF</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel jobs-panel" aria-labelledby="jobsTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="kicker">WORK QUEUE</p>
+            <h2 id="jobsTitle">舱内作业</h2>
+          </div>
+          <div class="count-ring"><b id="jobsDone">6</b><span>/ 6</span></div>
+        </div>
+
+        <div class="priority-legend">
+          <span><i class="dot sample"></i>取样</span>
+          <span><i class="dot inspect"></i>巡检</span>
+          <span><i class="dot vent"></i>泄压</span>
+        </div>
+
+        <div class="task-list" id="taskList"></div>
+
+        <div class="protocol-note">
+          <span class="protocol-icon" aria-hidden="true">!</span>
+          <p>
+            <b>饥饿保护已启用</b>
+            高优先样本可锁定下一班 1 个机位；任一普通作业等待 2 班后获得强制提升。
+          </p>
+        </div>
+      </section>
+
+      <section class="viewport-panel" aria-labelledby="viewportTitle">
+        <div class="viewport-toolbar">
+          <div class="viewport-title">
+            <span class="scan-line" aria-hidden="true"></span>
+            <p class="kicker">VESSEL SECTION / A—A</p>
+            <h2 id="viewportTitle">船体剖面与机器人轨迹</h2>
+          </div>
+          <div class="view-badges">
+            <span class="status-badge" id="runStateBadge"><i></i> ARCHIVED RUN</span>
+            <span class="status-badge ghost">INTERLOCK ON</span>
+          </div>
+        </div>
+
+        <div class="canvas-shell">
+          <canvas id="shipCanvas" aria-label="四舱试验船剖面，气闸、压力和机器人实时轨迹"></canvas>
+          <div class="canvas-corners" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </div>
+          <div class="canvas-hint" id="canvasHint">点击“重放本局”查看完整压力平衡与机器人轨迹</div>
+        </div>
+
+        <div class="scene-readout">
+          <div class="readout-block">
+            <span class="readout-label">R-01 / TREAD</span>
+            <strong id="robotOneState">待命 · DOCK 01</strong>
+          </div>
+          <div class="readout-block">
+            <span class="readout-label">R-02 / TREAD</span>
+            <strong id="robotTwoState">待命 · DOCK 02</strong>
+          </div>
+          <div class="readout-block pressure-summary">
+            <span class="readout-label">PRESS. EVENTS</span>
+            <strong><b id="pressureAccidents">0</b> ACCIDENTS</strong>
+          </div>
+          <div class="speed-control" role="group" aria-label="回放速度">
+            <button type="button" data-speed="1" class="active">1×</button>
+            <button type="button" data-speed="2">2×</button>
+            <button type="button" data-speed="4">4×</button>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="primary-action" id="primaryAction" type="button">
+            <span class="play-icon" aria-hidden="true"></span>
+            <span id="primaryActionLabel">重放本局</span>
+          </button>
+          <button class="secondary-action" id="editAction" type="button">重新编排</button>
+          <button class="text-action" id="logAction" type="button">
+            <span aria-hidden="true">↧</span> 导出任务日志
+          </button>
+          <p class="save-status" id="saveStatus"><i></i> RUN #004 已存档</p>
+        </div>
+      </section>
+
+      <aside class="right-rail">
+        <section class="panel manifest-panel" aria-labelledby="manifestTitle">
+          <div class="panel-heading compact">
+            <div>
+              <p class="kicker">SORTIE MANIFEST</p>
+              <h2 id="manifestTitle">完整任务顺序</h2>
+            </div>
+            <span class="manifest-id">#004</span>
+          </div>
+          <div class="shift-list" id="shiftList"></div>
+        </section>
+
+        <section class="panel pressure-panel" aria-labelledby="pressureTitle">
+          <div class="panel-heading compact">
+            <div>
+              <p class="kicker">CABIN PRESSURE</p>
+              <h2 id="pressureTitle">舱室压力</h2>
+            </div>
+            <span class="pressure-unit">bar</span>
+          </div>
+          <div class="cabin-pressure-list" id="cabinPressureList"></div>
+          <div class="interlock-row">
+            <span>舱门联锁</span>
+            <b id="interlockStatus">18 / 18 PASS</b>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="ticker">
+      <span class="ticker-label">EVENT LOG</span>
+      <div class="ticker-track" id="eventTicker">
+        <span>所有气密舱压力稳定。试航记录 #004 已完成并写入本地存档。</span>
+      </div>
+      <span class="ticker-time" id="tickerTime">T+ 03:18:42</span>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="result-modal" id="resultModal" aria-hidden="true">
+      <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <button class="modal-close" id="modalClose" type="button" aria-label="关闭">×</button>
+        <p class="kicker">CERTIFICATION RESULT</p>
+        <h2 id="resultTitle">试航通过</h2>
+        <p class="result-subtitle">六项舱内工作完成，气闸联锁全程有效。</p>
+        <div class="result-stats">
+          <div><b>6/6</b><span>作业完成</span></div>
+          <div><b>0</b><span>压力事故</span></div>
+          <div><b>3</b><span>执行班次</span></div>
+        </div>
+        <ol class="result-sequence" id="resultSequence"></ol>
+        <div class="result-actions">
+          <button class="primary-action" id="downloadAction" type="button">下载 JSON 存档</button>
+          <button class="secondary-action" id="resultCloseAction" type="button">返回调度台</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="src/data.js"></script>
+    <script src="src/planner.js"></script>
+    <script src="src/audio.js"></script>
+    <script src="src/renderer.js"></script>
+    <script src="src/engine.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
