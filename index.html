@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>三维地形微缩模型 · 动态等高线</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="stage">
+        <canvas id="gl-canvas" aria-label="可旋转的三维地形模型"></canvas>
+        <canvas id="overlay-canvas" class="overlay"></canvas>
+        <div class="hint">拖拽旋转 · 滚轮缩放 · 鼠标悬停查看标高</div>
+      </section>
+      <aside class="panel">
+        <h1>地形等高线控制台</h1>
+        <div class="control">
+          <label for="threshold">高度阈值 <span id="threshold-value">500 m</span></label>
+          <input id="threshold" type="range" min="0" max="1" step="0.001" value="0.5" />
+          <div class="range-labels"><span>0 m</span><span>1000 m</span></div>
+        </div>
+        <div class="buttons">
+          <button id="export-svg" type="button">导出 SVG</button>
+          <button id="export-png" type="button">导出 PNG</button>
+          <button id="auto-rotate" type="button">自动旋转</button>
+          <button id="sweep" type="button">阈值往返扫描</button>
+          <button id="reset" type="button">重置视图</button>
+        </div>
+        <p id="metrics" class="metrics"></p>
+        <p id="sweep-log" class="sweep-log" aria-live="polite"></p>
+        <section class="legend">
+          <h2>图例</h2>
+          <ul>
+            <li><span class="swatch active-line"></span>当前阈值等高线（橙色）</li>
+            <li><span class="swatch fixed-line"></span>固定参考等高线</li>
+            <li><span class="swatch fill"></span>高于阈值的高亮区域</li>
+            <li><span class="dot peak"></span>山顶</li>
+            <li><span class="dot valley"></span>山谷</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
