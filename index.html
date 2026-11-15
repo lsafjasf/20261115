@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f2f0eb" />
+    <title>Vectra — Canvas Studio</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%235b5bd6'/%3E%3Crect x='8' y='8' width='16' height='16' rx='4' fill='none' stroke='white' stroke-width='2' transform='rotate(45 16 16)'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Vectra home">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="brand-orbit"></span>
+          </span>
+          <span class="brand-copy">
+            <strong>Vectra</strong>
+            <span>Canvas Studio</span>
+          </span>
+        </a>
+
+        <nav class="tool-rail" aria-label="Drawing tools">
+          <button class="tool-button is-active" data-tool="select" title="Select (V)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 13 8-6 1.6L9 19 5 3Z"/></svg>
+            <span>Select</span>
+          </button>
+          <button class="tool-button" data-tool="rect" title="Rectangle (R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1.5"/></svg>
+            <span>Rect</span>
+          </button>
+          <button class="tool-button" data-tool="circle" title="Circle (O)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>
+            <span>Circle</span>
+          </button>
+          <button class="tool-button" data-tool="path" title="Path (P)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 9 7l5 8 6-9"/><circle cx="4" cy="18" r="1.6"/><circle cx="14" cy="15" r="1.6"/><circle cx="20" cy="6" r="1.6"/></svg>
+            <span>Path</span>
+          </button>
+          <button class="tool-button" data-tool="text" title="Text (T)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M8 20h8"/></svg>
+            <span>Text</span>
+          </button>
+        </nav>
+
+        <div class="top-actions">
+          <button class="button button-ghost" id="new-scene" title="Clear the current page">
+            New
+          </button>
+          <button class="button button-ghost" id="random-scene" title="Generate a random test scene">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+            Random
+          </button>
+          <div class="action-divider"></div>
+          <button class="button button-ghost" id="load-json" title="Load a saved scene">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+            Load JSON
+          </button>
+          <button class="button button-dark" id="save-json" title="Export scene as JSON">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V9m0 0 4 4m-4-4-4 4M5 5h14"/></svg>
+            Save JSON
+          </button>
+          <button class="icon-button" id="export-svg" title="Export editable SVG" aria-label="Export SVG">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="m8 15 3-4 3 2 2-3 2 5M8 8h3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="studio">
+        <aside class="panel layers-panel" aria-label="Layers">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Document</span>
+              <h2>Layers</h2>
+            </div>
+            <span class="count-pill" id="layer-count">0</span>
+          </div>
+          <div class="layer-list" id="layer-list"></div>
+          <div class="layers-footer">
+            <div class="document-chip">
+              <span class="document-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5"/></svg>
+              </span>
+              <span>
+                <strong>Untitled scene</strong>
+                <small>960 × 600 · RGB</small>
+              </span>
+            </div>
+            <p class="vector-note"><span></span> Vector only · no image assets</p>
+          </div>
+        </aside>
+
+        <section class="stage" aria-label="Canvas workspace">
+          <div class="stage-heading">
+            <div>
+              <span class="eyebrow">Live preview</span>
+              <h1>Composition</h1>
+            </div>
+            <div class="stage-meta">
+              <span><i class="status-dot"></i> Canvas renderer</span>
+              <span id="object-summary">0 objects</span>
+            </div>
+          </div>
+
+          <div class="canvas-frame">
+            <div class="canvas-mat">
+              <canvas id="canvas" width="960" height="600" aria-label="Vector scene preview"></canvas>
+              <div class="text-entry is-hidden" id="text-entry">
+                <textarea id="text-entry-input" rows="1" aria-label="Text content"></textarea>
+              </div>
+            </div>
+            <div class="canvas-badge">
+              <span class="badge-cube">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+              </span>
+              <span><strong id="canvas-mode">Select</strong><small>Canvas 2D</small></span>
+            </div>
+          </div>
+
+          <div class="stage-footer">
+            <p class="stage-hint" id="stage-hint">Click an object to inspect it, or choose a tool to draw.</p>
+            <div class="zoom-control">
+              <button id="zoom-out" aria-label="Zoom out">−</button>
+              <span id="zoom-label">100%</span>
+              <button id="zoom-in" aria-label="Zoom in">+</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel inspector-panel" aria-label="Inspector">
+          <div class="panel-heading inspector-heading">
+            <div>
+              <span class="eyebrow">Properties</span>
+              <h2 id="inspector-title">Document</h2>
+            </div>
+            <button class="icon-button icon-button-sm is-hidden" id="delete-object" title="Delete object" aria-label="Delete object">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg>
+            </button>
+          </div>
+          <div class="inspector-body" id="inspector-body"></div>
+        </aside>
+      </main>
+
+      <footer class="statusbar">
+        <div><span class="connection-dot"></span> Ready for input</div>
+        <div class="status-center">JSON round-trip safe · SVG text remains editable</div>
+        <div id="selection-status">No selection</div>
+      </footer>
+    </div>
+
+    <input type="file" id="file-input" accept=".json,application/json" hidden />
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

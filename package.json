@@ -1,0 +1,14 @@
+{
+  "name": "vectra-canvas-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "test": "node --test tests/*.test.js",
+    "test:e2e": "node tests/e2e-roundtrip.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.65.1"
+  }
+}
