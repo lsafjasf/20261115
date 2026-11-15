@@ -1,0 +1,24 @@
+{
+  "name": "audio-latency-calibrator",
+  "version": "1.0.0",
+  "description": "浏览器音频输出延迟测量与补偿校准工具",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "verify": "node test/verify.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "playwright": "^1.65.1"
+  }
+}

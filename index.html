@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音频输出延迟校准器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>音频输出延迟校准器</h1>
+    <p id="statusLine">音频未初始化 — 点击「开始测试」启动</p>
+  </header>
+
+  <main>
+    <section class="panel" id="runPanel">
+      <h2>1. 播放测试脉冲</h2>
+      <div class="row">
+        <button id="btnStart">开始测试</button>
+        <label>脉冲数
+          <select id="selCount">
+            <option value="4">4</option>
+            <option value="6" selected>6</option>
+            <option value="8">8</option>
+          </select>
+        </label>
+        <label>间隔
+          <select id="selInterval">
+            <option value="400">400 ms</option>
+            <option value="500" selected>500 ms</option>
+            <option value="700">700 ms</option>
+          </select>
+        </label>
+        <span id="runState" class="badge">空闲</span>
+      </div>
+      <canvas id="flashCanvas" width="960" height="110"></canvas>
+      <canvas id="waveCanvas" width="960" height="120"></canvas>
+    </section>
+
+    <section class="panel" id="markPanel">
+      <h2>2. 移动标记估计听到时间</h2>
+      <p class="hint">每一行对应一次脉冲，中线是视觉闪烁中心。拖动三角形标记到你「听到」声音的位置（右偏 = 声音比闪烁晚）。</p>
+      <canvas id="trackCanvas" width="960" height="240"></canvas>
+      <div class="row">
+        <button id="btnAutoListen" disabled>模拟听辨（测试用）</button>
+        <button id="btnClearMarks" disabled>清除标记</button>
+      </div>
+    </section>
+
+    <section class="panel" id="analysisPanel">
+      <h2>3. 分析误差并应用补偿</h2>
+      <p id="estimateText">尚无数据</p>
+      <canvas id="errorCanvas" width="960" height="160"></canvas>
+      <div class="row">
+        <button id="btnApplyEstimate" disabled>应用估计值作为补偿</button>
+        <label>补偿值 (ms)
+          <input id="inpCompensation" type="number" step="1" value="0">
+        </label>
+        <button id="btnApplyManual">手动应用</button>
+        <button id="btnReset">重置补偿</button>
+      </div>
+      <p class="hint">补偿为正表示把视觉闪烁延后，使补偿后的节拍落在闪烁中心。</p>
+    </section>
+
+    <section class="panel" id="profilePanel">
+      <h2>4. 设备校准档案</h2>
+      <div class="row">
+        <select id="selProfiles"><option value="">（无档案）</option></select>
+        <input id="inpProfileName" type="text" placeholder="档案名称，如：客厅蓝牙音箱">
+        <button id="btnSaveProfile">保存档案</button>
+        <button id="btnDeleteProfile" disabled>删除档案</button>
+        <button id="btnExport">导出校准报告</button>
+      </div>
+      <p id="profileInfo" class="hint">刷新页面后会自动恢复当前档案的补偿值。</p>
+    </section>
+
+    <section class="panel" id="testPanel">
+      <h2>测试工具</h2>
+      <div class="row">
+        <label>模拟输出延迟 (ms)
+          <input id="inpSimLatency" type="number" step="1" value="0">
+        </label>
+        <button id="btnApplySim">应用模拟延迟</button>
+        <span id="simBadge" class="badge">模拟延迟: 0 ms</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>日志</h2>
+      <pre id="log"></pre>
+    </section>
+  </main>
+
+  <script src="js/audio.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

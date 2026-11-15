@@ -1,0 +1,100 @@
+:root {
+  --bg: #10141c;
+  --panel: #1a2130;
+  --line: #2c3648;
+  --text: #dbe4f0;
+  --dim: #8b98ad;
+  --accent: #4fc3f7;
+  --good: #7bd88a;
+  --warn: #ffb454;
+  --bad: #ff6b6b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+header h1 { margin: 0 0 4px; font-size: 22px; }
+header p { margin: 0 0 16px; color: var(--dim); }
+
+main { max-width: 1000px; margin: 0 auto; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.panel h2 { margin: 0 0 10px; font-size: 16px; color: var(--accent); }
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+button {
+  background: #24314a;
+  color: var(--text);
+  border: 1px solid #3a4a6b;
+  border-radius: 6px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+button:hover:not(:disabled) { background: #2e3f60; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+input, select {
+  background: #0d1220;
+  color: var(--text);
+  border: 1px solid #3a4a6b;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+input[type="number"] { width: 90px; }
+input[type="text"] { width: 220px; }
+
+canvas {
+  display: block;
+  width: 100%;
+  background: #0b0f18;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.badge {
+  background: #24314a;
+  border: 1px solid #3a4a6b;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--dim);
+}
+.badge.active { color: var(--good); border-color: var(--good); }
+
+.hint { color: var(--dim); font-size: 13px; margin: 6px 0; }
+
+#estimateText { font-size: 15px; }
+#estimateText strong { color: var(--warn); }
+
+#log {
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 12px;
+  color: var(--dim);
+  white-space: pre-wrap;
+  margin: 0;
+}
