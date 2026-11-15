@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>低多边形陶罐生成器</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d1f24; color: #ddd;
+    font: 14px/1.5 "PingFang SC", "Microsoft YaHei", sans-serif; overflow: hidden; }
+  #app { display: flex; height: 100%; }
+  #side { width: 300px; min-width: 300px; background: #26282e; display: flex;
+    flex-direction: column; border-right: 1px solid #3a3d44; }
+  #side h1 { font-size: 15px; margin: 12px 14px 6px; }
+  #side .tip { font-size: 12px; color: #9aa0aa; margin: 0 14px 8px; }
+  #editor { flex: 1; margin: 0 14px; background: #1b1d21; border-radius: 6px;
+    cursor: crosshair; touch-action: none; }
+  #toolbar { display: flex; gap: 6px; padding: 10px 14px; flex-wrap: wrap; }
+  button { background: #3a3d44; color: #ddd; border: 1px solid #4c5058; border-radius: 4px;
+    padding: 5px 10px; font-size: 13px; cursor: pointer; }
+  button:hover { background: #4c5058; }
+  button.active { background: #b06a3b; border-color: #b06a3b; color: #fff; }
+  #status { padding: 8px 14px; font-size: 12px; color: #9aa0aa; border-top: 1px solid #3a3d44;
+    white-space: pre-line; }
+  #view { flex: 1; display: block; cursor: grab; }
+  #view:active { cursor: grabbing; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="side">
+    <h1>低多边形陶罐生成器</h1>
+    <div class="tip">拖动右侧轮廓点（左右改半径，上下改高度），网格实时重建。</div>
+    <canvas id="editor"></canvas>
+    <div id="toolbar">
+      <button id="btnSolid" class="active">实体</button>
+      <button id="btnWire">线框</button>
+      <button id="btnBoth">实体+线框</button>
+      <button id="btnExport">导出 OBJ</button>
+      <button id="btnImport">重新载入 OBJ</button>
+      <input type="file" id="fileInput" accept=".obj" style="display:none">
+    </div>
+    <div id="status"></div>
+  </div>
+  <canvas id="view"></canvas>
+</div>
+<script src="pot.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
