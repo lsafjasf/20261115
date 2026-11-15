@@ -1,0 +1,11 @@
+{
+  "name": "tideline-navigation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic tidal navigation simulation game",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node tests/verify.mjs"
+  }
+}

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#04141b">
+    <title>TIDELINE · 潮流航标</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="19"></circle>
+              <circle cx="24" cy="24" r="5"></circle>
+              <path d="M24 5v8M24 35v8M5 24h8M35 24h8"></path>
+              <path d="m12 12 6 6M30 30l6 6M36 12l-6 6M18 30l-6 6"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="eyebrow">TIDELINE / AUTONOMOUS FLEET</p>
+            <h1>潮流航标</h1>
+          </div>
+        </div>
+
+        <div class="seed-module">
+          <label for="seedInput">航行区 SEED</label>
+          <div class="seed-entry">
+            <input id="seedInput" value="NORD-17" maxlength="14" spellcheck="false" autocomplete="off" aria-label="航行区种子">
+            <button id="randomSeed" class="icon-button" type="button" title="生成新种子" aria-label="生成新种子">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17 3h4v4M3 17l5-5M21 3l-6 6M3 7l4-4M7 3H3v4M17 21l4-4M21 17v4h-4M14 14l7 7M3 21h4v-4"></path>
+              </svg>
+            </button>
+          </div>
+          <span id="environmentHash" class="hash-readout">ENV --------</span>
+        </div>
+
+        <div class="header-actions">
+          <button id="audioToggle" class="audio-button" type="button" aria-pressed="false">
+            <span class="audio-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span><small>声呐</small><strong id="audioLabel">关闭</strong></span>
+          </button>
+          <div class="mission-chip">
+            <span id="missionDot" class="status-dot"></span>
+            <span><small>胜利条件</small><strong>2 / 3 通过</strong></span>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="command-panel panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">FORCE CONFIGURATION</p>
+              <h2>航标指令</h2>
+            </div>
+            <div class="lock-state">
+              <span id="lockDot"></span>
+              <span id="lockLabel">可编辑</span>
+              <button id="resetRun" class="reset-link" type="button" hidden>重设</button>
+            </div>
+          </div>
+          <p class="panel-note">曲线决定全程目标推力，阈值控制航向修正的死区。模拟锁止后不可修改。</p>
+
+          <div id="fleetControls" class="fleet-controls"></div>
+
+          <div class="config-footer">
+            <button id="restoreConfigs" class="text-button" type="button">
+              <span>↺</span> 恢复基准曲线
+            </button>
+            <p>推力输出范围 25–74 kn · 任务窗口 42 s</p>
+          </div>
+        </aside>
+
+        <section class="stage-column">
+          <div class="stage-heading">
+            <div>
+              <span id="stageStatus" class="kicker">STANDBY · 配置阶段</span>
+              <h2>五月潮 · 外海航道 07</h2>
+            </div>
+            <div id="checkpointStrip" class="checkpoint-strip" aria-label="检查点进度"></div>
+          </div>
+
+          <div class="canvas-shell">
+            <canvas id="oceanCanvas" aria-label="潮流、航迹、障碍与检查点模拟画面"></canvas>
+            <div class="canvas-hud hud-top">
+              <div class="seed-stamp">
+                <span>SECTOR / <b id="hudSeed">NORD-17</b></span>
+                <small>DYNAMIC CURRENT FIELD</small>
+              </div>
+              <div class="legend">
+                <span><i class="legend-current"></i>海流</span>
+                <span><i class="legend-hazard"></i>暗礁</span>
+                <span><i class="legend-clear"></i>检查点</span>
+              </div>
+            </div>
+            <div class="canvas-hud hud-bottom">
+              <span id="currentReadout">FLOW -- kn</span>
+              <span class="hud-divider"></span>
+              <span id="frameReadout">FRAME 000</span>
+              <span id="replayBadge" class="replay-badge" hidden>REPLAY</span>
+            </div>
+            <span class="corner corner-tl"></span>
+            <span class="corner corner-tr"></span>
+            <span class="corner corner-bl"></span>
+            <span class="corner corner-br"></span>
+
+            <div id="resultOverlay" class="result-overlay" hidden>
+              <div class="result-card">
+                <div id="resultGlyph" class="result-glyph">✓</div>
+                <p id="resultKicker" class="eyebrow">MISSION COMPLETE</p>
+                <h2 id="resultTitle">编队通过</h2>
+                <p id="resultSummary"></p>
+                <div class="result-stats">
+                  <div><small>任务用时</small><strong id="resultTime">--</strong></div>
+                  <div><small>总碰撞</small><strong id="resultCollisions">--</strong></div>
+                  <div><small>回放指纹</small><strong id="resultHash">--</strong></div>
+                </div>
+                <div id="resultFleet" class="result-fleet"></div>
+                <div class="result-actions">
+                  <button id="resultReplay" class="button primary" type="button">重新回放</button>
+                  <button id="resultInspect" class="button quiet" type="button">查看航迹</button>
+                  <button id="resultNext" class="button quiet" type="button">下一海域</button>
+                </div>
+              </div>
+            </div>
+            <div id="toast" class="toast" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="transport panel">
+            <div class="timeline-block">
+              <div class="time-row">
+                <span id="simTime">00:00.0</span>
+                <span>任务时限 42 s</span>
+              </div>
+              <div class="timeline"><span id="timelineFill"></span><i id="timelineHead"></i></div>
+            </div>
+
+            <div class="transport-actions">
+              <button id="stepButton" class="button icon-only" type="button" title="单步推进 0.5 秒" aria-label="单步推进 0.5 秒">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16M19 5l-9 7 9 7z"></path></svg>
+              </button>
+              <button id="playButton" class="button primary play-button" type="button">
+                <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+                <span id="playLabel">开始模拟</span>
+              </button>
+              <button id="replayButton" class="button" type="button" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M4.7 15a8 8 0 1 0 .8-8.2L4 10"></path></svg>
+                回放
+              </button>
+              <button id="overlayButton" class="button icon-only" type="button" title="叠加上次航迹" aria-label="叠加上次航迹" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h12v12H8zM4 4h12v3M4 4v12h3"></path></svg>
+              </button>
+            </div>
+
+            <div class="telemetry">
+              <div class="meter-card">
+                <span>平均航速</span>
+                <strong id="speedMetric">--</strong>
+                <div class="meter"><i id="speedMeter"></i></div>
+              </div>
+              <div class="meter-card">
+                <span>航向张力</span>
+                <strong id="tensionMetric">--</strong>
+                <div class="meter amber"><i id="tensionMeter"></i></div>
+              </div>
+              <div class="meter-card compact">
+                <span>碰撞</span>
+                <strong id="collisionMetric">0</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="statusbar">
+        <span><i class="live-dot"></i> DETERMINISTIC CORE · 20 Hz</span>
+        <span>固定步长 50 ms</span>
+        <span id="footerHash">RUN --------</span>
+        <span class="footer-spacer"></span>
+        <span>CANVAS / WEB AUDIO</span>
+      </footer>
+    </div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
