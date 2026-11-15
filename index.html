@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>二维动画相机取景求解器</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>二维动画相机取景求解器</h1>
+    <p class="subtitle">双人同框 · 舞台边界 · 布景避让 · 实时可行域 · 关键帧</p>
+  </header>
+
+  <main class="layout">
+    <section class="stage-panel">
+      <canvas id="stage" width="1000" height="600"></canvas>
+      <div id="status" class="status" aria-live="polite"></div>
+      <div id="conflict" class="conflict" hidden></div>
+    </section>
+
+    <aside class="controls">
+      <section class="card">
+        <h2>场景</h2>
+        <button data-scene="solvable" class="primary">载入场景 A（可解）</button>
+        <button data-scene="infeasible">载入场景 B（无解）</button>
+      </section>
+
+      <section class="card">
+        <h2>镜头参数</h2>
+        <label>焦段 <span id="focalValue">50</span> mm
+          <input type="range" id="focal" min="24" max="200" step="1" value="50" />
+        </label>
+        <label>安全边距 <span id="marginValue">24</span> px
+          <input type="range" id="margin" min="0" max="80" step="2" value="24" />
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>锁定与约束</h2>
+        <div class="row">
+          <label><input type="radio" name="lock" value="-1" checked /> 不锁定</label>
+          <label><input type="radio" name="lock" value="0" /> 锁定 A</label>
+          <label><input type="radio" name="lock" value="1" /> 锁定 B</label>
+        </div>
+        <label><input type="checkbox" id="relaxStage" /> 临时放宽舞台边界</label>
+        <label><input type="checkbox" id="relaxSet" /> 临时放宽布景避让</label>
+      </section>
+
+      <section class="card">
+        <h2>关键帧</h2>
+        <button id="saveFrame" class="primary">保存当前镜头关键帧</button>
+        <button id="exportFrames">导出 JSON</button>
+        <button id="clearFrames">清空</button>
+        <ul id="frameList" class="frame-list"></ul>
+      </section>
+
+      <section class="card legend">
+        <h2>图例</h2>
+        <p><span class="swatch feasible"></span> 可行机位范围</p>
+        <p><span class="swatch forbidden"></span> 布景禁入区</p>
+        <p><span class="swatch view"></span> 最终取景框</p>
+        <p><span class="swatch margin"></span> 角色安全边距</p>
+      </section>
+    </aside>
+  </main>
+
+  <script src="src/solver.js"></script>
+  <script src="src/scenarios.js"></script>
+  <script src="src/keyframe-store.js"></script>
+  <script src="src/renderer.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>

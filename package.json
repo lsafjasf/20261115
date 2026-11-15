@@ -1,0 +1,11 @@
+{
+  "name": "camera-framing-solver",
+  "version": "1.0.0",
+  "private": true,
+  "description": "二维动画双人同框相机取景实时求解器（舞台边界/布景避让/可行域/关键帧）",
+  "scripts": {
+    "test": "node --test test/solver.test.js test/app.dom.test.js",
+    "start": "node server.js"
+  },
+  "license": "UNLICENSED"
+}
