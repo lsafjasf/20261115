@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>车辆轨迹审计平台</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>车辆轨迹审计平台</h1>
+  <div class="topbar-ctrl">
+    <label>路线
+      <select id="routeSelect"></select>
+    </label>
+    <button id="exportBtn" type="button">导出审计报告 PNG</button>
+  </div>
+</header>
+
+<section class="toolbar">
+  <div class="tb-block">
+    <span class="tb-label">时间段</span>
+    <input type="range" id="rangeStart" min="0" max="100" value="0">
+    <span id="rangeStartText" class="range-text"></span>
+    <span class="range-sep">至</span>
+    <input type="range" id="rangeEnd" min="0" max="100" value="100">
+    <span id="rangeEndText" class="range-text"></span>
+    <button id="rangeReset" type="button" class="mini-btn">重置</button>
+  </div>
+  <div class="tb-block">
+    <span class="tb-label">异常筛选</span>
+    <label class="chk chk-speed"><input type="checkbox" id="fSpeed" checked>超速 <b id="cntSpeed">0</b></label>
+    <label class="chk chk-reverse"><input type="checkbox" id="fReverse" checked>逆行 <b id="cntReverse">0</b></label>
+    <label class="chk chk-skip"><input type="checkbox" id="fSkip" checked>未停靠 <b id="cntSkip">0</b></label>
+  </div>
+  <div class="tb-block">
+    <button id="playBtn" type="button" class="mini-btn">▶ 播放</button>
+    <span id="cursorTime" class="range-text">--:--:--</span>
+  </div>
+</section>
+
+<main class="panels">
+  <section class="panel panel-map">
+    <h2>地图轨迹 <small>Canvas 渲染 · 无外部地图</small></h2>
+    <canvas id="mapCanvas"></canvas>
+  </section>
+
+  <section class="panel panel-side">
+    <h2>站点停靠</h2>
+    <div id="stationList" class="station-list"></div>
+  </section>
+
+  <section class="panel panel-chart">
+    <h2>速度曲线 <small>点击曲线可跳转时刻</small></h2>
+    <canvas id="speedCanvas"></canvas>
+  </section>
+
+  <section class="panel panel-anom">
+    <h2>异常事件（点击跳转对应时刻）</h2>
+    <div id="anomalyList" class="anomaly-list"></div>
+  </section>
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
