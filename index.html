@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas 2D 场景剖析工具</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="brand">Canvas 2D 场景剖析</div>
+      <label class="switch" title="阴影是画面特性：关闭会改变画面，仅用于测量阴影成本">
+        <input type="checkbox" id="opt-shadows" checked />
+        <span>阴影（画面特性）</span>
+      </label>
+      <label class="switch" title="纯优化：关闭后画面像素不变，仅性能变化">
+        <input type="checkbox" id="opt-spatial" checked />
+        <span>空间排序（优化）</span>
+      </label>
+      <label class="switch" title="纯优化：关闭后画面像素不变，仅性能变化">
+        <input type="checkbox" id="opt-culling" checked />
+        <span>离屏裁剪（优化）</span>
+      </label>
+      <div class="spacer"></div>
+      <button id="btn-replay">回放 10s</button>
+      <button id="btn-replay-rec">回放录制</button>
+      <button id="btn-record">录制动作</button>
+      <button id="btn-bench">跑基准对比</button>
+      <button id="btn-save">保存场景</button>
+      <button id="btn-load">加载场景</button>
+      <button id="btn-export-script">导出固定脚本</button>
+      <input type="file" id="file-load" accept="application/json" hidden />
+    </header>
+
+    <main class="layout">
+      <div class="stage">
+        <canvas id="scene"></canvas>
+        <div id="overlay" class="overlay hidden"></div>
+      </div>
+
+      <aside class="panel">
+        <h2>实时剖析</h2>
+        <div class="metric"><span>帧时间 (ms)</span><strong id="m-frame">–</strong></div>
+        <div class="metric"><span>布局耗时 (ms)</span><strong id="m-layout">–</strong></div>
+        <div class="metric"><span>绘制耗时 (ms)</span><strong id="m-draw">–</strong></div>
+        <div class="metric"><span>绘制调用估算</span><strong id="m-calls">–</strong></div>
+        <div class="metric"><span>对象数量</span><strong id="m-objects">–</strong></div>
+        <div class="metric"><span>可见 / 已裁剪</span><strong id="m-visible">–</strong></div>
+
+        <h2>画面一致性</h2>
+        <p class="hint">两个“优化”开关在任意组合下都必须输出相同像素。点击按钮抓取当前帧哈希。</p>
+        <button id="btn-parity" class="secondary">校验当前开关像素一致性</button>
+        <pre id="parity-out" class="code"></pre>
+
+        <h2>回放</h2>
+        <div class="metric"><span>状态</span><strong id="m-replay-state">空闲</strong></div>
+        <div class="metric"><span>帧 / 时间</span><strong id="m-replay-frame">–</strong></div>
+
+        <h2>基准结果</h2>
+        <pre id="bench-out" class="code">点击“跑基准对比”，将对三种配置各执行 10 秒确定性回放。</pre>
+      </aside>
+    </main>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

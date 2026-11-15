@@ -1,0 +1,26 @@
+{
+  "name": "uid325",
+  "version": "1.0.0",
+  "description": "Canvas 2D scene profiler with deterministic replay and benchmarking",
+  "scripts": {
+    "bench": "node bench/run-bench.mjs",
+    "serve": "node bench/server.mjs",
+    "test": "node test/engine.test.mjs",
+    "ui-check": "node bench/ui-check.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}
