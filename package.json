@@ -1,0 +1,24 @@
+{
+  "name": "gesture-paint-board",
+  "version": "1.0.0",
+  "description": "画布手势识别：画线 / 擦除 / 盖章，多图层，撤销重做，导出 PNG",
+  "scripts": {
+    "test": "node test/draw.js",
+    "serve": "python3 -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsafjasf/20261115.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lsafjasf/20261115/issues"
+  },
+  "homepage": "https://github.com/lsafjasf/20261115#readme",
+  "dependencies": {
+    "playwright": "^1.65.1"
+  }
+}

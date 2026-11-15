@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手势画板 · 画线 / 擦除 / 盖章</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="toolbar">
+    <div class="group layers" id="layerSwitcher">
+      <span class="label">图层</span>
+      <button class="layer-btn" data-layer="0">图层 1</button>
+      <button class="layer-btn" data-layer="1">图层 2</button>
+    </div>
+    <div class="group">
+      <span class="label">当前工具</span>
+      <span id="toolBadge" class="tool-badge">画线</span>
+    </div>
+    <div class="group">
+      <button id="undoBtn" title="撤销 (Ctrl+Z)">↩ 撤销</button>
+      <button id="redoBtn" title="重做 (Ctrl+Y)">↪ 重做</button>
+      <button id="exportBtn" class="primary">导出 PNG</button>
+    </div>
+  </header>
+
+  <main class="board-wrap">
+    <div id="board" class="board">
+      <canvas class="layer-canvas" id="layer0"></canvas>
+      <canvas class="layer-canvas" id="layer1"></canvas>
+      <canvas id="overlay"></canvas>
+    </div>
+  </main>
+
+  <footer class="hint">
+    手势识别：缓慢拖动 = <b>画线</b>（自动平滑）｜快速来回折返 = <b>擦除</b>（仅当前图层）｜轻点 / 小圈 = <b>盖章</b>
+    ｜状态：<span id="statusText">就绪</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
